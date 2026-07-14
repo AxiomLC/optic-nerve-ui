@@ -28,24 +28,17 @@ Supabase credentials are handled server-side via Cloudflare Pages Functions — 
 
 ## Env vars (production)
 
-**GitHub Actions secrets:**
-
-| Secret | Purpose |
-|---|---|
-| `VITE_N8N_BASE_URL` | n8n instance URL (build-time) |
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token for deploy |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-
-**Cloudflare Dashboard → Environment Variables (Production + Preview):**
+**Cloudflare Dashboard → Variables and Secrets:**
 
 | Var | Purpose |
 |---|---|
-| `SUPABASE_URL` | Supabase project REST endpoint (server-side only) |
-| `SUPABASE_ANON_KEY` | Supabase anon key (server-side only, never in browser) |
+| `VITE_N8N_BASE_URL` | n8n instance URL (build-time) |
+| `SUPABASE_URL` | Supabase project REST endpoint (server-side only, no `VITE_` prefix) |
+| `SUPABASE_ANON_KEY` | Supabase anon key (server-side only, no `VITE_` prefix) |
 
 ## Deploy
 
-Push to `main` — GitHub Actions builds and deploys to Cloudflare Pages.
+Push to `main` — Cloudflare Pages auto-deploys.
 
 ## Security
 

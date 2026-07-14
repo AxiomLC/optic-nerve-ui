@@ -2,9 +2,11 @@ name = "optic-nerve-ui"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-04-01"
 
-# Runtime env vars (set in Cloudflare Dashboard → Environment Variables → Production + Preview):
-#   SUPABASE_URL           — Supabase project REST endpoint (server-side only)
-#   SUPABASE_ANON_KEY      — Supabase anon key (server-side only)
+# Env vars set in Cloudflare Dashboard → Variables and Secrets:
 #
-# Build-time env var (set as GitHub Actions secret):
-#   VITE_N8N_BASE_URL      — n8n instance URL
+# Build-time (VITE_ prefix required for Vite):
+#   VITE_N8N_BASE_URL       — n8n instance URL
+#
+# Runtime (used by Pages Functions, no VITE_ prefix):
+#   SUPABASE_URL            — Supabase project REST endpoint
+#   SUPABASE_ANON_KEY       — Supabase anon key
