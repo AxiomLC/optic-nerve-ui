@@ -2,8 +2,9 @@ name = "optic-nerve-ui"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-04-01"
 
-[env.production]
-# Environment variables set via Cloudflare Dashboard > Settings > Environment Variables:
-#   VITE_SUPABASE_URL
-#   VITE_SUPABASE_ANON_KEY
-#   VITE_N8N_BASE_URL
+# Runtime env vars (set in Cloudflare Dashboard → Environment Variables → Production + Preview):
+#   SUPABASE_URL           — Supabase project REST endpoint (server-side only)
+#   SUPABASE_ANON_KEY      — Supabase anon key (server-side only)
+#
+# Build-time env var (set as GitHub Actions secret):
+#   VITE_N8N_BASE_URL      — n8n instance URL
