@@ -22,7 +22,7 @@ export async function getPreviewUrlSingle(driveId, source_id) {
 }
 
 export async function vectorSearch(query) {
-  const res = await fetch(`${N8N_BASE}/webhook/vector-search`, {
+  const res = await fetch(`${N8N_BASE}/webhook/optic-query`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
