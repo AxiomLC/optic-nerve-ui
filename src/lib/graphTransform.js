@@ -1,26 +1,20 @@
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
  *
- * Nodes: every optic_file + every optic_entity.
- *   - File nodes use source_id as id.
- *   - Entity nodes use `entity:<canonical_name>` to avoid collisions.
- * Links: every optic_edge.
- *   - source -> file's source_id
- *   - target -> entity's `entity:<canonical_name>`
+ * Nodes use internal DB primary keys (id) since that's what edge
+ * foreign keys (file_id, target_entity_id) reference.
+ * Full row data (source_id, canonical_name, etc.) is preserved on
+ * each node for the viewer panel.
  */
 export function toGraphData({ files, entities, edges }) {
   const nodes = [
-    ...(files || []).map(f => ({ id: f.source_id, type: 'file', ...f })),
-    ...(entities || []).map(e => ({
-      id: `entity:${e.canonical_name}`,
-      type: 'entity',
-      ...e,
-    })),
+    ...(files || []).map(f => ({ id: f.id, type: 'file', ...f })),
+    ...(entities || []).map(e => ({ id: e.id, type: 'entity', ...e })),
   ];
 
   const links = (edges || []).map(e => ({
-    source: e.file_id_source_id,
-    target: `entity:${e.entity_canonical_name}`,
+    source: e.file_id,
+    target: e.target_entity_id,
     edge_type: e.edge_type,
     action: e.action,
   }));
