@@ -18,23 +18,17 @@ npm install
 npm run dev
 ```
 
-For local dev, create a `.env` file with:
+For local dev, create a `.env` file with the same vars as `.env.production`.
+
+## Env vars
+
+All three are public-safe values, committed in `.env.production` — Vite bakes them into the JS at build time:
 
 | Var | Purpose |
 |---|---|
+| `VITE_SUPABASE_URL` | Supabase project REST endpoint |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon public key (safe to expose, RLS enforces access) |
 | `VITE_N8N_BASE_URL` | n8n instance URL |
-
-Supabase credentials are handled server-side via Cloudflare Pages Functions — not needed in the client bundle.
-
-## Env vars (production)
-
-**Cloudflare Dashboard → Variables and Secrets:**
-
-| Var | Purpose |
-|---|---|
-| `VITE_N8N_BASE_URL` | n8n instance URL (build-time) |
-| `SUPABASE_URL` | Supabase project REST endpoint (server-side only, no `VITE_` prefix) |
-| `SUPABASE_ANON_KEY` | Supabase anon key (server-side only, no `VITE_` prefix) |
 
 ## Deploy
 
@@ -42,7 +36,7 @@ Push to `main` — Cloudflare Pages auto-deploys.
 
 ## Security
 
-Supabase URL and anon key live server-side in a Cloudflare Pages Function proxy. The browser never calls Supabase directly — only `/api/login` on its own domain. No sensitive credentials are exposed in the client bundle.
+Supabase anon key is designed to be public. Data access is enforced server-side by the `get_canvas` RPC function which validates username/password. No sensitive credentials ever reach the browser.
 
 ## Contact
 

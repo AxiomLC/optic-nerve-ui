@@ -1,21 +1,12 @@
-/**
- * Login — calls our own server-side proxy (/api/login)
- * instead of Supabase directly.
- *
- * Supabase credentials never touch the browser.
- */
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export async function getCanvas(username, password) {
-  const res = await fetch('/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Login failed' }));
-    throw new Error(err.error || `Login failed (${res.status})`);
-  }
-
-  return res.json(); // { files: [...], entities: [...], edges: [...] }
+  const { data, error } = await supabase.rpc('get_canvas', { username, password });
+  if (error) throw error;
+  return data; // { files: [...], entities: [...], edges: [...] }
 }
