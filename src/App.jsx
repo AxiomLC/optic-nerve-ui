@@ -1,11 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import LoginForm from './auth/LoginForm';
-import MindMap from './graph/MindMap';
 import SearchPanel from './search/SearchPanel';
 import ViewerPanel from './viewer/ViewerPanel';
 import VoiceChat from './voice/VoiceChat';
 import { toGraphData } from './lib/graphTransform';
 import { getPreviewUrls, getPreviewUrlSingle } from './lib/n8nClient';
+
+const MindMap = lazy(() => import('./graph/MindMap'));
 
 export default function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -79,10 +80,12 @@ export default function App() {
 
         <div className="right-col">
           {graphData && (
-            <MindMap
-              graphData={graphData}
-              onSelectFile={handleSelectFile}
-            />
+            <Suspense fallback={<div className="panel" style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'#888'}}>Loading graph…</div>}>
+              <MindMap
+                graphData={graphData}
+                onSelectFile={handleSelectFile}
+              />
+            </Suspense>
           )}
         </div>
       </div>
