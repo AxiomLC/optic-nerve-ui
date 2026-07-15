@@ -71,7 +71,7 @@ header.app-header {
   align-items: center;
   justify-content: space-between;
   padding: var(--pad);
-  border-bottom: var(--border-thickness) solid var(--border-pink);
+  
   flex-shrink: 0;
   height: var(--header-height);
   gap: 8px;
