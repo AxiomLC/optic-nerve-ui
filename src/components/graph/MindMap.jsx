@@ -315,7 +315,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   }, []);
 
   const handleEngineStop = useCallback(() => {
-    if (!fgRef.current || !graphData?.nodes) return;
+    if (!graphData?.nodes) return;
 
     const nodes = graphData.nodes;
     const orphans = nodes.filter(n => n.isOrphan);
@@ -324,20 +324,19 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     // If no orphans, nothing to do
     if (orphans.length === 0) return;
 
-    // Measure bounding box of connected nodes
+    // Measure bounding box of connected nodes (use their current x,y,z)
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
 
     connected.forEach(n => {
-      const pos = fgRef.current.getNodePosition(n.id);
-      if (pos) {
-        minX = Math.min(minX, pos.x);
-        maxX = Math.max(maxX, pos.x);
-        minY = Math.min(minY, pos.y);
-        maxY = Math.max(maxY, pos.y);
-        minZ = Math.min(minZ, pos.z);
-        maxZ = Math.max(maxZ, pos.z);
+      if (isFinite(n.x) && isFinite(n.y) && isFinite(n.z)) {
+        minX = Math.min(minX, n.x);
+        maxX = Math.max(maxX, n.x);
+        minY = Math.min(minY, n.y);
+        maxY = Math.max(maxY, n.y);
+        minZ = Math.min(minZ, n.z);
+        maxZ = Math.max(maxZ, n.z);
       }
     });
 
@@ -370,9 +369,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       orphan.fx = x;
       orphan.fy = y;
       orphan.fz = z;
-
-      // Notify force graph of the update
-      fgRef.current.d3Force('collide').initialize(nodes);
     });
   }, [graphData]);
 
