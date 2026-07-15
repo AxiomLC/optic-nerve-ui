@@ -1,7 +1,8 @@
 // ============================================================
 // DEV CONTROLS — Visual theme for the Optic Nerve graph UI
-// Change values here to affect entity colors, emojis, file
-// icons, node sizes, and graph behavior.
+// Change values here to affect entity icons, file icons,
+// node colors, sizes, and graph behavior.
+// Uses lucide-react for crisp SVG icons.
 //
 // Color reference:
 //   #4f9 = mint green   #49f = sky blue   #f94 = orange
@@ -9,22 +10,27 @@
 //   #ff4 = yellow       #999 = grey       #aaa = light grey
 // ============================================================
 
-// ── Entity emojis ──────────────────────────────────────────
-export const ENTITY_EMOJI = {
-  person:   '👤',
-  org:      '🏢',
-  place:    '📍',
-  project:  '🚀',
-  product:  '💼',
-  document: '📄',
-  event:    '🎪',
-  thing:    '💡',
-  concept:  '💡',
+// ── Entity icon names (lucide-react) ──────────────────────
+// Maps entity_type → icon component name from lucide-react
+export const ENTITY_ICON = {
+  person:   'User',
+  org:      'Building2',
+  place:    'MapPin',
+  project:  'Rocket',
+  product:  'Package',
+  document: 'FileText',
+  event:    'Calendar',
+  thing:    'Lightbulb',
+  concept:  'Brain',
 };
 
-// ── Entity emoji transparency ─────────────────────────────
-// 0 = invisible, 1 = fully opaque
-export const ENTITY_EMOJI_OPACITY = 0.5;
+// ── Entity icon styling ───────────────────────────────────
+// Size in pixels, opacity 0–1
+export const ENTITY_ICON_STYLE = {
+  size: 28,
+  opacity: 0.8,
+  strokeWidth: 1.5,
+};
 
 // ── Entity glow colors ────────────────────────────────────
 export const ENTITY_COLOR = {
@@ -53,32 +59,40 @@ export const ENTITY_SIZE_TIERS = [
   { max: Infinity, size: 10 },
 ];
 
-// ── File type icons ───────────────────────────────────────
+// ── File type icons (lucide-react) ────────────────────────
+// Maps MIME type or extension → icon component name
 export const FILE_ICON = {
-  'application/pdf':                '📋',
-  '.pdf':                           '📋',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
-  '.docx':                          '📝',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📉',
-  '.xlsx':                          '📉',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
-  '.pptx':                          '📊',
-  'text/':                          '📝',
-  '.txt':                           '📝',
-  'image/':                         '🖼️',
-  '.jpg':                           '🖼️',
-  '.jpeg':                          '🖼️',
-  '.png':                           '🖼️',
-  'video/':                         '📽️',
-  '.mp4':                           '📽️',
-  '.mov':                           '📽️',
-  'audio/':                         '🎵',
-  '.mp3':                           '🎵',
-  'message/':                       '💬',
-  '.eml':                           '📧',
-  'ntn':                            '📓',
+  'application/pdf':                'FileText',
+  '.pdf':                           'FileText',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'FileText',
+  '.docx':                          'FileText',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       'Sheet',
+  '.xlsx':                          'Sheet',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'Presentation',
+  '.pptx':                          'Presentation',
+  'text/':                          'FileText',
+  '.txt':                           'FileText',
+  'image/':                         'Image',
+  '.jpg':                           'Image',
+  '.jpeg':                          'Image',
+  '.png':                           'Image',
+  'video/':                         'Video',
+  '.mp4':                           'Video',
+  '.mov':                           'Video',
+  'audio/':                         'Music',
+  '.mp3':                           'Music',
+  'message/':                       'Mail',
+  '.eml':                           'Mail',
+  'ntn':                            'BookOpen',
 };
-export const FILE_ICON_DEFAULT = '📎';
+export const FILE_ICON_DEFAULT = 'Paperclip';
+
+// ── File icon styling ────────────────────────────────────
+export const FILE_ICON_STYLE = {
+  size: 20,
+  opacity: 1.0,
+  strokeWidth: 2,
+};
 
 // ── File label styling ────────────────────────────────────
 export const FILE_LABEL = {
@@ -88,8 +102,8 @@ export const FILE_LABEL = {
 
 // ── Node display sizes ────────────────────────────────────
 export const NODE_SIZE = {
-  fileEmoji:   7,
-  entityEmoji: 10,
+  fileIcon:   7,
+  entityIcon: 10,
 };
 
 // ── Link styling ──────────────────────────────────────────

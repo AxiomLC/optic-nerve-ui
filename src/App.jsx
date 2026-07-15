@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
-import LoginForm from './auth/LoginForm';
-import SearchPanel from './search/SearchPanel';
-import ViewerPanel from './viewer/ViewerPanel';
-import VoiceChat from './voice/VoiceChat';
+import LoginForm from './components/LoginForm';
+import SearchPanel from './components/SearchPanel';
+import ViewerPanel from './components/viewer/ViewerPanel';
+import VoiceChat from './components/VoiceChat';
 import { toGraphData } from './lib/graphTransform';
 import { getPreviewUrls } from './lib/n8nClient';
 import { getCanvas } from './lib/supabaseClient';
 
-const MindMap = lazy(() => import('./graph/MindMap'));
+const MindMap = lazy(() => import('./components/graph/MindMap'));
 
 const SESSION_KEY = 'optic-nerve-session';
 

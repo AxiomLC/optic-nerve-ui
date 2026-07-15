@@ -2,7 +2,7 @@
 // Node styling helpers — delegates to theme.js for values.
 // ============================================================
 
-import { ENTITY_COLOR, LINK } from '../lib/theme';
+import { ENTITY_COLOR, LINK } from '../../config/theme';
 
 export function nodeColor(node, selected) {
   if (selected) return '#ffcc00';
