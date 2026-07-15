@@ -72,6 +72,9 @@ function entityRadius(edgeCount) {
 export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   const [selected, setSelected] = useState(new Set());
   const fgRef = useRef(null);
+  // Keep a live ref to graphData so onEngineTick can read it without closure issues
+  const graphDataRef = useRef(graphData);
+  graphDataRef.current = graphData;
 
   const handleClick = useCallback((node) => {
     if (node.type === 'file') {
@@ -129,22 +132,21 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     if (!fgRef.current) return;
     const dist = fgRef.current.camera().position.length();
 
-    // Walk all Three groups in the graph
-    fgRef.current.graphData().nodes.forEach(node => {
-      // Get the Three object for this node
-      // We traverse the scene to find label sprites
-      // Since 3d-force-graph doesn't expose node objects directly,
-      // we use the internal _objects map (stable API)
-      const obj3d = fgRef.current._objects?.get?.(node.id);
-      if (!obj3d) return;
+    // Walk nodes via __threeObj (set by 3d-force-graph on each node)
+    const gd = graphDataRef.current;
+    if (!gd?.nodes) return;
 
-      obj3d.children.forEach(child => {
+    gd.nodes.forEach(node => {
+      // Each node's Three.js group is stored on node.__threeObj by the library
+      const group = node.__threeObj;
+      if (!group?.children) return;
+
+      group.forEach(child => {
         if (!child.userData?.isLabel) return;
 
         const isEntity = child.userData.zoomType !== 'file';
         const threshold = isEntity ? ZOOM.entityLabelAt : ZOOM.fileLabelAt;
 
-        // Fade in as camera gets closer, out as it gets farther
         const raw = 1 - (dist - threshold * 0.5) / (threshold * 0.8);
         child.material.opacity = Math.max(0, Math.min(1, raw));
       });
@@ -172,5 +174,3 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     </div>
   );
 }
-
-
