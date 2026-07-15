@@ -3,7 +3,7 @@
 // Change values here to affect entity colors, emojis, file
 // icons, node sizes, and graph behavior.
 //
-// Color reference (shown as hex in most editors):
+// Color reference:
 //   #4f9 = mint green   #49f = sky blue   #f94 = orange
 //   #94f = purple       #f49 = pink       #9f4 = lime
 //   #ff4 = yellow       #999 = grey       #aaa = light grey
@@ -22,6 +22,10 @@ export const ENTITY_EMOJI = {
   concept:  '💡',
 };
 
+// ── Entity emoji transparency ─────────────────────────────
+// 0 = invisible, 1 = fully opaque
+export const ENTITY_EMOJI_OPACITY = 0.5;
+
 // ── Entity glow colors (hex) ──────────────────────────────
 export const ENTITY_COLOR = {
   person:   '#4f9',   // mint green
@@ -36,72 +40,81 @@ export const ENTITY_COLOR = {
 };
 
 // ── Entity glow blob radius multiplier ────────────────────
-// Actual radius = ENTITY_SIZE_TIERS[size] * GLOW.baseRadius
 export const GLOW = {
-  baseRadius: 1,       // default: 6 — minimum glow sphere radius
+  baseRadius: 1,       // default: 6
   opacity: 0.35,       // default: 0.25 — glow transparency (0=invisible, 1=solid)
 };
 
 // ── Entity node size by edge_count tiers ──────────────────
-// { max: N, size: radius } — node matches first tier where edge_count <= max
 export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 3  },  // default: 1-5  connections → size 6
-  { max: 15, size: 5  },  // default: 6-15 connections → size 9
-  { max: 30, size: 7 },  // default: 16-30 connections → size 13
-  { max: Infinity, size: 10 },  // default: 31+  connections → size 17
+  { max: 5,  size: 3  },  // default: 6
+  { max: 15, size: 5  },  // default: 9
+  { max: 30, size: 7  },  // default: 13
+  { max: Infinity, size: 10 },  // default: 17
 ];
 
 // ── File type icons (matched against file_type prefix) ────
-// Order matters: first match wins.
-// Matches both MIME types ("image/jpeg") and extensions (".pdf", ".docx")
+// Order matters: first match wins. Supports MIME and extension matching.
 export const FILE_ICON = {
-  'application/pdf':                '📋',   // clipboard — PDF
-  '.pdf':                           '📋',   // fallback .pdf extension
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',  // memo — DOCX
+  'application/pdf':                '📋',
+  '.pdf':                           '📋',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
   '.docx':                          '📝',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📉',  // chart down — XLSX
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📉',
   '.xlsx':                          '📉',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',  // chart up — PPTX
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
   '.pptx':                          '📊',
-  'text/':                          '📝',   // memo — text files
+  'text/':                          '📝',
   '.txt':                           '📝',
-  'image/':                         '🖼️',  // framed picture — images
+  'image/':                         '🖼️',
   '.jpg':                           '🖼️',
   '.jpeg':                          '🖼️',
   '.png':                           '🖼️',
-  'video/':                         '📽️',  // film projector — videos
+  'video/':                         '📽️',
   '.mp4':                           '📽️',
   '.mov':                           '📽️',
-  'audio/':                         '🎵',   // musical note — audio
+  'audio/':                         '🎵',
   '.mp3':                           '🎵',
-  'message/':                       '💬',   // speech bubble — email
-  '.eml':                           '📧',   // envelope — .eml
-  'ntn':                            '📓',   // notebook — Notion
+  'message/':                       '💬',
+  '.eml':                           '📧',
+  'ntn':                            '📓',
 };
 
-// ── Default fallback icon (when no FILE_ICON entry matches) ──
-// Change this if you see a generic icon you don't like
-export const FILE_ICON_DEFAULT = '📎';  // paperclip
+// ── Default fallback icon ─────────────────────────────────
+export const FILE_ICON_DEFAULT = '📎';
+
+// ── File label styling (on graph nodes) ───────────────────
+export const FILE_LABEL = {
+  color: '#0f0',      // light green
+  fontSize: 20,       // font size for both type and title
+  typePrefix: '',     // optional prefix before file_type text
+};
 
 // ── Node display sizes ────────────────────────────────────
 export const NODE_SIZE = {
-  fileEmoji:   7,     // default: 7 — emoji size for file nodes
-  entityEmoji: 10,    // default: 9 — emoji size for entity nodes (sits on glow)
+  fileEmoji:   7,
+  entityEmoji: 10,
 };
 
 // ── Link line styling ─────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.5,       // default: 0.5 — thin line for 'mention' edges
-  linkWidth:     2,         // default: 2 — thick line for 'link' edges
-  mentionColor:  '#555',    // default: #555 — grey
-  linkColor:     '#ff6ec7', // default: #ff6ec7 — pink (matches border)
-  particleSpeed: 0.005,     // default: 0.005 — flow particle speed along links
+  mentionWidth:  0.5,
+  linkWidth:     2,
+  mentionColor:  '#555',
+  linkColor:     '#ff6ec7',
+  particleSpeed: 0.005,
 };
 
 // ── Graph physics ─────────────────────────────────────────
 export const PHYSICS = {
-  alphaDecay:    0.02,   // default: 0.02 — how fast simulation settles (lower = longer)
-  velocityDecay: 0.3,    // default: 0.3 — friction (lower = more bounce)
-  linkDistance:  80,     // default: 80 — target link length in pixels
-  warmupTicks:   100,    // default: 100 — pre-render simulation ticks
+  alphaDecay:    0.02,
+  velocityDecay: 0.3,
+  linkDistance:  80,
+  warmupTicks:   100,
+  orphanRadius:  8,   // initial cluster radius for orphaned nodes
 };
+
+// ── Logo ──────────────────────────────────────────────────
+// Place logo.png in optic-nerve-ui/public/logo.png
+// The UI displays it inline with the header title.
+// If the file is absent, the browser shows a small broken-icon — no crash.

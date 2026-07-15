@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import { Group, Panel, Separator } from 'react-resizable-panels';
 import LoginForm from './auth/LoginForm';
 import SearchPanel from './search/SearchPanel';
 import ViewerPanel from './viewer/ViewerPanel';
@@ -17,40 +18,41 @@ function loadSession() {
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
-
 function saveSession(data) {
   try { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch {}
 }
-
 function clearSession() {
   try { localStorage.removeItem(SESSION_KEY); } catch {}
 }
 
 export default function App() {
-  // ── Auth ──────────────────────────────────────────────────
+  // ── Auth ──
   const [authUser, setAuthUser] = useState(null);
   const [canvas, setCanvas] = useState(null);
   const [graphData, setGraphData] = useState(null);
   const [previewUrls, setPreviewUrls] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
 
-  // ── Selection ─────────────────────────────────────────────
+  // ── Selection ──
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
 
-  // ── Search ────────────────────────────────────────────────
+  // ── Layers: 'viewer' | 'search' | 'voice' ──
+  const [activeLayer, setActiveLayer] = useState('viewer');
+
+  // ── Search ──
   const [searchResults, setSearchResults] = useState(null);
 
-  // ── Voice ─────────────────────────────────────────────────
+  // ── Voice ──
   const [voiceExpanded, setVoiceExpanded] = useState(false);
 
-  // ── Error log ─────────────────────────────────────────────
+  // ── Error log ──
   const [errorLog, setErrorLog] = useState([]);
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
   }, []);
 
-  // ── Restore session on mount ─────────────────────────────
+  // ── Restore session on mount ──
   useEffect(() => {
     const saved = loadSession();
     if (saved && saved.canvas && saved.username) {
@@ -59,7 +61,6 @@ export default function App() {
       setGraphData(toGraphData(saved.canvas));
       if (saved.previewUrls) setPreviewUrls(saved.previewUrls);
 
-      // Re-fetch in background
       getCanvas(saved.username, saved.password).then(canvasData => {
         setCanvas(canvasData);
         setGraphData(toGraphData(canvasData));
@@ -74,7 +75,7 @@ export default function App() {
     }
   }, []);
 
-  // ── Login handler ────────────────────────────────────────
+  // ── Login ──
   async function handleLogin({ username, canvas: canvasData }) {
     setAuthUser({ username });
     setCanvas(canvasData);
@@ -83,7 +84,6 @@ export default function App() {
     setSelectedFile(null);
     setSelectedEntity(null);
 
-    // Fetch preview URLs (non-blocking)
     const items = (canvasData.files || [])
       .filter(f => f.drive_id && f.source_id)
       .map(f => ({ driveId: f.drive_id, source_id: f.source_id }));
@@ -98,12 +98,11 @@ export default function App() {
       }
     }
 
-    // Save to localStorage for session persistence
     const password = document?.forms?.[0]?.password?.value || '';
     saveSession({ username, password, canvas: canvasData, previewUrls: urls });
   }
 
-  // ── Logout handler ───────────────────────────────────────
+  // ── Logout ──
   function handleLogout() {
     clearSession();
     setAuthUser(null);
@@ -117,28 +116,53 @@ export default function App() {
     setErrorLog([]);
   }
 
-  // ── Select file from graph / search ──────────────────────
+  // ── Select file ──
   const handleSelectFile = useCallback((file) => {
     setSelectedFile(file);
     setSelectedEntity(null);
     setPreviewMode(false);
+    setActiveLayer('viewer');
   }, []);
 
-  // ── Select entity from graph ─────────────────────────────
+  // ── Select entity ──
   const handleSelectEntity = useCallback((entity) => {
     setSelectedEntity(entity);
     setSelectedFile(null);
     setPreviewMode(false);
+    setActiveLayer('viewer');
   }, []);
 
-  // ── Get File button: show preview ────────────────────────
+  // ── Search submit ──
+  const handleSearchSubmit = useCallback((results) => {
+    setActiveLayer('search');
+  }, []);
+
+  // ── Voice payload handler ──
+  const handleVoicePayload = useCallback((payload) => {
+    if (payload && Array.isArray(payload) && payload.length > 0 && payload[0].source_id) {
+      setSearchResults(payload);
+      setActiveLayer('search');
+    }
+  }, []);
+
+  // ── Get File ──
   const handleGetFile = useCallback(() => {
     setPreviewMode(true);
   }, []);
 
   const getFileAvailable = selectedFile?.drive_id && selectedFile?.source_id;
 
-  // ── If not logged in ────────────────────────────────────
+  // ── Voice toggle ──
+  const handleVoiceToggle = useCallback((expanded) => {
+    setVoiceExpanded(expanded);
+    if (expanded) {
+      setActiveLayer('voice');
+    } else {
+      setActiveLayer('viewer');
+    }
+  }, []);
+
+  // ── Not logged in ──
   if (!authUser) {
     return <LoginForm onLogin={handleLogin} />;
   }
@@ -147,68 +171,98 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      {/* ── Header ── */}
       <header className="app-header">
         <div className="header-left">
-          <h1>Optic Nerve VK<sup>™</sup></h1>
+          <h1>
+            <img src="/logo.png" alt="" className="header-logo-img" />
+            {' '}Optic Nerve VK<sup>™</sup>
+          </h1>
           <p className="sub">visual kernel</p>
         </div>
-
-        {/* Error log strip */}
-        <div className="header-log">
-          {errorLog.map((e, i) => (
-            <span key={i} className="log-entry">{e.time} {e.msg}</span>
-          ))}
-        </div>
-
-        <div className="header-logo">
+        <div className="header-center" />
+        <div className="header-right">
+          <div className="header-log">
+            {errorLog.map((e, i) => (
+              <span key={i} className="log-entry">{e.time} {e.msg}</span>
+            ))}
+          </div>
           <button className="btn-logout" onClick={handleLogout}>New Login</button>
         </div>
       </header>
 
+      {/* ── Main layout with resizable panels ── */}
       <div className="layout-4tier">
-        <div className="left-col">
-          {!voiceExpanded && (
-            <SearchPanel
-              onSelectFile={handleSelectFile}
-              searchResults={searchResults}
-              setSearchResults={setSearchResults}
-            />
-          )}
-
-          <ViewerPanel
-            file={selectedFile}
-            entity={selectedEntity}
-            previewUrl={previewUrl}
-            previewMode={previewMode}
-            onGetFile={handleGetFile}
-            getFileAvailable={getFileAvailable}
-          />
-
-          {/* Get File button — flush right, below viewer */}
-          {!voiceExpanded && !previewMode && getFileAvailable && (
-            <div className="get-file-bar">
-              <button className="btn-get-file" onClick={handleGetFile}>Get File</button>
-            </div>
-          )}
-        </div>
-
-        <div className="right-col">
-          {graphData && (
-            <Suspense fallback={<div className="panel" style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'#888'}}>Loading graph…</div>}>
-              <MindMap
-                graphData={graphData}
+        <Group direction="horizontal" autoSaveId="main">
+          <Panel defaultSize={26} minSize={20} maxSize={50}>
+            <div className="left-col">
+              <SearchPanel
                 onSelectFile={handleSelectFile}
-                onSelectEntity={handleSelectEntity}
+                searchResults={searchResults}
+                setSearchResults={setSearchResults}
+                onSearchSubmit={handleSearchSubmit}
               />
-            </Suspense>
-          )}
-        </div>
+
+              {/* Layer container */}
+              <div className="layer-container">
+                {activeLayer === 'viewer' && (
+                  <ViewerPanel
+                    file={selectedFile}
+                    entity={selectedEntity}
+                    previewUrl={previewUrl}
+                    previewMode={previewMode}
+                    onGetFile={handleGetFile}
+                    getFileAvailable={getFileAvailable}
+                  />
+                )}
+
+                {activeLayer === 'search' && searchResults && searchResults.length > 0 && (
+                  <div className="layer-search scrollable">
+                    {searchResults.map(r => (
+                      <div key={r.source_id} className="search-result-item" onClick={() => handleSelectFile(r)}>
+                        <div className="search-result-title">{r.title}</div>
+                        <div className="search-result-score">{(r.score * 100).toFixed(0)}%</div>
+                        <div className="search-result-summary">{r.summary}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeLayer === 'voice' && (
+                  <VoiceChat
+                    voiceExpanded={voiceExpanded}
+                    onExpandChange={handleVoiceToggle}
+                    onSearchPayload={handleVoicePayload}
+                  />
+                )}
+              </div>
+            </div>
+          </Panel>
+
+          <Separator className="resize-handle" />
+
+          <Panel>
+            <div className="right-col">
+              {graphData && (
+                <Suspense fallback={<div className="panel" style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'#888'}}>Loading graph…</div>}>
+                  <MindMap
+                    graphData={graphData}
+                    onSelectFile={handleSelectFile}
+                    onSelectEntity={handleSelectEntity}
+                  />
+                </Suspense>
+              )}
+            </div>
+          </Panel>
+        </Group>
       </div>
 
-      <VoiceChat
-        voiceExpanded={voiceExpanded}
-        onExpandChange={setVoiceExpanded}
-      />
+      {/* ── Voice toggle ── */}
+      {activeLayer !== 'voice' && (
+        <button className="voice-toggle-btn" onClick={() => handleVoiceToggle(true)}>
+          🎙 AI Voice
+        </button>
+      )}
 
       <footer className="app-footer">
         creative intelligence: w57th.agency

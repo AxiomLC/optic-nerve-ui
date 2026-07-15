@@ -70,19 +70,21 @@ input:focus { outline: none; border-color: var(--border-pink); }
 
 /* ── Header / Footer ── */
 header.app-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: var(--pad);
   border-bottom: var(--border-thickness) solid var(--border-pink);
   flex-shrink: 0;
   height: var(--header-height);
-  gap: 8px;
 }
 header.app-header h1 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 header.app-header .sub {
   margin: 0;
@@ -94,8 +96,23 @@ header.app-header .sub {
 .header-left {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  flex-shrink: 0;
+  align-items: center;
+  justify-items: center;
+}
+.header-center {
+  display: flex;
+  justify-content: center;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.header-logo-img {
+  height: 24px;
+  width: auto;
 }
 
 /* ── Error log strip ── */
@@ -104,35 +121,17 @@ header.app-header .sub {
   min-width: 0;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 0 8px;
   font-size: var(--font-size-xs);
   color: #f55;
   scrollbar-width: thin;
 }
-.header-log .log-entry {
-  margin-right: 12px;
-}
-.header-log .log-entry::before {
-  content: '⚠ ';
-}
-
-.header-logo {
-  width: auto;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.header-logo .logo-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
+.header-log .log-entry { margin-right: 12px; }
+.header-log .log-entry::before { content: '⚠ '; }
 
 .btn-logout {
   font-size: var(--font-size-xs);
   padding: 4px 10px;
+  flex-shrink: 0;
 }
 
 footer.app-footer {
@@ -158,20 +157,31 @@ footer.app-footer {
   overflow: hidden;
 }
 
+/* ── Resize handle ── */
+.resize-handle {
+  width: 4px;
+  background: var(--border-pink);
+  cursor: col-resize;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.resize-handle:hover {
+  background: #ff8ad4;
+}
+
+/* ── Left column ── */
 .left-col {
-  width: 380px;
-  min-width: 280px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border-pink);
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .right-col {
-  flex: 1;
+  height: 100%;
   position: relative;
   overflow: hidden;
+  /* No top border — mind map floats visually with header */
 }
 
 /* ── Login ── */
@@ -195,11 +205,16 @@ footer.app-footer {
 /* ── Search panel ── */
 .search-panel {
   border-bottom: 1px solid var(--border-pink);
-  padding: var(--pad);
+  padding: var(--pad) var(--pad) 6px;
   background: var(--bg-green);
-  overflow-y: auto;
   flex-shrink: 0;
-  max-height: 40%;
+}
+.search-header {
+  font-size: var(--font-size-xs);
+  color: var(--border-pink);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 .search-form { display: flex; gap: 6px; }
 .search-form input { flex: 1; }
@@ -217,11 +232,37 @@ footer.app-footer {
 .search-results .score { float: right; color: #aaa; font-size: 0.75rem; }
 .search-results p { margin: 2px 0 0; font-size: 0.75rem; color: #aaa; }
 
+/* ── Layer container ── */
+.layer-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Search results layer ── */
+.layer-search {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-green);
+  padding: var(--pad);
+}
+.search-result-item {
+  padding: 8px;
+  border-bottom: 1px solid #222;
+  cursor: pointer;
+}
+.search-result-item:hover { background: rgba(255, 110, 199, 0.1); }
+.search-result-title { font-weight: bold; font-size: 0.9rem; }
+.search-result-score { float: right; color: #aaa; font-size: 0.75rem; }
+.search-result-summary { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+
 /* ── Viewer ── */
 .viewer {
   flex: 1;
   overflow-y: auto;
   min-height: 80px;
+  padding: var(--pad);
 }
 .viewer.empty-state {
   display: flex;
@@ -231,39 +272,33 @@ footer.app-footer {
   font-style: italic;
 }
 .viewer.scrollable { overflow-y: auto; }
-.viewer-actions { display: flex; gap: 8px; margin: 8px 0; }
 .media-preview { max-width: 100%; display: block; margin: 8px 0; }
 .media-thumb { max-width: 100%; max-height: 200px; display: block; margin: 8px 0; border-radius: 4px; }
 .media-error { color: #f55; font-size: 0.85rem; }
 
-/* ── Snippet header (file_type + title) ── */
+/* ── Snippet header ── */
 .snippet-header {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
+  margin-bottom: 6px;
 }
 .snippet-type {
   font-size: var(--font-size-xs);
   color: #0f0;
   font-weight: bold;
   text-transform: uppercase;
-  white-space: nowrap;
 }
-.snippet-title {
+.snippet-title-line {
   font-size: 0.95rem;
   color: var(--text-white);
-  font-weight: normal;
-  margin: 0;
+  margin-top: 2px;
   word-break: break-word;
 }
 
-/* ── Preview unavailable message ── */
+/* ── Preview unavailable ── */
 .preview-unavail {
   color: #f55;
   font-size: var(--font-size-sm);
   padding: var(--pad);
+  padding-left: 0;
 }
 .link-btn {
   background: none;
@@ -283,20 +318,18 @@ footer.app-footer {
   border: none;
 }
 
-/* ── Get File button bar ── */
-.get-file-bar {
+/* ── Viewer footer (Get File button area) ── */
+.viewer-footer {
   display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid var(--border-pink);
-  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #222;
+  margin-top: 8px;
 }
 .btn-get-file {
   font-size: var(--font-size-sm);
   padding: 6px 16px;
-  border-radius: 0;
-  border: none;
-  border-left: 1px solid var(--border-pink);
-  width: 100%;
 }
 .btn-get-file:hover {
   background: var(--border-pink);
@@ -313,35 +346,33 @@ footer.app-footer {
 .mindmap-container {
   width: 100%;
   height: 100%;
+  /* No border — floats visually with header */
 }
 
-/* ── Voice chat ── */
-.voice-chat {
+/* ── Voice toggle button (bottom-left fixed) ── */
+.voice-toggle-btn {
   position: fixed;
-  bottom: 0;
+  bottom: 30px;
   left: 0;
   z-index: 100;
+  font-size: var(--font-size-sm);
+  padding: 8px 16px;
+  border-radius: 0 4px 4px 0;
+  border-left: none;
 }
-.voice-chat.collapsed {
-  width: auto;
-}
-.voice-chat.expanded {
-  width: 380px;
-  max-height: 50vh;
-  display: flex;
-  flex-direction: column;
-}
-.voice-toggle {
-  width: 100%;
-  border-radius: 0;
-}
-.voice-body {
+
+/* ── Voice chat panel (in left col layer) ── */
+.voice-chat-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--bg-green);
-  border: 1px solid var(--border-pink);
-  border-top: none;
+}
+.voice-chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 .voice-messages {
@@ -352,9 +383,62 @@ footer.app-footer {
 .voice-messages .msg { margin: 4px 0; font-size: 0.85rem; }
 .voice-messages .msg.user { color: var(--border-pink); }
 .voice-messages .msg.assistant { color: var(--text-white); }
-.voice-input {
-  display: flex;
+.voice-input-area {
+  padding: var(--pad);
   border-top: 1px solid var(--border-pink);
 }
-.voice-input input { flex: 1; border: none; }
-.voice-input button { border: none; border-left: 1px solid var(--border-pink); }
+.voice-text-input {
+  width: 100%;
+}
+
+/* ── Mic button with emanate rings ── */
+.voice-mic-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 12px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mic-icon {
+  font-size: 1.4rem;
+  z-index: 2;
+}
+.mic-ring {
+  position: absolute;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
+  pointer-events: none;
+}
+
+/* Idle — purple static ring */
+.voice-mic-container.idle .mic-ring {
+  border-color: #9b59b6;
+  opacity: 0.3;
+}
+
+/* Listening — green pulse */
+.voice-mic-container.listening .mic-ring {
+  border-color: #2ecc71;
+  animation: emanate 1.5s ease-out infinite;
+}
+.voice-mic-container.listening .ring-2 { animation-delay: 0.3s; }
+.voice-mic-container.listening .ring-3 { animation-delay: 0.6s; }
+
+/* Speaking — light purple slow pulse */
+.voice-mic-container.speaking .mic-ring {
+  border-color: #a29bfe;
+  animation: emanate 2.5s ease-out infinite;
+}
+.voice-mic-container.speaking .ring-2 { animation-delay: 0.6s; }
+.voice-mic-container.speaking .ring-3 { animation-delay: 1.2s; }
+
+@keyframes emanate {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}

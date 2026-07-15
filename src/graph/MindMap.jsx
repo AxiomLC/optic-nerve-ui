@@ -3,15 +3,16 @@ import { useState, useCallback, useRef } from 'react';
 import * as THREE from 'three';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
-  ENTITY_EMOJI, ENTITY_COLOR, FILE_ICON, FILE_ICON_DEFAULT,
+  ENTITY_EMOJI, ENTITY_COLOR, ENTITY_EMOJI_OPACITY, FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL,
   GLOW, ENTITY_SIZE_TIERS, NODE_SIZE, PHYSICS, LINK,
 } from '../lib/theme';
 
 // ── Sprite factory: emoji ─────────────────────────────────
-function makeSprite(emoji, size) {
+function makeSprite(emoji, size, opacity) {
   const c = document.createElement('canvas');
   c.width = 64; c.height = 64;
   const ctx = c.getContext('2d');
+  ctx.globalAlpha = opacity || 1;
   ctx.font = `${size * 6}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -23,7 +24,7 @@ function makeSprite(emoji, size) {
   return s;
 }
 
-// ── Sprite factory: text label ────────────────────────────
+// ── Sprite factory: text label (single line) ─────────────
 function makeLabel(text, color, fontSize, offY) {
   const c = document.createElement('canvas');
   c.width = 512; c.height = 64;
@@ -95,25 +96,25 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       // Glow blob
       group.add(makeGlow(color, r * GLOW.baseRadius));
 
-      // Emoji
-      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji);
+      // Emoji with configurable transparency
+      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji, ENTITY_EMOJI_OPACITY);
       group.add(emoji);
 
-      // Entity name label (white, fully visible)
+      // Entity name label
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
       group.add(label);
 
     } else if (node.type === 'file') {
       // Emoji only — no blob
-      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji);
+      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji, 1.0);
       group.add(emoji);
 
-      // File type label (small, white, fully visible)
-      const typeLabel = makeLabel(node.file_type || '', '#fff', 16, -3);
+      // File type label (light green, above emoji)
+      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, -4.5);
       group.add(typeLabel);
 
-      // File title label (white, fully visible)
-      const titleLabel = makeLabel(node.title || '', '#fff', 22, 3.5);
+      // File title label (white, below emoji)
+      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, 4);
       group.add(titleLabel);
     }
 

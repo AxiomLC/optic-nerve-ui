@@ -1,60 +1,66 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 /**
- * VoiceChat — expandable panel that connects to the n8n voice-chat webhook.
+ * VoiceChat — microphone UI with 3 states:
+ *   idle    (purple)    — static mic icon
+ *   listening (green)   — mic + CSS pulse rings, turns off on click or 2s timeout
+ *   speaking  (light purple) — same pulse, slower — AI talking
  *
- * When expanded, the search panel collapses/minimizes to make room.
- * The viewer stays visible regardless of voice-chat state.
- *
- * Real voice logic (STT / TTS / streaming) lives in a separate module
- * that this component wires into the layout — see the Tech Buildout doc
- * for the `voiceChat.js` entry point.
+ * Chat area above mic: scrolling message list with input at bottom.
+ * Placeholder — real STT/TTS/LLM wiring comes later via n8n webhook.
  */
-export default function VoiceChat({ onExpandChange, voiceExpanded }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
 
-  function toggle() {
-    onExpandChange(!voiceExpanded);
+const STATE = { IDLE: 'idle', LISTENING: 'listening', SPEAKING: 'speaking' };
+
+export default function VoiceChat({ onExpandChange, voiceExpanded, onSearchPayload }) {
+  const [micState, setMicState] = useState(STATE.IDLE);
+  const timerRef = useRef(null);
+
+  // Auto-timeout listening after 2s
+  useEffect(() => {
+    if (micState === STATE.LISTENING) {
+      timerRef.current = setTimeout(() => {
+        setMicState(STATE.IDLE);
+      }, 2000);
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [micState]);
+
+  function toggleMic() {
+    if (micState === STATE.IDLE) {
+      setMicState(STATE.LISTENING);
+    } else {
+      setMicState(STATE.IDLE);
+    }
   }
 
-  async function handleSend(e) {
-    e.preventDefault();
-    if (!input.trim()) return;
-    const text = input.trim();
-    setInput('');
-    setMessages(prev => [...prev, { role: 'user', text }]);
-    // TODO: wire to n8n voice-chat webhook
-    // const res = await fetch(`${N8N_BASE}/webhook/voice-chat`, { ... });
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'assistant', text: '[voice response placeholder]' }]);
-    }, 500);
-  }
+  // TODO: wire to n8n voice-chat webhook
+  // On response: if payload has search results shape → onSearchPayload(results)
+  // Else → add as chat message
 
   return (
-    <div className={`voice-chat ${voiceExpanded ? 'expanded' : 'collapsed'}`}>
-      <button className="voice-toggle" onClick={toggle}>
-        {voiceExpanded ? '✕ Close Voice' : '🎙 AI Voice'}
-      </button>
-
-      {voiceExpanded && (
-        <div className="voice-body">
-          <div className="voice-messages">
-            {messages.map((m, i) => (
-              <p key={i} className={`msg ${m.role}`}>{m.text}</p>
-            ))}
-          </div>
-          <form onSubmit={handleSend} className="voice-input">
-            <input
-              type="text"
-              placeholder="Message…"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-            />
-            <button type="submit">Send</button>
-          </form>
+    <div className={`voice-chat-panel ${voiceExpanded ? 'expanded' : ''}`}>
+      <div className="voice-chat-box">
+        {/* Chat messages area — placeholder */}
+        <div className="voice-messages">
+          <p className="msg assistant">AI Voice ready. Tap the mic to speak.</p>
         </div>
-      )}
+
+        {/* Typing input — placeholder */}
+        <div className="voice-input-area">
+          <input type="text" placeholder="Type a message..." className="voice-text-input" />
+        </div>
+      </div>
+
+      {/* Mic button with emanate rings */}
+      <div className={`voice-mic-container ${micState}`} onClick={toggleMic}>
+        <div className="mic-ring ring-1" />
+        <div className="mic-ring ring-2" />
+        <div className="mic-ring ring-3" />
+        <div className="mic-icon">
+          {micState === STATE.IDLE ? '🎤' : micState === STATE.LISTENING ? '🔴' : '💬'}
+        </div>
+      </div>
     </div>
   );
 }
