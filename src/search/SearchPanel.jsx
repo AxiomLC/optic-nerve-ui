@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { vectorSearch } from '../lib/n8nClient';
 
-export default function SearchPanel({ onSelectFile, setSearchResults, searchResults }) {
+export default function SearchPanel({ onSelectFile, setSearchResults, searchResults, onSearchSubmit }) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -12,6 +12,7 @@ export default function SearchPanel({ onSelectFile, setSearchResults, searchResu
     try {
       const results = await vectorSearch(query.trim());
       setSearchResults(results);
+      if (onSearchSubmit) onSearchSubmit(results);
     } catch (err) {
       console.error('Search failed:', err);
       setSearchResults([]);
@@ -33,18 +34,6 @@ export default function SearchPanel({ onSelectFile, setSearchResults, searchResu
           {loading ? '…' : 'Search'}
         </button>
       </form>
-
-      {searchResults && searchResults.length > 0 && (
-        <ul className="search-results">
-          {searchResults.map(r => (
-            <li key={r.source_id} onClick={() => onSelectFile(r)}>
-              <strong>{r.title}</strong>
-              <span className="score">{(r.score * 100).toFixed(0)}%</span>
-              <p>{r.summary}</p>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
