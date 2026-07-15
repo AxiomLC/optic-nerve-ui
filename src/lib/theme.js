@@ -52,19 +52,31 @@ export const ENTITY_SIZE_TIERS = [
 ];
 
 // ── File type icons (matched against file_type prefix) ────
-// Order matters: first match wins (e.g. "text/html" matches "text/" before "html")
+// Order matters: first match wins.
+// Matches both MIME types ("image/jpeg") and extensions (".pdf", ".docx")
 export const FILE_ICON = {
-  'application/pdf':                '📋',   // clipboard — PDFs
+  'application/pdf':                '📋',   // clipboard — PDF
+  '.pdf':                           '📋',   // fallback .pdf extension
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',  // memo — DOCX
+  '.docx':                          '📝',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📉',  // chart down — XLSX
+  '.xlsx':                          '📉',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',  // chart up — PPTX
-  'text/':                          '📝',   // memo — text files, HTML, etc.
+  '.pptx':                          '📊',
+  'text/':                          '📝',   // memo — text files
+  '.txt':                           '📝',
   'image/':                         '🖼️',  // framed picture — images
+  '.jpg':                           '🖼️',
+  '.jpeg':                          '🖼️',
+  '.png':                           '🖼️',
   'video/':                         '📽️',  // film projector — videos
+  '.mp4':                           '📽️',
+  '.mov':                           '📽️',
   'audio/':                         '🎵',   // musical note — audio
-  'message/':                       '💬',   // speech bubble — email/rfc822
-  'ntn':                            '📓',   // notebook — Notion pages
-  'eml':                            '📧',   // envelope — .eml files
+  '.mp3':                           '🎵',
+  'message/':                       '💬',   // speech bubble — email
+  '.eml':                           '📧',   // envelope — .eml
+  'ntn':                            '📓',   // notebook — Notion
 };
 
 // ── Default fallback icon (when no FILE_ICON entry matches) ──

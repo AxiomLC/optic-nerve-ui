@@ -33,7 +33,7 @@ function makeLabel(text, color, fontSize, offY) {
   ctx.fillStyle = color;
   ctx.fillText(text, 256, 40);
   const t = new THREE.CanvasTexture(c);
-  const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, opacity: 0 });
+  const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, opacity: 1.0 });
   const s = new THREE.Sprite(m);
   s.scale.set(32, 4, 1);
   s.position.y = offY || 0;
@@ -52,8 +52,9 @@ function makeGlow(color, radius) {
 // ── Resolve emoji for any node ────────────────────────────
 function nodeEmoji(node) {
   if (node.type === 'file') {
+    const ft = node.file_type || '';
     const match = Object.entries(FILE_ICON).find(([key]) =>
-      node.file_type?.startsWith(key)
+      ft === key || ft.startsWith(key) || ft.startsWith('.' + key)
     );
     return match ? match[1] : FILE_ICON_DEFAULT;
   }
@@ -100,7 +101,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
 
       // Entity name label (white, fully visible)
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
-      label.material.opacity = 1.0;
       group.add(label);
 
     } else if (node.type === 'file') {
@@ -110,12 +110,10 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
 
       // File type label (small, white, fully visible)
       const typeLabel = makeLabel(node.file_type || '', '#fff', 16, -3);
-      typeLabel.material.opacity = 1.0;
       group.add(typeLabel);
 
       // File title label (white, fully visible)
       const titleLabel = makeLabel(node.title || '', '#fff', 22, 3.5);
-      titleLabel.material.opacity = 1.0;
       group.add(titleLabel);
     }
 
@@ -135,6 +133,9 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         linkDirectionalParticles={1}
         linkDirectionalParticleSpeed={LINK.particleSpeed}
         warmupTicks={PHYSICS.warmupTicks}
+        d3AlphaDecay={PHYSICS.alphaDecay}
+        d3VelocityDecay={PHYSICS.velocityDecay}
+        d3LinkDistance={PHYSICS.linkDistance}
       />
     </div>
   );
