@@ -72,9 +72,6 @@ function entityRadius(edgeCount) {
 export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   const [selected, setSelected] = useState(new Set());
   const fgRef = useRef(null);
-  // Keep a live ref to graphData so onEngineTick can read it without closure issues
-  const graphDataRef = useRef(graphData);
-  graphDataRef.current = graphData;
 
   const handleClick = useCallback((node) => {
     if (node.type === 'file') {
@@ -101,9 +98,9 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji);
       group.add(emoji);
 
-      // Entity name label (hidden until zoom)
+      // Entity name label (low opacity, becomes readable on zoom)
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
-      label.userData.isLabel = true;
+      label.material.opacity = 0.15;
       group.add(label);
 
     } else if (node.type === 'file') {
@@ -111,46 +108,18 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji);
       group.add(emoji);
 
-      // File type label (small, bright green — hidden until zoom)
+      // File type label (small, bright green, low opacity)
       const typeLabel = makeLabel(node.file_type || '', '#0f0', 16, -3);
-      typeLabel.userData.isLabel = true;
-      typeLabel.userData.zoomType = 'file';
+      typeLabel.material.opacity = 0.12;
       group.add(typeLabel);
 
-      // File title label (white — hidden until zoom)
+      // File title label (white, low opacity)
       const titleLabel = makeLabel(node.title || '', '#fff', 22, 3.5);
-      titleLabel.userData.isLabel = true;
-      titleLabel.userData.zoomType = 'file';
+      titleLabel.material.opacity = 0.12;
       group.add(titleLabel);
     }
 
     return group;
-  }, []);
-
-  // ── Zoom-dependent label visibility ─────────────────────
-  const handleEngineTick = useCallback(() => {
-    if (!fgRef.current) return;
-    const dist = fgRef.current.camera().position.length();
-
-    // Walk nodes via __threeObj (set by 3d-force-graph on each node)
-    const gd = graphDataRef.current;
-    if (!gd?.nodes) return;
-
-    gd.nodes.forEach(node => {
-      // Each node's Three.js group is stored on node.__threeObj by the library
-      const group = node.__threeObj;
-      if (!group?.children) return;
-
-      group.forEach(child => {
-        if (!child.userData?.isLabel) return;
-
-        const isEntity = child.userData.zoomType !== 'file';
-        const threshold = isEntity ? ZOOM.entityLabelAt : ZOOM.fileLabelAt;
-
-        const raw = 1 - (dist - threshold * 0.5) / (threshold * 0.8);
-        child.material.opacity = Math.max(0, Math.min(1, raw));
-      });
-    });
   }, []);
 
   return (
@@ -166,10 +135,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         linkDirectionalParticles={1}
         linkDirectionalParticleSpeed={LINK.particleSpeed}
         warmupTicks={PHYSICS.warmupTicks}
-        d3AlphaDecay={PHYSICS.alphaDecay}
-        d3VelocityDecay={PHYSICS.velocityDecay}
-        d3LinkDistance={PHYSICS.linkDistance}
-        onEngineTick={handleEngineTick}
       />
     </div>
   );
