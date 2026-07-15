@@ -4,60 +4,52 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
   // ── Entity snippet ──────────────────────────────────────
   if (entity) {
     return (
-      <div className="viewer">
+      <div className="viewer panel">
         <div className="snippet-header">
-          <div className="snippet-type">Entity type: {entity.entity_type}</div>
-        </div>
-        <div className="snippet-title-line">title: {entity.canonical_name}</div>
+            <span className="snippet-type">Entity type: {entity.entity_type}</span>
+          </div>
+        <h2 className="snippet-title">{entity.canonical_name}</h2>
       </div>
     );
   }
 
   // ── No selection ────────────────────────────────────────
   if (!file) {
-    return <div className="viewer empty-state">Select a file to view</div>;
+    return <div className="viewer panel empty-state">Select a file to view</div>;
   }
 
   const isMedia = file.file_type?.startsWith('image/') || file.file_type?.startsWith('video/');
 
   // ── Preview mode: show full preview URL ─────────────────
   if (previewMode) {
-    return (
-      <div className="viewer scrollable">
-        <div className="snippet-header">
-          <div className="snippet-type">{file.file_type}</div>
-          <div className="snippet-title-line">title: {file.title}</div>
-        </div>
-        {previewUrl ? (
-          <>
-            {isMedia ? (
-              <img src={previewUrl} alt={file.title || ''} className="media-preview" />
-            ) : (
-              <iframe src={previewUrl} className="preview-iframe" title="file preview" />
-            )}
-            <div className="viewer-footer">
-              <span />
-              <button className="btn-get-file" onClick={() => window.open(previewUrl, '_blank')}>
-                Open File
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="preview-unavail">
-            Preview unavailable.
-            <button onClick={onGetFile} className="link-btn">Refresh now</button>
+    if (previewUrl) {
+      return (
+        <div className="viewer panel scrollable">
+          {isMedia ? (
+            <img src={previewUrl} alt={file.title || ''} className="media-preview" />
+          ) : (
+            <iframe src={previewUrl} className="preview-iframe" title="file preview" />
+          )}
+          <div className="viewer-actions">
+            <button onClick={() => window.open(previewUrl, '_blank')}>Open File</button>
           </div>
-        )}
+        </div>
+      );
+    }
+    return (
+      <div className="viewer panel">
+        <p className="preview-unavail">Preview unavailable. <button onClick={onGetFile} className="link-btn">Refresh now</button> for previews to load.</p>
       </div>
     );
   }
 
   // ── Snippet mode: file summary ──────────────────────────
   return (
-    <div className="viewer scrollable">
+    <div className="viewer panel scrollable">
+      {/* File type + title header */}
       <div className="snippet-header">
-        <div className="snippet-type">{file.file_type}</div>
-        <div className="snippet-title-line">title: {file.title}</div>
+        <span className="snippet-type">{file.file_type}</span>
+        <span className="snippet-title">{file.title}</span>
       </div>
 
       {/* Media: show thumb_url if available */}
@@ -68,10 +60,9 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
       {/* Documents: show markdown */}
       {file.md && <MarkdownView md={file.md} />}
 
-      {/* Get File button — bottom-right */}
+      {/* Get File button */}
       {getFileAvailable && (
-        <div className="viewer-footer">
-          <span />
+        <div className="viewer-actions">
           <button className="btn-get-file" onClick={onGetFile}>Get File</button>
         </div>
       )}

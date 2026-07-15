@@ -1,5 +1,3 @@
-import { PHYSICS } from './theme';
-
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
  *
@@ -31,12 +29,12 @@ export function toGraphData({ files, entities, edges }) {
     linkedIds.add(l.target);
   });
 
-  const r = PHYSICS.orphanRadius;
+  const orphanRadius = 8; // small cluster radius for orphans
   nodes.forEach(n => {
     if (!linkedIds.has(n.id)) {
-      n.x = (Math.random() - 0.5) * r;
-      n.y = (Math.random() - 0.5) * r;
-      n.z = (Math.random() - 0.5) * r;
+      n.x = (Math.random() - 0.5) * orphanRadius;
+      n.y = (Math.random() - 0.5) * orphanRadius;
+      n.z = (Math.random() - 0.5) * orphanRadius;
     }
   });
 
