@@ -7,7 +7,6 @@ import VoiceChat from './voice/VoiceChat';
 import { toGraphData } from './lib/graphTransform';
 import { getPreviewUrls } from './lib/n8nClient';
 import { getCanvas } from './lib/supabaseClient';
-import { PANEL as PANEL_CFG } from './lib/theme';
 
 const MindMap = lazy(() => import('./graph/MindMap'));
 
@@ -174,14 +173,14 @@ export default function App() {
     <div className="app-shell">
       {/* ── Header ── */}
       <header className="app-header">
-        <div />  {/* left spacer for grid balance */}
-        <div className="header-center">
+        <div className="header-left">
           <h1>
             <img src="/logo.png" alt="" className="header-logo-img" />
             {' '}Optic Nerve VK<sup>™</sup>
           </h1>
           <p className="sub">visual kernel</p>
         </div>
+        <div className="header-center" />
         <div className="header-right">
           <div className="header-log">
             {errorLog.map((e, i) => (
@@ -194,8 +193,8 @@ export default function App() {
 
       {/* ── Main layout with resizable panels ── */}
       <div className="layout-4tier">
-        <Group direction="horizontal" autoSaveId="main" style={{ height: '100%' }}>
-          <Panel defaultSize={PANEL_CFG.defaultSize} minSize={PANEL_CFG.minSize} maxSize={PANEL_CFG.maxSize} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Group direction="horizontal" autoSaveId="main">
+          <Panel defaultSize={26} minSize={20} maxSize={50}>
             <div className="left-col">
               <SearchPanel
                 onSelectFile={handleSelectFile}
@@ -204,7 +203,7 @@ export default function App() {
                 onSearchSubmit={handleSearchSubmit}
               />
 
-              {/* Layer container — only one visible */}
+              {/* Layer container */}
               <div className="layer-container">
                 {activeLayer === 'viewer' && (
                   <ViewerPanel
@@ -242,7 +241,7 @@ export default function App() {
 
           <Separator className="resize-handle" />
 
-          <Panel style={{ height: '100%' }}>
+          <Panel>
             <div className="right-col">
               {graphData && (
                 <Suspense fallback={<div className="panel" style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'#888'}}>Loading graph…</div>}>
@@ -258,7 +257,7 @@ export default function App() {
         </Group>
       </div>
 
-      {/* ── Voice toggle button ── */}
+      {/* ── Voice toggle ── */}
       {activeLayer !== 'voice' && (
         <button className="voice-toggle-btn" onClick={() => handleVoiceToggle(true)}>
           🎙 AI Voice
