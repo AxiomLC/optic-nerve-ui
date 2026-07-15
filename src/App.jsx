@@ -57,8 +57,14 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <h1>Optic Nerve VK<sup>™</sup></h1>
-        <p className="sub">visual kernel</p>
+        <div className="header-left">
+          <h1>Optic Nerve VK<sup>™</sup></h1>
+          <p className="sub">visual kernel</p>
+        </div>
+        <div className="header-logo">
+          {/* Drop a PNG in public/logo.png and uncomment:
+              <img src="/logo.png" alt="Logo" className="logo-img" /> */}
+        </div>
       </header>
 
       <div className="layout-4tier">

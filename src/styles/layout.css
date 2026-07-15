@@ -1,10 +1,24 @@
-/* ── Theme ── */
+/* ============================================================
+   DEV CONTROLS — Visual theme
+   Change CSS vars here to control layout colors, borders, fonts.
+   JS-side visual controls live in src/lib/theme.js
+   ============================================================ */
+
 :root {
   --bg-black: #0a0a0a;
   --bg-green: #0d1f14;
   --border-pink: #ff6ec7;
+  --border-thickness: 1px;
   --text-white: #f2f2f2;
+  --text-muted: #888;
   --pad: 12px;
+  --font-family: system-ui, sans-serif;
+  --font-size-sm: 0.8rem;
+  --font-size-xs: 0.7rem;
+  --header-height: 56px;
+  --footer-height: 28px;
+  --left-col-width: 380px;
+  --left-col-min: 280px;
 }
 
 * { box-sizing: border-box; }
@@ -56,10 +70,13 @@ input:focus { outline: none; border-color: var(--border-pink); }
 
 /* ── Header / Footer ── */
 header.app-header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--pad);
-  border-bottom: 1px solid var(--border-pink);
+  border-bottom: var(--border-thickness) solid var(--border-pink);
   flex-shrink: 0;
+  height: var(--header-height);
 }
 header.app-header h1 {
   margin: 0;
@@ -67,8 +84,27 @@ header.app-header h1 {
 }
 header.app-header .sub {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   color: #aaa;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-logo .logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 footer.app-footer {
