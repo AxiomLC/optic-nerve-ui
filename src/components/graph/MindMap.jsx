@@ -394,6 +394,9 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const z = clusterCenter.z + r * Math.cos(phi);
 
       // Freeze the orphan at this position
+      orphan.x = x;
+      orphan.y = y;
+      orphan.z = z;
       orphan.fx = x;
       orphan.fy = y;
       orphan.fz = z;

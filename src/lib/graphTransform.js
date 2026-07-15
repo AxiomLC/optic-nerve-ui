@@ -33,6 +33,18 @@ export function toGraphData({ files, entities, edges }) {
 
   nodes.forEach(n => {
     n.isOrphan = !linkedIds.has(n.id);
+    
+    // Pre-freeze orphans near origin BEFORE simulation warms up
+    // d3-force tick resets x=fx and zeros velocity each frame — charge force can't move them
+    if (n.isOrphan) {
+      // Small cloud spread so they don't stack at origin
+      n.x = (Math.random() - 0.5) * 40;
+      n.y = (Math.random() - 0.5) * 40;
+      n.z = (Math.random() - 0.5) * 40;
+      n.fx = n.x;
+      n.fy = n.y;
+      n.fz = n.z;
+    }
   });
 
   return { nodes, links };
