@@ -1,4 +1,4 @@
-import { PHYSICS } from './theme';
+import { PHYSICS } from '../config/theme';
 
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
