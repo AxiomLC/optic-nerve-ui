@@ -23,10 +23,11 @@ export default function SearchPanel({ onSelectFile, setSearchResults, searchResu
 
   return (
     <div className="search-panel">
+      <div className="search-header">Vector Search</div>
       <form onSubmit={handleSearch} className="search-form">
         <input
           type="text"
-          placeholder="Semantic search…"
+          placeholder="Natural language search..."
           value={query}
           onChange={e => setQuery(e.target.value)}
         />

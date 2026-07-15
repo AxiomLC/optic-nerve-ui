@@ -1,3 +1,5 @@
+import { PHYSICS } from './theme';
+
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
  *
@@ -6,8 +8,8 @@
  * Full row data (source_id, canonical_name, etc.) is preserved on
  * each node for the viewer panel.
  *
- * Orphaned files (no edges) get initial positions near center
- * so they don't drift to the edge of the graph.
+ * Orphaned files (no edges) get frozen positions near center
+ * using fx/fy/fz so the simulation cannot push them outward.
  */
 export function toGraphData({ files, entities, edges }) {
   const nodes = [
@@ -22,19 +24,19 @@ export function toGraphData({ files, entities, edges }) {
     action: e.action,
   }));
 
-  // Mark orphaned nodes and give them positions near center
+  // Mark orphaned nodes — freeze them near center
   const linkedIds = new Set();
   links.forEach(l => {
     linkedIds.add(l.source);
     linkedIds.add(l.target);
   });
 
-  const orphanRadius = 8; // small cluster radius for orphans
+  const r = PHYSICS.orphanRadius;
   nodes.forEach(n => {
     if (!linkedIds.has(n.id)) {
-      n.x = (Math.random() - 0.5) * orphanRadius;
-      n.y = (Math.random() - 0.5) * orphanRadius;
-      n.z = (Math.random() - 0.5) * orphanRadius;
+      n.fx = (Math.random() - 0.5) * r;
+      n.fy = (Math.random() - 0.5) * r;
+      n.fz = (Math.random() - 0.5) * r;
     }
   });
 

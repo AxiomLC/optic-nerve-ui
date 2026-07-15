@@ -17,35 +17,25 @@ function loadSession() {
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
-
 function saveSession(data) {
   try { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch {}
 }
-
 function clearSession() {
   try { localStorage.removeItem(SESSION_KEY); } catch {}
 }
 
 export default function App() {
-  // ── Auth ──
   const [authUser, setAuthUser] = useState(null);
   const [canvas, setCanvas] = useState(null);
   const [graphData, setGraphData] = useState(null);
   const [previewUrls, setPreviewUrls] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
-
-  // ── Selection ──
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
-
-  // ── Layers: 'viewer' | 'search' | 'voice' ──
   const [activeLayer, setActiveLayer] = useState('viewer');
-
-  // ── Search ──
   const [searchResults, setSearchResults] = useState(null);
-
-  // ── Error log ──
   const [errorLog, setErrorLog] = useState([]);
+
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
   }, []);
@@ -58,7 +48,6 @@ export default function App() {
       setCanvas(saved.canvas);
       setGraphData(toGraphData(saved.canvas));
       if (saved.previewUrls) setPreviewUrls(saved.previewUrls);
-
       getCanvas(saved.username, saved.password).then(canvasData => {
         setCanvas(canvasData);
         setGraphData(toGraphData(canvasData));
@@ -73,7 +62,6 @@ export default function App() {
     }
   }, []);
 
-  // ── Login ──
   async function handleLogin({ username, canvas: canvasData }) {
     setAuthUser({ username });
     setCanvas(canvasData);
@@ -81,11 +69,9 @@ export default function App() {
     setPreviewMode(false);
     setSelectedFile(null);
     setSelectedEntity(null);
-
     const items = (canvasData.files || [])
       .filter(f => f.drive_id && f.source_id)
       .map(f => ({ driveId: f.drive_id, source_id: f.source_id }));
-
     let urls = {};
     if (items.length > 0) {
       try {
@@ -95,12 +81,10 @@ export default function App() {
         addLog(`Preview batch failed: ${err.message}`);
       }
     }
-
     const password = document?.forms?.[0]?.password?.value || '';
     saveSession({ username, password, canvas: canvasData, previewUrls: urls });
   }
 
-  // ── Logout ──
   function handleLogout() {
     clearSession();
     setAuthUser(null);
@@ -114,7 +98,6 @@ export default function App() {
     setErrorLog([]);
   }
 
-  // ── Select file ──
   const handleSelectFile = useCallback((file) => {
     setSelectedFile(file);
     setSelectedEntity(null);
@@ -122,7 +105,6 @@ export default function App() {
     setActiveLayer('viewer');
   }, []);
 
-  // ── Select entity ──
   const handleSelectEntity = useCallback((entity) => {
     setSelectedEntity(entity);
     setSelectedFile(null);
@@ -130,12 +112,10 @@ export default function App() {
     setActiveLayer('viewer');
   }, []);
 
-  // ── Search submit → activates search layer ──
   const handleSearchSubmit = useCallback(() => {
     setActiveLayer('search');
   }, []);
 
-  // ── Voice payload: if search-shaped, switch to search layer ──
   const handleVoicePayload = useCallback((payload) => {
     if (payload && Array.isArray(payload) && payload.length > 0 && payload[0].source_id) {
       setSearchResults(payload);
@@ -143,19 +123,16 @@ export default function App() {
     }
   }, []);
 
-  // ── Get File ──
   const handleGetFile = useCallback(() => {
     setPreviewMode(true);
   }, []);
 
   const getFileAvailable = selectedFile?.drive_id && selectedFile?.source_id;
 
-  // ── Voice toggle ──
   const handleVoiceToggle = useCallback(() => {
     setActiveLayer(prev => prev === 'voice' ? 'viewer' : 'voice');
   }, []);
 
-  // ── Not logged in ──
   if (!authUser) {
     return <LoginForm onLogin={handleLogin} />;
   }
@@ -165,25 +142,26 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div className="header-left">
-          <h1>Optic Nerve VK<sup>™</sup></h1>
+        <div />
+        <div className="header-center">
+          <h1>
+            <img src="/logo.png" alt="" className="header-logo-img" />
+            {' '}Optic Nerve VK<sup>™</sup>
+          </h1>
           <p className="sub">visual kernel</p>
         </div>
-
-        <div className="header-log">
-          {errorLog.map((e, i) => (
-            <span key={i} className="log-entry">{e.time} {e.msg}</span>
-          ))}
-        </div>
-
-        <div className="header-logo">
+        <div className="header-right">
+          <div className="header-log">
+            {errorLog.map((e, i) => (
+              <span key={i} className="log-entry">{e.time} {e.msg}</span>
+            ))}
+          </div>
           <button className="btn-logout" onClick={handleLogout}>New Login</button>
         </div>
       </header>
 
       <div className="layout-4tier">
         <div className="left-col">
-          {/* Search bar — always visible */}
           <SearchPanel
             onSelectFile={handleSelectFile}
             searchResults={searchResults}
@@ -191,9 +169,7 @@ export default function App() {
             onSearchSubmit={handleSearchSubmit}
           />
 
-          {/* Layer container — one visible at a time */}
           <div className="layer-container">
-            {/* Viewer layer (default) */}
             {activeLayer === 'viewer' && (
               <ViewerPanel
                 file={selectedFile}
@@ -205,7 +181,6 @@ export default function App() {
               />
             )}
 
-            {/* Search results layer */}
             {activeLayer === 'search' && searchResults && searchResults.length > 0 && (
               <div className="layer-search scrollable">
                 {searchResults.map(r => (
@@ -218,7 +193,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Voice layer */}
             {activeLayer === 'voice' && (
               <VoiceChat
                 voiceExpanded={true}
@@ -242,7 +216,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Voice toggle — fixed bottom-left, always visible */}
       {activeLayer !== 'voice' && (
         <button className="voice-toggle-btn" onClick={handleVoiceToggle}>
           🎙 AI Voice

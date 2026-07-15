@@ -3,15 +3,15 @@ import { useState, useCallback, useRef } from 'react';
 import * as THREE from 'three';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
-  ENTITY_EMOJI, ENTITY_COLOR, FILE_ICON, FILE_ICON_DEFAULT,
+  ENTITY_EMOJI, ENTITY_COLOR, ENTITY_EMOJI_OPACITY, FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL,
   GLOW, ENTITY_SIZE_TIERS, NODE_SIZE, PHYSICS, LINK,
 } from '../lib/theme';
 
-// ── Sprite factory: emoji ─────────────────────────────────
-function makeSprite(emoji, size) {
+function makeSprite(emoji, size, opacity) {
   const c = document.createElement('canvas');
   c.width = 64; c.height = 64;
   const ctx = c.getContext('2d');
+  ctx.globalAlpha = opacity || 1;
   ctx.font = `${size * 6}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -23,7 +23,6 @@ function makeSprite(emoji, size) {
   return s;
 }
 
-// ── Sprite factory: text label ────────────────────────────
 function makeLabel(text, color, fontSize, offY) {
   const c = document.createElement('canvas');
   c.width = 512; c.height = 64;
@@ -36,11 +35,10 @@ function makeLabel(text, color, fontSize, offY) {
   const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, opacity: 1.0 });
   const s = new THREE.Sprite(m);
   s.scale.set(32, 4, 1);
-  s.position.y = offY || 0;
+  s.position.y = offY;
   return s;
 }
 
-// ── Glow blob factory ─────────────────────────────────────
 function makeGlow(color, radius) {
   const geo = new THREE.SphereGeometry(radius, 16, 16);
   const mat = new THREE.MeshBasicMaterial({
@@ -49,7 +47,6 @@ function makeGlow(color, radius) {
   return new THREE.Mesh(geo, mat);
 }
 
-// ── Resolve emoji for any node ────────────────────────────
 function nodeEmoji(node) {
   if (node.type === 'file') {
     const ft = node.file_type || '';
@@ -61,7 +58,6 @@ function nodeEmoji(node) {
   return ENTITY_EMOJI[node.entity_type] || '💡';
 }
 
-// ── Entity blob radius from edge_count ────────────────────
 function entityRadius(edgeCount) {
   const c = edgeCount || 0;
   for (const t of ENTITY_SIZE_TIERS) {
@@ -84,37 +80,30 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [onSelectEntity, onSelectFile]);
 
-  // ── Build custom Three.js objects per node ──────────────
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
 
     if (node.type === 'entity') {
       const r = entityRadius(node.edge_count);
       const color = ENTITY_COLOR[node.entity_type] || '#999';
-
-      // Glow blob
       group.add(makeGlow(color, r * GLOW.baseRadius));
-
-      // Emoji
-      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji);
+      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji, ENTITY_EMOJI_OPACITY);
+      emoji.position.y = 0;
       group.add(emoji);
-
-      // Entity name label (white, fully visible)
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
       group.add(label);
 
     } else if (node.type === 'file') {
-      // Emoji only — no blob
-      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji);
-      group.add(emoji);
-
-      // File type label (small, white, fully visible)
-      const typeLabel = makeLabel(node.file_type || '', '#fff', 16, -3);
+      // Stacked: file_type (green) → title (white) → emoji
+      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, 6.5);
       group.add(typeLabel);
 
-      // File title label (white, fully visible)
-      const titleLabel = makeLabel(node.title || '', '#fff', 22, 3.5);
+      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, 2);
       group.add(titleLabel);
+
+      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji, 1.0);
+      emoji.position.y = -2.5;
+      group.add(emoji);
     }
 
     return group;

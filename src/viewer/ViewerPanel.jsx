@@ -8,7 +8,7 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
         <div className="snippet-header">
           <div className="snippet-type">Entity type: {entity.entity_type}</div>
         </div>
-        <div className="snippet-title">{entity.canonical_name}</div>
+        <div className="snippet-title-line">title: {entity.canonical_name}</div>
       </div>
     );
   }
@@ -20,7 +20,7 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
 
   const isMedia = file.file_type?.startsWith('image/') || file.file_type?.startsWith('video/');
 
-  // ── Preview mode: show full preview URL ─────────────────
+  // ── Preview mode ────────────────────────────────────────
   if (previewMode) {
     if (previewUrl) {
       return (
@@ -43,12 +43,12 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
     );
   }
 
-  // ── Snippet mode: file summary ──────────────────────────
+  // ── Snippet mode ────────────────────────────────────────
   return (
     <div className="viewer scrollable">
       <div className="snippet-header">
         <div className="snippet-type">{file.file_type}</div>
-        <div className="snippet-title">{file.title}</div>
+        <div className="snippet-title-line">title: {file.title}</div>
       </div>
 
       {isMedia && file.thumb_url && (
