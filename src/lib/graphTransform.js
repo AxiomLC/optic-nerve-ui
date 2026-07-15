@@ -24,11 +24,17 @@ export function toGraphData({ files, entities, edges }) {
     action: e.action,
   }));
 
-  // Mark orphaned nodes (will be repositioned post-warmup in MindMap.jsx)
+  // Mark orphaned nodes: a node is orphan only if it has NO resolvable edges
+  // (an edge must connect to an entity OR file that actually exists in the data)
   const linkedIds = new Set();
+  const validNodeIds = new Set(nodes.map(n => n.id));
+  
   links.forEach(l => {
-    linkedIds.add(l.source);
-    linkedIds.add(l.target);
+    // Only count the edge if BOTH ends exist in our node list
+    if (validNodeIds.has(l.source) && validNodeIds.has(l.target)) {
+      linkedIds.add(l.source);
+      linkedIds.add(l.target);
+    }
   });
 
   nodes.forEach(n => {
