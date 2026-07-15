@@ -178,6 +178,7 @@ footer.app-footer {
   height: 100%;
   position: relative;
   overflow: hidden;
+  margin-top: -1px;  /* overlap header border */
 }
 
 /* ── Login ── */

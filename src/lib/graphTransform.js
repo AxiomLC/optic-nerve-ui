@@ -24,7 +24,7 @@ export function toGraphData({ files, entities, edges }) {
     action: e.action,
   }));
 
-  // Mark orphaned nodes and give them positions near center
+  // fx/fy/fz freezes orphans — simulation cannot push them outward nodes and give them positions near center
   const linkedIds = new Set();
   links.forEach(l => {
     linkedIds.add(l.source);
@@ -34,9 +34,9 @@ export function toGraphData({ files, entities, edges }) {
   const r = PHYSICS.orphanRadius;
   nodes.forEach(n => {
     if (!linkedIds.has(n.id)) {
-      n.x = (Math.random() - 0.5) * r;
-      n.y = (Math.random() - 0.5) * r;
-      n.z = (Math.random() - 0.5) * r;
+      n.fx = (Math.random() - 0.5) * r;
+      n.fy = (Math.random() - 0.5) * r;
+      n.fz = (Math.random() - 0.5) * r;
     }
   });
 
