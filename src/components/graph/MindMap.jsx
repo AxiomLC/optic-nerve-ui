@@ -321,8 +321,15 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     const orphans = nodes.filter(n => n.isOrphan);
     const connected = nodes.filter(n => !n.isOrphan);
 
+    console.log('[Orphan Reposition] onEngineStop called');
+    console.log('  Orphans found:', orphans.length, orphans.map(o => o.title));
+    console.log('  Connected nodes:', connected.length);
+
     // If no orphans, nothing to do
-    if (orphans.length === 0) return;
+    if (orphans.length === 0) {
+      console.log('  No orphans, returning');
+      return;
+    }
 
     // Measure bounding box of connected nodes (use their current x,y,z)
     let minX = Infinity, maxX = -Infinity;
@@ -341,7 +348,12 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     });
 
     // If no valid positions, skip
-    if (!isFinite(maxX) || !isFinite(maxY) || !isFinite(maxZ)) return;
+    if (!isFinite(maxX) || !isFinite(maxY) || !isFinite(maxZ)) {
+      console.log('  No valid connected positions, returning');
+      return;
+    }
+
+    console.log('  Cluster bounds:', { minX, maxX, minY, maxY, minZ, maxZ });
 
     const clusterWidth = maxX - minX;
     const clusterHeight = maxY - minY;
@@ -356,6 +368,10 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     const maxDim = Math.max(clusterWidth, clusterHeight, clusterDepth);
     const ringRadius = (maxDim / 2) * 1.1; // 10% outside
 
+    console.log('  Cluster center:', clusterCenter);
+    console.log('  Cluster dims:', { clusterWidth, clusterHeight, clusterDepth, maxDim });
+    console.log('  Ring radius:', ringRadius);
+
     // Position orphans in a ring around the cluster
     orphans.forEach((orphan, i) => {
       const angle = (i / orphans.length) * Math.PI * 2;
@@ -369,6 +385,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       orphan.fx = x;
       orphan.fy = y;
       orphan.fz = z;
+      console.log(`  Orphan ${orphan.title} (id:${orphan.id}) → fx:${x.toFixed(0)}, fy:${y.toFixed(0)}, fz:${z.toFixed(0)}`);
     });
   }, [graphData]);
 
