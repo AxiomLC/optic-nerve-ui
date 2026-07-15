@@ -314,6 +314,68 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     return group;
   }, []);
 
+  const handleEngineStop = useCallback(() => {
+    if (!fgRef.current || !graphData?.nodes) return;
+
+    const nodes = graphData.nodes;
+    const orphans = nodes.filter(n => n.isOrphan);
+    const connected = nodes.filter(n => !n.isOrphan);
+
+    // If no orphans, nothing to do
+    if (orphans.length === 0) return;
+
+    // Measure bounding box of connected nodes
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+
+    connected.forEach(n => {
+      const pos = fgRef.current.getNodePosition(n.id);
+      if (pos) {
+        minX = Math.min(minX, pos.x);
+        maxX = Math.max(maxX, pos.x);
+        minY = Math.min(minY, pos.y);
+        maxY = Math.max(maxY, pos.y);
+        minZ = Math.min(minZ, pos.z);
+        maxZ = Math.max(maxZ, pos.z);
+      }
+    });
+
+    // If no valid positions, skip
+    if (!isFinite(maxX) || !isFinite(maxY) || !isFinite(maxZ)) return;
+
+    const clusterWidth = maxX - minX;
+    const clusterHeight = maxY - minY;
+    const clusterDepth = maxZ - minZ;
+    const clusterCenter = {
+      x: (minX + maxX) / 2,
+      y: (minY + maxY) / 2,
+      z: (minZ + maxZ) / 2,
+    };
+
+    // Ring radius is 10% outside the cluster bounds
+    const maxDim = Math.max(clusterWidth, clusterHeight, clusterDepth);
+    const ringRadius = (maxDim / 2) * 1.1; // 10% outside
+
+    // Position orphans in a ring around the cluster
+    orphans.forEach((orphan, i) => {
+      const angle = (i / orphans.length) * Math.PI * 2;
+      const phi = Math.random() * Math.PI; // Random elevation for 3D spread
+
+      const x = clusterCenter.x + ringRadius * Math.cos(angle) * Math.sin(phi);
+      const y = clusterCenter.y + ringRadius * Math.sin(angle) * Math.sin(phi);
+      const z = clusterCenter.z + ringRadius * Math.cos(phi);
+
+      // Freeze the orphan at this position
+      orphan.fx = x;
+      orphan.fy = y;
+      orphan.fz = z;
+
+      // Notify force graph of the update
+      fgRef.current.d3Force('collide').initialize(nodes);
+    });
+  }, [graphData]);
+
   return (
     <div className="mindmap-container">
       <ForceGraph3D
@@ -330,6 +392,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         d3AlphaDecay={PHYSICS.alphaDecay}
         d3VelocityDecay={PHYSICS.velocityDecay}
         d3LinkDistance={PHYSICS.linkDistance}
+        onEngineStop={handleEngineStop}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { PHYSICS } from '../config/theme';
+// Note: PHYSICS.orphanRadius is used in MindMap.jsx post-warmup callback
 
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
@@ -24,20 +24,15 @@ export function toGraphData({ files, entities, edges }) {
     action: e.action,
   }));
 
-  // Mark orphaned nodes — freeze them near center
+  // Mark orphaned nodes (will be repositioned post-warmup in MindMap.jsx)
   const linkedIds = new Set();
   links.forEach(l => {
     linkedIds.add(l.source);
     linkedIds.add(l.target);
   });
 
-  const r = PHYSICS.orphanRadius;
   nodes.forEach(n => {
-    if (!linkedIds.has(n.id)) {
-      n.fx = (Math.random() - 0.5) * r;
-      n.fy = (Math.random() - 0.5) * r;
-      n.fz = (Math.random() - 0.5) * r;
-    }
+    n.isOrphan = !linkedIds.has(n.id);
   });
 
   return { nodes, links };
