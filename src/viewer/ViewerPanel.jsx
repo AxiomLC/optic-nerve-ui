@@ -1,34 +1,71 @@
 import MarkdownView from './MarkdownView';
-import MediaView from './MediaView';
 
-export default function ViewerPanel({ file, previewUrl, onRetryPreview }) {
+export default function ViewerPanel({ file, entity, previewUrl, previewMode, onGetFile, getFileAvailable }) {
+  // ── Entity snippet ──────────────────────────────────────
+  if (entity) {
+    return (
+      <div className="viewer panel">
+        <div className="snippet-header">
+          <span className="snippet-type">{entity.entity_type}</span>
+        </div>
+        <h2 className="snippet-title">{entity.canonical_name}</h2>
+      </div>
+    );
+  }
+
+  // ── No selection ────────────────────────────────────────
   if (!file) {
     return <div className="viewer panel empty-state">Select a file to view</div>;
   }
 
+  const isMedia = file.file_type?.startsWith('image/') || file.file_type?.startsWith('video/');
+
+  // ── Preview mode: show full preview URL ─────────────────
+  if (previewMode) {
+    if (previewUrl) {
+      return (
+        <div className="viewer panel scrollable">
+          {isMedia ? (
+            <img src={previewUrl} alt={file.title || ''} className="media-preview" />
+          ) : (
+            <iframe src={previewUrl} className="preview-iframe" title="file preview" />
+          )}
+          <div className="viewer-actions">
+            <button onClick={() => window.open(previewUrl, '_blank')}>Open File</button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="viewer panel">
+        <p className="preview-unavail">Preview unavailable. <button onClick={onGetFile} className="link-btn">Refresh now</button> for previews to load.</p>
+      </div>
+    );
+  }
+
+  // ── Snippet mode: file summary ──────────────────────────
   return (
     <div className="viewer panel scrollable">
-      {/* Always show markdown if present */}
-      <MarkdownView md={file.md} />
-
-      <div className="viewer-actions">
-        {previewUrl && (
-          <button onClick={() => window.open(previewUrl, '_blank')}>
-            Open File
-          </button>
-        )}
-        {file.source_url && (
-          <button onClick={() => window.open(file.source_url, '_blank')}>
-            Open Source
-          </button>
-        )}
+      {/* File type + title header */}
+      <div className="snippet-header">
+        <span className="snippet-type">{file.file_type}</span>
+        <span className="snippet-title">{file.title}</span>
       </div>
 
-      <MediaView
-        file={file}
-        previewUrl={previewUrl}
-        onRetryPreview={onRetryPreview}
-      />
+      {/* Media: show thumb_url if available */}
+      {isMedia && file.thumb_url && (
+        <img src={file.thumb_url} alt={file.title || ''} className="media-thumb" />
+      )}
+
+      {/* Documents: show markdown */}
+      {file.md && <MarkdownView md={file.md} />}
+
+      {/* Get File button */}
+      {getFileAvailable && (
+        <div className="viewer-actions">
+          <button className="btn-get-file" onClick={onGetFile}>Get File</button>
+        </div>
+      )}
     </div>
   );
 }

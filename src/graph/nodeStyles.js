@@ -1,15 +1,13 @@
 // ============================================================
-// DEV CONTROLS — Node styling helpers
-// Core values live in src/lib/theme.js — edit them there.
-// This file just wires them into the graph renderer.
+// Node styling helpers — delegates to theme.js for values.
 // ============================================================
 
-import { ENTITY_COLOR, FILE_COLOR, LINK } from '../lib/theme';
+import { ENTITY_COLOR, LINK } from '../lib/theme';
 
 export function nodeColor(node, selected) {
   if (selected) return '#ffcc00';
-  if (node.type === 'file') return FILE_COLOR;
-  return ENTITY_COLOR[node.entity_type] || '#999';
+  if (node.type === 'entity') return ENTITY_COLOR[node.entity_type] || '#999';
+  return null; // files have no blob, no color needed
 }
 
 export function linkWidth(edge) {

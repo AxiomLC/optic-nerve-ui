@@ -30,29 +30,47 @@ export const ENTITY_COLOR = {
   concept:  '#aaa',
 };
 
-// ── File type icons (by file_type prefix) ──────────────────
+// ── Entity glow blob ───────────────────────────────────────
+export const GLOW = {
+  baseRadius: 6,        // minimum radius for glow sphere
+  opacity: 0.25,        // transparency of the glow (0-1)
+};
+
+// ── Entity size by edge_count tiers ─────────────────────────
+// { max: N, size: radius } - node gets first tier where edge_count <= max
+export const ENTITY_SIZE_TIERS = [
+  { max: 5,  size: 6  },
+  { max: 15, size: 9  },
+  { max: 30, size: 13 },
+  { max: Infinity, size: 17 },
+];
+
+// ── File type icons (by mime/extension prefix) ─────────────
 export const FILE_ICON = {
-  'application/pdf':           '📋',
+  'application/pdf':                                     '📋',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📊',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📽️',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':       '📉',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
   'text/':                     '📄',
   'image/':                    '🖼️',
-  'video/':                    '🎬',
+  'video/':                    '📽️',
   'audio/':                    '🎵',
   'message/':                  '💬',
   'ntn':                       '📓',  // Notion pages
+  'eml':                       '📧',  // Email
 };
 
-// ── File node fallback color ───────────────────────────────
-export const FILE_COLOR = '#888';
+// ── Zoom label thresholds ──────────────────────────────────
+// cameraDistance where labels fade in (relative to initial ~200)
+export const ZOOM = {
+  entityLabelAt: 120,   // entity name visible when camera distance <= this
+  fileLabelAt:   80,    // file type + title visible when camera distance <= this
+};
 
 // ── Node sizes ─────────────────────────────────────────────
 export const NODE_SIZE = {
-  fileDefault:      6,
-  entityDefault:    8,
-  entityMin:        5,   // minimum entity size regardless of edge_count
-  entityScale:      1.5, // extra radius per edge_count
+  fileEmoji:   7,
+  entityEmoji: 9,
 };
 
 // ── Link styling ───────────────────────────────────────────

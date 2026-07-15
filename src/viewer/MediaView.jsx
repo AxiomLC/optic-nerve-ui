@@ -26,8 +26,8 @@ export default function MediaView({ file, previewUrl, onRetryPreview }) {
   }
 
   if (error && onRetryPreview) {
-    return <p className="media-error">Preview unavailable. Click to retry.</p>;
+    return <p className="media-error">Preview error. Click Get File to retry.</p>;
   }
 
-  return <p className="media-pending">Loading preview…</p>;
+  return null;
 }
