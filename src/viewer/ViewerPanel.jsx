@@ -6,8 +6,8 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
     return (
       <div className="viewer panel">
         <div className="snippet-header">
-          <span className="snippet-type">{entity.entity_type}</span>
-        </div>
+            <span className="snippet-type">Entity type: {entity.entity_type}</span>
+          </div>
         <h2 className="snippet-title">{entity.canonical_name}</h2>
       </div>
     );

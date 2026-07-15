@@ -3,8 +3,8 @@ import { useState, useCallback, useRef } from 'react';
 import * as THREE from 'three';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
-  ENTITY_EMOJI, ENTITY_COLOR, FILE_ICON,
-  GLOW, ENTITY_SIZE_TIERS, ZOOM, NODE_SIZE, PHYSICS, LINK,
+  ENTITY_EMOJI, ENTITY_COLOR, FILE_ICON, FILE_ICON_DEFAULT,
+  GLOW, ENTITY_SIZE_TIERS, NODE_SIZE, PHYSICS, LINK,
 } from '../lib/theme';
 
 // ── Sprite factory: emoji ─────────────────────────────────
@@ -55,7 +55,7 @@ function nodeEmoji(node) {
     const match = Object.entries(FILE_ICON).find(([key]) =>
       node.file_type?.startsWith(key)
     );
-    return match ? match[1] : '📄';
+    return match ? match[1] : FILE_ICON_DEFAULT;
   }
   return ENTITY_EMOJI[node.entity_type] || '💡';
 }
@@ -98,9 +98,9 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji);
       group.add(emoji);
 
-      // Entity name label (low opacity, becomes readable on zoom)
+      // Entity name label (white, fully visible)
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
-      label.material.opacity = 0.15;
+      label.material.opacity = 1.0;
       group.add(label);
 
     } else if (node.type === 'file') {
@@ -108,14 +108,14 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji);
       group.add(emoji);
 
-      // File type label (small, bright green, low opacity)
-      const typeLabel = makeLabel(node.file_type || '', '#0f0', 16, -3);
-      typeLabel.material.opacity = 0.12;
+      // File type label (small, white, fully visible)
+      const typeLabel = makeLabel(node.file_type || '', '#fff', 16, -3);
+      typeLabel.material.opacity = 1.0;
       group.add(typeLabel);
 
-      // File title label (white, low opacity)
+      // File title label (white, fully visible)
       const titleLabel = makeLabel(node.title || '', '#fff', 22, 3.5);
-      titleLabel.material.opacity = 0.12;
+      titleLabel.material.opacity = 1.0;
       group.add(titleLabel);
     }
 
