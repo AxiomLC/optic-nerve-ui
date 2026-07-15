@@ -331,12 +331,22 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       return;
     }
 
-    // Measure bounding box of connected nodes (use their current x,y,z)
+    // Measure bounding box of HIGH-DEGREE connected nodes (core cluster, not outliers)
+    // Filter to nodes with at least 3 edges (heuristic to exclude low-degree stragglers)
+    const coreNodes = connected.filter(n => {
+      if (n.type === 'entity') return (n.edge_count || 0) >= 3;
+      if (n.type === 'file') return (n.edge_count || 0) >= 2; // Files typically have fewer edges
+      return false;
+    });
+
+    console.log('  Core nodes (high degree):', coreNodes.length);
+
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
 
-    connected.forEach(n => {
+    const nodesToMeasure = coreNodes.length > 0 ? coreNodes : connected; // Fallback to all connected if no core
+    nodesToMeasure.forEach(n => {
       if (isFinite(n.x) && isFinite(n.y) && isFinite(n.z)) {
         minX = Math.min(minX, n.x);
         maxX = Math.max(maxX, n.x);
@@ -364,30 +374,33 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       z: (minZ + maxZ) / 2,
     };
 
-    // Ring radius is 10% outside the cluster bounds
+    // Ring radius: position orphans at ~20% beyond the measured core
     const maxDim = Math.max(clusterWidth, clusterHeight, clusterDepth);
-    const ringRadius = (maxDim / 2) * 1.1; // 10% outside
+    const ringRadius = (maxDim / 2) * 0.3; // Conservative: only 30% of half-width
 
+    console.log('  Core cluster bounds:', { minX, maxX, minY, maxY, minZ, maxZ });
     console.log('  Cluster center:', clusterCenter);
     console.log('  Cluster dims:', { clusterWidth, clusterHeight, clusterDepth, maxDim });
-    console.log('  Ring radius:', ringRadius);
+    console.log('  Ring radius (30% of maxDim/2):', ringRadius);
 
     // Position orphans in a ring around the cluster
     orphans.forEach((orphan, i) => {
       const angle = (i / orphans.length) * Math.PI * 2;
       const phi = Math.random() * Math.PI; // Random elevation for 3D spread
+      const r = ringRadius + (Math.random() * ringRadius * 0.2); // Add jitter to radius
 
-      const x = clusterCenter.x + ringRadius * Math.cos(angle) * Math.sin(phi);
-      const y = clusterCenter.y + ringRadius * Math.sin(angle) * Math.sin(phi);
-      const z = clusterCenter.z + ringRadius * Math.cos(phi);
+      const x = clusterCenter.x + r * Math.cos(angle) * Math.sin(phi);
+      const y = clusterCenter.y + r * Math.sin(angle) * Math.sin(phi);
+      const z = clusterCenter.z + r * Math.cos(phi);
 
       // Freeze the orphan at this position
       orphan.fx = x;
       orphan.fy = y;
       orphan.fz = z;
-      console.log(`  Orphan ${orphan.title} (id:${orphan.id}) → fx:${x.toFixed(0)}, fy:${y.toFixed(0)}, fz:${z.toFixed(0)}`);
+      if (i < 3) console.log(`  Orphan ${orphan.title} (id:${orphan.id}) → fx:${x.toFixed(0)}, fy:${y.toFixed(0)}, fz:${z.toFixed(0)}`);
     });
-  }, [graphData]);
+    console.log(`  ... ${orphans.length - 3} more orphans positioned`);
+  }, [graphData, graphData?.nodes]); // Re-run if nodes change
 
   return (
     <div className="mindmap-container">
@@ -406,6 +419,15 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         d3VelocityDecay={PHYSICS.velocityDecay}
         d3LinkDistance={PHYSICS.linkDistance}
         onEngineStop={handleEngineStop}
+        nodeCanvasObject={(node, ctx) => {
+          // Optional: visual debug - highlight orphans with a marker
+          // if (node.isOrphan) {
+          //   ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+          //   ctx.beginPath();
+          //   ctx.arc(node.x, node.y, 50, 0, Math.PI * 2);
+          //   ctx.fill();
+          // }
+        }}
       />
     </div>
   );
