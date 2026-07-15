@@ -194,7 +194,7 @@ export default function App() {
 
       {/* ── Main layout with resizable panels ── */}
       <div className="layout-4tier">
-        <Group direction="horizontal" style={{ height: '100%' }}>
+        <Group direction="horizontal" style={{ width: '100%', height: '100%' }}>
           <Panel defaultSize={PANEL_CFG.defaultSize} minSize={PANEL_CFG.minSize} maxSize={PANEL_CFG.maxSize} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div className="left-col">
               <SearchPanel

@@ -93,17 +93,16 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       group.add(label);
 
     } else if (node.type === 'file') {
-      // Emoji only — no blob
-      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji, 1.0);
-      group.add(emoji);
-
-      // File type label — light green, positive Y = ABOVE emoji
-      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, 4.5);
+      // Stacked: file_type top → title middle → emoji bottom
+      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, 6.5);
       group.add(typeLabel);
 
-      // File title label — white, negative Y = BELOW emoji
-      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, -5);
+      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, 2);
       group.add(titleLabel);
+
+      const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji, 1.0);
+      emoji.position.y = -2.5;
+      group.add(emoji);
     }
 
     return group;
