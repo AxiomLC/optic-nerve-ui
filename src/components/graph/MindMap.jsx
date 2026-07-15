@@ -316,94 +316,10 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
 
   const handleEngineStop = useCallback(() => {
     if (!graphData?.nodes) return;
-
-    const nodes = graphData.nodes;
-    const orphans = nodes.filter(n => n.isOrphan);
-    const connected = nodes.filter(n => !n.isOrphan);
-
-    console.log('[Orphan Reposition] onEngineStop called');
-    console.log('  Orphans found:', orphans.length, orphans.map(o => o.title));
-    console.log('  Connected nodes:', connected.length);
-
-    // If no orphans, nothing to do
-    if (orphans.length === 0) {
-      console.log('  No orphans, returning');
-      return;
-    }
-
-    // Measure bounding box of HIGH-DEGREE connected nodes (core cluster, not outliers)
-    // Filter to nodes with at least 3 edges (heuristic to exclude low-degree stragglers)
-    const coreNodes = connected.filter(n => {
-      if (n.type === 'entity') return (n.edge_count || 0) >= 3;
-      if (n.type === 'file') return (n.edge_count || 0) >= 2; // Files typically have fewer edges
-      return false;
-    });
-
-    console.log('  Core nodes (high degree):', coreNodes.length);
-
-    let minX = Infinity, maxX = -Infinity;
-    let minY = Infinity, maxY = -Infinity;
-    let minZ = Infinity, maxZ = -Infinity;
-
-    const nodesToMeasure = coreNodes.length > 0 ? coreNodes : connected; // Fallback to all connected if no core
-    nodesToMeasure.forEach(n => {
-      if (isFinite(n.x) && isFinite(n.y) && isFinite(n.z)) {
-        minX = Math.min(minX, n.x);
-        maxX = Math.max(maxX, n.x);
-        minY = Math.min(minY, n.y);
-        maxY = Math.max(maxY, n.y);
-        minZ = Math.min(minZ, n.z);
-        maxZ = Math.max(maxZ, n.z);
-      }
-    });
-
-    // If no valid positions, skip
-    if (!isFinite(maxX) || !isFinite(maxY) || !isFinite(maxZ)) {
-      console.log('  No valid connected positions, returning');
-      return;
-    }
-
-    console.log('  Cluster bounds:', { minX, maxX, minY, maxY, minZ, maxZ });
-
-    const clusterWidth = maxX - minX;
-    const clusterHeight = maxY - minY;
-    const clusterDepth = maxZ - minZ;
-    const clusterCenter = {
-      x: (minX + maxX) / 2,
-      y: (minY + maxY) / 2,
-      z: (minZ + maxZ) / 2,
-    };
-
-    // Ring radius: position orphans at ~20% beyond the measured core
-    const maxDim = Math.max(clusterWidth, clusterHeight, clusterDepth);
-    const ringRadius = (maxDim / 2) * 0.3; // Conservative: only 30% of half-width
-
-    console.log('  Core cluster bounds:', { minX, maxX, minY, maxY, minZ, maxZ });
-    console.log('  Cluster center:', clusterCenter);
-    console.log('  Cluster dims:', { clusterWidth, clusterHeight, clusterDepth, maxDim });
-    console.log('  Ring radius (30% of maxDim/2):', ringRadius);
-
-    // Position orphans in a ring around the cluster
-    orphans.forEach((orphan, i) => {
-      const angle = (i / orphans.length) * Math.PI * 2;
-      const phi = Math.random() * Math.PI; // Random elevation for 3D spread
-      const r = ringRadius + (Math.random() * ringRadius * 0.2); // Add jitter to radius
-
-      const x = clusterCenter.x + r * Math.cos(angle) * Math.sin(phi);
-      const y = clusterCenter.y + r * Math.sin(angle) * Math.sin(phi);
-      const z = clusterCenter.z + r * Math.cos(phi);
-
-      // Freeze the orphan at this position
-      orphan.x = x;
-      orphan.y = y;
-      orphan.z = z;
-      orphan.fx = x;
-      orphan.fy = y;
-      orphan.fz = z;
-      if (i < 3) console.log(`  Orphan ${orphan.title} (id:${orphan.id}) → fx:${x.toFixed(0)}, fy:${y.toFixed(0)}, fz:${z.toFixed(0)}`);
-    });
-    console.log(`  ... ${orphans.length - 3} more orphans positioned`);
-  }, [graphData, graphData?.nodes]); // Re-run if nodes change
+    const orphans = graphData.nodes.filter(n => n.isOrphan);
+    window.__orphans = orphans;
+    console.log(`[Orphan] Engine stopped, ${orphans.length} orphans, first fx:`, orphans[0]?.fx?.toFixed(0), orphans[0]?.x?.toFixed(0));
+  }, [graphData, graphData?.nodes]);
 
   return (
     <div className="mindmap-container">
