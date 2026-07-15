@@ -7,7 +7,6 @@ import {
   GLOW, ENTITY_SIZE_TIERS, NODE_SIZE, PHYSICS, LINK,
 } from '../lib/theme';
 
-// ── Sprite factory: emoji ─────────────────────────────────
 function makeSprite(emoji, size, opacity) {
   const c = document.createElement('canvas');
   c.width = 64; c.height = 64;
@@ -24,7 +23,6 @@ function makeSprite(emoji, size, opacity) {
   return s;
 }
 
-// ── Sprite factory: text label (single line) ─────────────
 function makeLabel(text, color, fontSize, offY) {
   const c = document.createElement('canvas');
   c.width = 512; c.height = 64;
@@ -37,11 +35,10 @@ function makeLabel(text, color, fontSize, offY) {
   const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, opacity: 1.0 });
   const s = new THREE.Sprite(m);
   s.scale.set(32, 4, 1);
-  s.position.y = offY || 0;
+  s.position.y = offY;
   return s;
 }
 
-// ── Glow blob factory ─────────────────────────────────────
 function makeGlow(color, radius) {
   const geo = new THREE.SphereGeometry(radius, 16, 16);
   const mat = new THREE.MeshBasicMaterial({
@@ -50,7 +47,6 @@ function makeGlow(color, radius) {
   return new THREE.Mesh(geo, mat);
 }
 
-// ── Resolve emoji for any node ────────────────────────────
 function nodeEmoji(node) {
   if (node.type === 'file') {
     const ft = node.file_type || '';
@@ -62,7 +58,6 @@ function nodeEmoji(node) {
   return ENTITY_EMOJI[node.entity_type] || '💡';
 }
 
-// ── Entity blob radius from edge_count ────────────────────
 function entityRadius(edgeCount) {
   const c = edgeCount || 0;
   for (const t of ENTITY_SIZE_TIERS) {
@@ -85,22 +80,15 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [onSelectEntity, onSelectFile]);
 
-  // ── Build custom Three.js objects per node ──────────────
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
 
     if (node.type === 'entity') {
       const r = entityRadius(node.edge_count);
       const color = ENTITY_COLOR[node.entity_type] || '#999';
-
-      // Glow blob
       group.add(makeGlow(color, r * GLOW.baseRadius));
-
-      // Emoji with configurable transparency
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.entityEmoji, ENTITY_EMOJI_OPACITY);
       group.add(emoji);
-
-      // Entity name label
       const label = makeLabel(node.canonical_name || '', '#fff', 28, 5);
       group.add(label);
 
@@ -109,12 +97,12 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const emoji = makeSprite(nodeEmoji(node), NODE_SIZE.fileEmoji, 1.0);
       group.add(emoji);
 
-      // File type label (light green, above emoji)
-      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, -4.5);
+      // File type label — light green, positive Y = ABOVE emoji
+      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, 4.5);
       group.add(typeLabel);
 
-      // File title label (white, below emoji)
-      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, 4);
+      // File title label — white, negative Y = BELOW emoji
+      const titleLabel = makeLabel(node.title || '', '#fff', FILE_LABEL.fontSize, -5);
       group.add(titleLabel);
     }
 

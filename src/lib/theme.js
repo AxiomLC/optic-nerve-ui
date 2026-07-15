@@ -42,15 +42,15 @@ export const ENTITY_COLOR = {
 // ── Entity glow blob radius multiplier ────────────────────
 export const GLOW = {
   baseRadius: 1,       // default: 6
-  opacity: 0.35,       // default: 0.25 — glow transparency (0=invisible, 1=solid)
+  opacity: 0.6,       // default: 0.25 — glow transparency (0=invisible, 1=solid)
 };
 
 // ── Entity node size by edge_count tiers ──────────────────
 export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 3  },  // default: 6
-  { max: 15, size: 5  },  // default: 9
-  { max: 30, size: 7  },  // default: 13
-  { max: Infinity, size: 10 },  // default: 17
+  { max: 5,  size: 6  },  // default: 6
+  { max: 15, size: 7  },  // default: 9
+  { max: 30, size: 8  },  // default: 13
+  { max: Infinity, size: 9},  // default: 17
 ];
 
 // ── File type icons (matched against file_type prefix) ────
@@ -86,23 +86,23 @@ export const FILE_ICON_DEFAULT = '📎';
 // ── File label styling (on graph nodes) ───────────────────
 export const FILE_LABEL = {
   color: '#0f0',      // light green
-  fontSize: 20,       // font size for both type and title
+  fontSize: 18,       // font size for both type and title
   typePrefix: '',     // optional prefix before file_type text
 };
 
 // ── Node display sizes ────────────────────────────────────
 export const NODE_SIZE = {
-  fileEmoji:   7,
-  entityEmoji: 10,
+  fileEmoji:   8,
+  entityEmoji: 9,
 };
 
 // ── Link line styling ─────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.5,
+  mentionWidth:  0.7,
   linkWidth:     2,
-  mentionColor:  '#555',
-  linkColor:     '#ff6ec7',
-  particleSpeed: 0.005,
+  mentionColor:  '#94f', // purple #94f gray #555
+  linkColor:     '#ff6ec7', // pink
+  particleSpeed: 0.004,
 };
 
 // ── Graph physics ─────────────────────────────────────────
@@ -111,10 +111,18 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanRadius:  8,   // initial cluster radius for orphaned nodes
+  orphanRadius:  1,   // initial cluster radius for orphaned nodes
 };
 
 // ── Logo ──────────────────────────────────────────────────
 // Place logo.png in optic-nerve-ui/public/logo.png
 // The UI displays it inline with the header title.
 // If the file is absent, the browser shows a small broken-icon — no crash.
+
+// ── Resizable panel (left column) ─────────────────────────
+// Values are percentage of total width (0-100)
+export const PANEL = {
+  defaultSize: 26,   // default: 26 — initial left column width (~380px at 1440px)
+  minSize:     15,   // default: 15 — narrowest allowed (~216px at 1440px)
+  maxSize:     50,   // default: 50 — widest allowed (~720px at 1440px)
+};
