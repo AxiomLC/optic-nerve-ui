@@ -32,17 +32,17 @@ export const ENTITY_COLOR = {
 
 // ── Entity glow blob ───────────────────────────────────────
 export const GLOW = {
-  baseRadius: 6,        // minimum radius for glow sphere
-  opacity: 0.25,        // transparency of the glow (0-1)
+  baseRadius: 1,        // minimum radius for glow sphere
+  opacity: 0.35,        // transparency of the glow (0-1)
 };
 
 // ── Entity size by edge_count tiers ─────────────────────────
 // { max: N, size: radius } - node gets first tier where edge_count <= max
 export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 6  },
-  { max: 15, size: 9  },
-  { max: 30, size: 13 },
-  { max: Infinity, size: 17 },
+  { max: 5,  size: 3  },
+  { max: 15, size: 5  },
+  { max: 30, size: 7 },
+  { max: Infinity, size: 10 },
 ];
 
 // ── File type icons (by mime/extension prefix) ─────────────
@@ -70,7 +70,7 @@ export const ZOOM = {
 // ── Node sizes ─────────────────────────────────────────────
 export const NODE_SIZE = {
   fileEmoji:   7,
-  entityEmoji: 9,
+  entityEmoji: 10,
 };
 
 // ── Link styling ───────────────────────────────────────────
