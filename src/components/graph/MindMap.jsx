@@ -2,7 +2,7 @@ import ForceGraph3D from 'react-force-graph-3d';
 import { useState, useCallback, useRef } from 'react';
 import * as THREE from 'three';
 import * as LucideIcons from 'lucide-react';
-// nodeStyles.js merged into theme.js
+import { nodeColor, linkWidth } from './nodeStyles';
 import {
   ENTITY_ICON, ENTITY_COLOR, ENTITY_ICON_STYLE, FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL,
   GLOW, ENTITY_SIZE_TIERS, NODE_SIZE, PHYSICS, LINK, FILE_ICON_STYLE,
