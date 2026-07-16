@@ -106,18 +106,17 @@ export const FILE_LABEL = {
   fontSize: 20,
 };
 
-// ── Label spacing (offY values for stacking labels and icons) ──
-// Increase/decrease these to adjust gaps between stacked text lines on nodes.
+// ── Label spacing (line height within combined label + icon position) ──
+// lineSpacing: multiplier of fontSize between stacked text lines
+// icon: how far below the combined label the icon sits (negative = down)
 export const LABEL_SPACING = {
   entity: {
-    label: 5.5,     // "Entity" word Y offset
-    name: -0.5,     // entity name Y offset
-    icon: -2.5,     // entity icon Y offset
+    lineSpacing: 1.6,  // gap between "Entity" and entity name
+    icon: -3.5,         // icon below label group
   },
   file: {
-    type: 5.5,      // file_type label Y offset
-    title: -0.5,    // file title Y offset
-    icon: -1.0,     // file icon Y offset
+    lineSpacing: 1.6,  // gap between file_type and file title
+    icon: -3.0,         // icon below label group
   },
 };
 
@@ -135,7 +134,7 @@ export const GLOW = {
     radius: 4,            // 'glow radius', fixed radius for all file glows
     spriteScale: 3,       // 6, world units per radius unit
     featherStart: 0.4,    // 0.3, where feathering begins
-    color: '#999',     // 999 gray. 000 black — file glow
+    color: '#002366',     // #002366 drak blue, 999 gray. 000 black — file glow
     opacity: 1.0,
   },
 };

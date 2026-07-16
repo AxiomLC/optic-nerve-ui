@@ -53,11 +53,13 @@ function makeIconSprite(iconName, size, color, opacity, style) {
     map: texture,
     transparent: true,
     depthWrite: false,
+    depthTest: false,
+    alphaTest: 0.01,
     opacity,
   });
   const sprite = new THREE.Sprite(material);
   sprite.scale.set(8, 8, 1);
-  sprite.renderOrder = 20;
+  sprite.renderOrder = 21;
 
   // Load actual lucide SVG paths and draw to canvas (async; updates texture when ready)
   const svgHTML = getIconSVG(iconName, color || style.color, style.strokeWidth);
@@ -86,22 +88,56 @@ function makeIconSprite(iconName, size, color, opacity, style) {
   return sprite;
 }
 
-function makeLabel(text, color, fontSize, offY) {
+function makeGroupLabel(lines, config = {}) {
+  const { offY = 0, lineSpacing = 1.4 } = config;
+  if (!lines || lines.length === 0) return new THREE.Group();
+
+  // Measure all lines to size canvas
+  const temp = document.createElement('canvas');
+  const tctx = temp.getContext('2d');
+  let totalH = 0, maxW = 0;
+  lines.forEach(l => {
+    tctx.font = `bold ${l.fontSize}px sans-serif`;
+    const m = tctx.measureText(l.text);
+    const h = l.fontSize * lineSpacing;
+    totalH += h;
+    maxW = Math.max(maxW, m.width);
+  });
+
+  const pad = 6;
+  const cw = Math.ceil(maxW + pad * 2);
+  const ch = Math.ceil(totalH + pad * 2);
+
   const c = document.createElement('canvas');
-  c.width = 512;
-  c.height = 64;
+  c.width = cw;
+  c.height = ch;
   const ctx = c.getContext('2d');
-  ctx.font = `bold ${fontSize}px sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillStyle = color;
-  ctx.fillText(text, 256, 40);
+  ctx.textBaseline = 'middle';
+
+  let y = pad + (lines[0].fontSize * lineSpacing) / 2;
+  lines.forEach(l => {
+    ctx.font = `bold ${l.fontSize}px sans-serif`;
+    ctx.fillStyle = l.color;
+    ctx.fillText(l.text, cw / 2, y);
+    y += l.fontSize * lineSpacing;
+  });
+
   const t = new THREE.CanvasTexture(c);
-  const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false, alphaTest: 0.01, opacity: 1.0 });
+  const m = new THREE.SpriteMaterial({
+    map: t, transparent: true, depthWrite: false, depthTest: false,
+    alphaTest: 0.01, opacity: 1.0,
+  });
   const s = new THREE.Sprite(m);
-  s.scale.set(32, 4, 1);
+  const aspect = cw / ch;
+  s.scale.set(6 * aspect, 6, 1);
   s.position.y = offY;
   s.renderOrder = 20;
   return s;
+}
+
+function makeLabel(text, color, fontSize, offY) {
+  return makeGroupLabel([{ text, color, fontSize }], { offY, lineSpacing: 1.4 });
 }
 
 // ── Feathered glow (radial gradient sprite) ──
@@ -188,11 +224,11 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const glowColor = ENTITY_COLOR[node.entity_type] || '#999';
       group.add(makeFeatheredGlow(glowColor, r * GLOW.entity.baseRadius, GLOW.entity));
 
-      // "Entity" label (smaller font, above name)
-      group.add(makeLabel(ENTITY_LABEL.text, ENTITY_LABEL.color, ENTITY_LABEL.fontSize, LABEL_SPACING.entity.label));
-
-      // Entity name label
-      group.add(makeLabel(node.canonical_name || '', ENTITY_LABEL.color, 28, LABEL_SPACING.entity.name));
+      // Combined "Entity" + entity name label
+      group.add(makeGroupLabel([
+        { text: ENTITY_LABEL.text, color: ENTITY_LABEL.color, fontSize: ENTITY_LABEL.fontSize },
+        { text: node.canonical_name || '', color: ENTITY_LABEL.color, fontSize: 28 },
+      ], { offY: 0, lineSpacing: LABEL_SPACING.entity.lineSpacing }));
 
       // Icon at bottom
       const iconName = ENTITY_ICON[node.entity_type] || 'Lightbulb';
@@ -204,12 +240,11 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       // File glow (black, fixed size)
       group.add(makeFeatheredGlow(GLOW.file.color, GLOW.file.radius, GLOW.file));
 
-      // Stacked: file_type → title → icon (tight spacing, #dfd colors)
-      const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, LABEL_SPACING.file.type);
-      group.add(typeLabel);
-
-      const titleLabel = makeLabel(node.title || '', FILE_LABEL.color, FILE_LABEL.fontSize, LABEL_SPACING.file.title);
-      group.add(titleLabel);
+      // Combined file_type + file title label
+      group.add(makeGroupLabel([
+        { text: node.file_type || '', color: FILE_LABEL.color, fontSize: FILE_LABEL.fontSize },
+        { text: node.title || '', color: FILE_LABEL.color, fontSize: FILE_LABEL.fontSize },
+      ], { offY: 0, lineSpacing: LABEL_SPACING.file.lineSpacing }));
 
       const iconName = getFileIcon(node);
       const iconSprite = makeIconSprite(iconName, FILE_ICON_STYLE.size, '#dfd', FILE_ICON_STYLE.opacity, FILE_ICON_STYLE);
