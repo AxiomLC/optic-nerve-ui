@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import LoginForm from './components/LoginForm';
 import SearchPanel from './components/SearchPanel';
 import ViewerPanel from './components/viewer/ViewerPanel';
@@ -35,6 +35,7 @@ export default function App() {
   const [activeLayer, setActiveLayer] = useState('viewer');
   const [searchResults, setSearchResults] = useState(null);
   const [errorLog, setErrorLog] = useState([]);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(380);
 
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
@@ -133,6 +134,34 @@ export default function App() {
     setActiveLayer(prev => prev === 'voice' ? 'viewer' : 'voice');
   }, []);
 
+  // ── Draggable divider ──
+  const isDragging = useRef(false);
+  const handleDividerDown = useCallback((e) => {
+    e.preventDefault();
+    isDragging.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      if (!isDragging.current) return;
+      setLeftPanelWidth(Math.max(280, Math.min(760, e.clientX)));
+    };
+    const handleUp = () => {
+      if (!isDragging.current) return;
+      isDragging.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.addEventListener('pointermove', handleMove);
+    document.addEventListener('pointerup', handleUp);
+    return () => {
+      document.removeEventListener('pointermove', handleMove);
+      document.removeEventListener('pointerup', handleUp);
+    };
+  }, []);
+
   if (!authUser) {
     return <LoginForm onLogin={handleLogin} />;
   }
@@ -161,7 +190,7 @@ export default function App() {
       </header>
 
       <div className="layout-4tier">
-        <div className="left-col">
+        <div className="left-col" style={{ width: leftPanelWidth }}>
           <SearchPanel
             onSelectFile={handleSelectFile}
             searchResults={searchResults}
@@ -202,6 +231,8 @@ export default function App() {
             )}
           </div>
         </div>
+
+        <div className="drag-handle" onPointerDown={handleDividerDown} />
 
         <div className="right-col">
           {graphData && (

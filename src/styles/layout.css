@@ -150,11 +150,8 @@ footer.app-footer {
 }
 
 .left-col {
-  width: 380px;
-  min-width: 280px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border-pink);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -163,6 +160,18 @@ footer.app-footer {
   flex: 1;
   position: relative;
   overflow: hidden;
+}
+
+/* ── Drag handle ── */
+.drag-handle {
+  width: 4px;
+  cursor: col-resize;
+  flex-shrink: 0;
+  background: transparent;
+  transition: background 0.15s;
+}
+.drag-handle:hover {
+  background: var(--border-pink);
 }
 
 /* ── Login ── */
