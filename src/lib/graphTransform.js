@@ -12,42 +12,25 @@
  * using fx/fy/fz so the simulation cannot push them outward.
  */
 export function toGraphData({ files, entities, edges }) {
-  // Prefix IDs by type to prevent collision between file_ids and entity_ids
-  // (both tables use auto-increment PKs — they overlap)
   const nodes = [
-    ...(files || []).map(f => ({ id: `f_${f.id}`, type: 'file', ...f })),
-    ...(entities || []).map(e => ({ id: `e_${e.id}`, type: 'entity', ...e })),
+    ...(files || []).map(f => ({ id: f.id, type: 'file', ...f })),
+    ...(entities || []).map(e => ({ id: e.id, type: 'entity', ...e })),
   ];
 
-  const links = (edges || []).flatMap(e => {
-    const result = [];
-    // Entity-targeted edge
-    if (e.target_entity_id != null) {
-      result.push({
-        source: `f_${e.file_id}`,
-        target: `e_${e.target_entity_id}`,
-        edge_type: e.edge_type,
-        action: e.action,
-      });
-    }
-    // File-to-file edge
-    if (e.target_file_id != null) {
-      result.push({
-        source: `f_${e.file_id}`,
-        target: `f_${e.target_file_id}`,
-        edge_type: e.edge_type,
-        action: e.action,
-      });
-    }
-    return result;
-  });
+  const links = (edges || []).map(e => ({
+    source: e.file_id,
+    target: e.target_entity_id,
+    edge_type: e.edge_type,
+    action: e.action,
+  }));
 
   // Mark orphaned nodes: a node is orphan only if it has NO resolvable edges
-  // (an edge must connect to a type-prefixed ID that actually exists)
+  // (an edge must connect to an entity OR file that actually exists in the data)
   const linkedIds = new Set();
   const validNodeIds = new Set(nodes.map(n => n.id));
   
   links.forEach(l => {
+    // Only count the edge if BOTH ends exist in our node list
     if (validNodeIds.has(l.source) && validNodeIds.has(l.target)) {
       linkedIds.add(l.source);
       linkedIds.add(l.target);
