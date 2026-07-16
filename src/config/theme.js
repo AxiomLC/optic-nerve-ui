@@ -38,15 +38,15 @@ export const ENTITY_ICON = {
 
 // ── Entity glow colors (per type) ─────────────────────────
 export const ENTITY_COLOR = {
-  person:   '#4f9',
-  org:      '#49f',
-  place:    '#f94',
-  project:  '#94f',
-  product:  '#f49',
-  document: '#9f4',
-  event:    '#ff4',
-  thing:    '#999',
-  concept:  '#aaa',
+  person:   '#4f9',  // mint green — person glow
+  org:      '#49f',  // sky blue — org glow
+  place:    '#f94',  // orange — place glow
+  project:  '#94f',  // purple — project glow
+  product:  '#f49',  // pink — product glow
+  document: '#9f4',  // lime — document glow
+  event:    '#ff4',  // yellow — event glow
+  thing:    '#999',  // grey — thing glow
+  concept:  '#aaa',  // light grey — concept glow
 };
 
 // ── Entity icon styling ───────────────────────────────────
@@ -54,13 +54,13 @@ export const ENTITY_ICON_STYLE = {
   size: 28,
   opacity: 0.8,
   strokeWidth: 1.5,
-  color: '#ccc',
+  color: '#ccc',  // light gray — entity icons
 };
 
 // ── Entity label "Entity" word (smaller, above name) ─────
 export const ENTITY_LABEL = {
   text: 'Entity',
-  color: '#ccc',
+  color: '#ccc',  // light gray — entity 'Entity' label
   fontSize: 14,
 };
 
@@ -73,30 +73,21 @@ export const ENTITY_SIZE_TIERS = [
 ];
 
 // ── File type icons (lucide-react) ────────────────────────
-// Maps MIME type or extension → lucide-react component name
+// Keys are file extensions (without dot). Dev can add or change.
 export const FILE_ICON = {
-  'application/pdf':                                                                      'FileText',
-  '.pdf':                                                                                 'FileText',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document':              'FileText',
-  '.docx':                                                                                'FileText',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':                    'Sheet',
-  '.xlsx':                                                                                'Sheet',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation':            'Presentation',
-  '.pptx':                                                                                'Presentation',
-  'text/':                                                                                'FileText',
-  '.txt':                                                                                 'FileText',
-  'image/':                                                                               'Image',
-  '.jpg':                                                                                 'Image',
-  '.jpeg':                                                                                'Image',
-  '.png':                                                                                 'Image',
-  'video/':                                                                               'Video',
-  '.mp4':                                                                                 'Video',
-  '.mov':                                                                                 'Video',
-  'audio/':                                                                               'Music',
-  '.mp3':                                                                                 'Music',
-  'message/':                                                                             'Mail',
-  '.eml':                                                                                 'Mail',
-  'ntn':                                                                                  'BookOpen',
+  pdf:  'FileText',
+  docx: 'FileText',
+  xlsx: 'Sheet',
+  pptx: 'Presentation',
+  txt:  'FileText',
+  jpg:  'Image',
+  jpeg: 'Image',
+  png:  'Image',
+  mp4:  'Video',
+  mov:  'Video',
+  mp3:  'Music',
+  eml:  'Mail',
+  ntn:  'BookOpen',
 };
 export const FILE_ICON_DEFAULT = 'Paperclip';
 
@@ -105,25 +96,30 @@ export const FILE_ICON_STYLE = {
   size: 20,
   opacity: 1.0,
   strokeWidth: 2,
-  color: '#dfd',
+  color: '#dfd',  // light green (near-white) — file icons
 };
 
 // ── File label styling ────────────────────────────────────
 export const FILE_LABEL = {
-  color: '#dfd',
+  color: '#dfd',  // light green (near-white) — file labels
   fontSize: 20,
 };
 
 // ── Glow effects (feathered radial gradient sprites) ─────
-// All glows use 100% opacity — feathered edge handles fade.
+// featherStart: 0=fully feathered, 1=solid circle (controls inner solid vs haze)
+// spriteScale: world units per radius unit (total sprite size = radius × spriteScale)
 export const GLOW = {
   entity: {
-    baseRadius: 1,      // multiplier × entity tier size
+    baseRadius: 1,        // multiplier × entity tier size
+    spriteScale: 6,       // world units per radius unit
+    featherStart: 0.3,    // where feathering begins (0-1)
     opacity: 1.0,
   },
   file: {
-    radius: 4,          // fixed radius for all file glows
-    color: '#000000',
+    radius: 4,            // fixed radius for all file glows
+    spriteScale: 6,       // world units per radius unit
+    featherStart: 0.3,    // where feathering begins
+    color: '#000000',     // black — file glow
     opacity: 1.0,
   },
 };
@@ -138,8 +134,8 @@ export const NODE_SIZE = {
 export const LINK = {
   mentionWidth:  0.5,
   linkWidth:     2,
-  mentionColor:  '#999',
-  linkColor:     '#ff6ec7',
+  mentionColor:  '#999',       // dark grey — 'mention' edges
+  linkColor:     '#ff6ec7',    // hot pink — 'link' edges
   particleSpeed: 0.005,
 };
 

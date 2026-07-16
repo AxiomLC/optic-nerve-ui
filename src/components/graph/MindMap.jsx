@@ -57,6 +57,7 @@ function makeIconSprite(iconName, size, color, opacity, style) {
   });
   const sprite = new THREE.Sprite(material);
   sprite.scale.set(8, 8, 1);
+  sprite.renderOrder = 20;
 
   // Load actual lucide SVG paths and draw to canvas (async; updates texture when ready)
   const svgHTML = getIconSVG(iconName, color || style.color, style.strokeWidth);
@@ -99,11 +100,13 @@ function makeLabel(text, color, fontSize, offY) {
   const s = new THREE.Sprite(m);
   s.scale.set(32, 4, 1);
   s.position.y = offY;
+  s.renderOrder = 20;
   return s;
 }
 
-// ── Feathered glow (radial gradient sprite, occludes edges) ──
-function makeFeatheredGlow(color, radius, alphaTest) {
+// ── Feathered glow (radial gradient sprite) ──
+function makeFeatheredGlow(color, radius, config) {
+  const { spriteScale = 6, featherStart = 0.3, opacity = 1.0 } = config || {};
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 256;
@@ -112,7 +115,7 @@ function makeFeatheredGlow(color, radius, alphaTest) {
   const cx = 128, cy = 128;
   const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 128);
   gradient.addColorStop(0,   color);
-  gradient.addColorStop(0.3, color);
+  gradient.addColorStop(featherStart, color);
   gradient.addColorStop(1,   'rgba(0,0,0,0)');
 
   ctx.fillStyle = gradient;
@@ -124,20 +127,34 @@ function makeFeatheredGlow(color, radius, alphaTest) {
     transparent: true,
     depthWrite: true,
     depthTest: true,
-    alphaTest: alphaTest != null ? alphaTest : 0.05,
-    opacity: 1.0,
+    opacity,
   });
   const sprite = new THREE.Sprite(material);
-  sprite.scale.set(radius * 6, radius * 6, 1);
+  sprite.scale.set(radius * spriteScale, radius * spriteScale, 1);
   return sprite;
 }
 
 function getFileIcon(node) {
-  const ft = node.file_type || '';
-  const match = Object.entries(FILE_ICON).find(([key]) =>
-    ft === key || ft.startsWith(key) || ft.startsWith('.' + key)
-  );
-  return match ? match[1] : FILE_ICON_DEFAULT;
+  const ft = (node.file_type || '').toLowerCase();
+  if (!ft) return FILE_ICON_DEFAULT;
+
+  // Strip leading dot ('.ext' → 'ext')
+  let key = ft.startsWith('.') ? ft.slice(1) : ft;
+
+  // Try direct match by extension
+  if (FILE_ICON[key]) return FILE_ICON[key];
+
+  // Try MIME subtype ('type/subtype' → 'subtype')
+  const idx = ft.indexOf('/');
+  if (idx !== -1) {
+    key = ft.slice(idx + 1);
+    // Aliases for common mismatches
+    if (key === 'jpeg') key = 'jpg';
+    if (key === 'rfc822') key = 'eml';
+    if (FILE_ICON[key]) return FILE_ICON[key];
+  }
+
+  return FILE_ICON_DEFAULT;
 }
 
 function entityRadius(edgeCount) {
@@ -169,7 +186,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     if (node.type === 'entity') {
       const r = entityRadius(node.edge_count);
       const glowColor = ENTITY_COLOR[node.entity_type] || '#999';
-      group.add(makeFeatheredGlow(glowColor, r * GLOW.entity.baseRadius));
+      group.add(makeFeatheredGlow(glowColor, r * GLOW.entity.baseRadius, GLOW.entity));
 
       // "Entity" label (smaller font, above name)
       group.add(makeLabel(ENTITY_LABEL.text, ENTITY_LABEL.color, ENTITY_LABEL.fontSize, 4.5));
@@ -185,7 +202,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
 
     } else if (node.type === 'file') {
       // File glow (black, fixed size)
-      group.add(makeFeatheredGlow(GLOW.file.color, GLOW.file.radius));
+      group.add(makeFeatheredGlow(GLOW.file.color, GLOW.file.radius, GLOW.file));
 
       // Stacked: file_type → title → icon (tight spacing, #dfd colors)
       const typeLabel = makeLabel(node.file_type || '', FILE_LABEL.color, FILE_LABEL.fontSize, 4.5);
