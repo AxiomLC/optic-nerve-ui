@@ -327,6 +327,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       <ForceGraph3D
         ref={fgRef}
         graphData={graphData}
+        nodeId="graphId"
         nodeColor={n => nodeColor(n, selected.has(n.id))}
         linkWidth={linkWidth}
         linkColor={e => e.edge_type === 'link' ? LINK.linkColor : LINK.mentionColor}

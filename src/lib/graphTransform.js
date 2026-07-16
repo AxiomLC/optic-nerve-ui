@@ -12,25 +12,29 @@
  * using fx/fy/fz so the simulation cannot push them outward.
  */
 export function toGraphData({ files, entities, edges }) {
+  // Use separate graphId (prefixed by type) to prevent d3-force ID collision
+  // while preserving numeric id for downstream code (ViewerPanel, selection, etc.)
   const nodes = [
-    ...(files || []).map(f => ({ id: f.id, type: 'file', ...f })),
-    ...(entities || []).map(e => ({ id: e.id, type: 'entity', ...e })),
+    ...(files || []).map(f => ({ id: f.id, graphId: `f_${f.id}`, type: 'file', ...f })),
+    ...(entities || []).map(e => ({ id: e.id, graphId: `e_${e.id}`, type: 'entity', ...e })),
   ];
 
-  const links = (edges || []).map(e => ({
-    source: e.file_id,
-    target: e.target_entity_id,
-    edge_type: e.edge_type,
-    action: e.action,
-  }));
+  const links = (edges || []).flatMap(e => {
+    const result = [];
+    if (e.target_entity_id != null) {
+      result.push({ source: `f_${e.file_id}`, target: `e_${e.target_entity_id}`, edge_type: e.edge_type, action: e.action });
+    }
+    if (e.target_file_id != null) {
+      result.push({ source: `f_${e.file_id}`, target: `f_${e.target_file_id}`, edge_type: e.edge_type, action: e.action });
+    }
+    return result;
+  });
 
-  // Mark orphaned nodes: a node is orphan only if it has NO resolvable edges
-  // (an edge must connect to an entity OR file that actually exists in the data)
+  // Mark orphaned nodes (using graphId for collision-free comparison)
   const linkedIds = new Set();
-  const validNodeIds = new Set(nodes.map(n => n.id));
+  const validNodeIds = new Set(nodes.map(n => n.graphId));
   
   links.forEach(l => {
-    // Only count the edge if BOTH ends exist in our node list
     if (validNodeIds.has(l.source) && validNodeIds.has(l.target)) {
       linkedIds.add(l.source);
       linkedIds.add(l.target);
@@ -38,12 +42,9 @@ export function toGraphData({ files, entities, edges }) {
   });
 
   nodes.forEach(n => {
-    n.isOrphan = !linkedIds.has(n.id);
+    n.isOrphan = !linkedIds.has(n.graphId);
     
-    // Pre-freeze orphans near origin BEFORE simulation warms up
-    // d3-force tick resets x=fx and zeros velocity each frame — charge force can't move them
     if (n.isOrphan) {
-      // Small cloud spread so they don't stack at origin
       n.x = (Math.random() - 0.5) * 40;
       n.y = (Math.random() - 0.5) * 40;
       n.z = (Math.random() - 0.5) * 40;
