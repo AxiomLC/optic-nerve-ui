@@ -9,6 +9,7 @@
 //   #ccc = light gray      — entity labels, entity icons
 //   #dfd = light green     — file labels, file icons (near-white)
 //   #000 = black           — file glow sphere
+//    #fff = white
 //   #4f9 = mint green      — person glow
 //   #49f = sky blue        — org glow
 //   #f94 = orange          — place glow
@@ -51,16 +52,16 @@ export const ENTITY_COLOR = {
 
 // ── Entity icon styling ───────────────────────────────────
 export const ENTITY_ICON_STYLE = {
-  size: 28,
-  opacity: 0.8,
-  strokeWidth: 1.5,
-  color: '#ccc',  // light gray — entity icons
+  size: 40,
+  opacity: 1.0,
+  strokeWidth: 1.5, // what the hell?
+  color: '#000',  // black. light gray — entity icons
 };
 
 // ── Entity label "Entity" word (smaller, above name) ─────
 export const ENTITY_LABEL = {
   text: 'Entity',
-  color: '#ccc',  // light gray — entity 'Entity' label
+  color: '#fff',  // #ccc light gray — entity 'Entity' label
   fontSize: 14,
 };
 
@@ -93,9 +94,9 @@ export const FILE_ICON_DEFAULT = 'Paperclip';
 
 // ── File icon styling ────────────────────────────────────
 export const FILE_ICON_STYLE = {
-  size: 20,
+  size: 30,
   opacity: 1.0,
-  strokeWidth: 2,
+  strokeWidth: 2, // ??
   color: '#dfd',  // light green (near-white) — file icons
 };
 
@@ -105,21 +106,36 @@ export const FILE_LABEL = {
   fontSize: 20,
 };
 
+// ── Label spacing (offY values for stacking labels and icons) ──
+// Increase/decrease these to adjust gaps between stacked text lines on nodes.
+export const LABEL_SPACING = {
+  entity: {
+    label: 5.5,     // "Entity" word Y offset
+    name: -0.5,     // entity name Y offset
+    icon: -2.5,     // entity icon Y offset
+  },
+  file: {
+    type: 5.5,      // file_type label Y offset
+    title: -0.5,    // file title Y offset
+    icon: -1.0,     // file icon Y offset
+  },
+};
+
 // ── Glow effects (feathered radial gradient sprites) ─────
 // featherStart: 0=fully feathered, 1=solid circle (controls inner solid vs haze)
 // spriteScale: world units per radius unit (total sprite size = radius × spriteScale)
 export const GLOW = {
   entity: {
-    baseRadius: 1,        // multiplier × entity tier size
-    spriteScale: 6,       // world units per radius unit
-    featherStart: 0.3,    // where feathering begins (0-1)
+    baseRadius: 0.8,        // default 1, 'glow radius', multiplier × entity tier size
+    spriteScale: 3,       // defualt 6 world units per radius unit
+    featherStart: 0.4,    // 0.3 default ,where feathering begins (0-1)
     opacity: 1.0,
   },
   file: {
-    radius: 4,            // fixed radius for all file glows
-    spriteScale: 6,       // world units per radius unit
-    featherStart: 0.3,    // where feathering begins
-    color: '#000000',     // black — file glow
+    radius: 4,            // 'glow radius', fixed radius for all file glows
+    spriteScale: 3,       // 6, world units per radius unit
+    featherStart: 0.4,    // 0.3, where feathering begins
+    color: '#999',     // 999 gray. 000 black — file glow
     opacity: 1.0,
   },
 };
