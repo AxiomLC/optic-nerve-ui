@@ -6,9 +6,9 @@ import * as THREE from 'three';
 import * as LucideIcons from 'lucide-react';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
-  ENTITY_ICON, ENTITY_COLOR, ENTITY_ICON_STYLE, ENTITY_LABEL, ENTITY_SIZE_TIERS,
-  FILE_ICON, FILE_ICON_DEFAULT, FILE_ICON_STYLE, FILE_LABEL, LABEL_SPACING,
-  GLOW, NODE_SIZE, PHYSICS, LINK,
+  ENTITY_ICON, ENTITY_COLOR, ENTITY_SIZE_TIERS, ENTITY_LABEL, ENTITY_GLOW,
+  FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL, FILE_GLOW,
+  NODE_SIZE, PHYSICS, LINK,
 } from '../../config/theme';
 
 // ── Icon SVG cache (render lucide-react to SVG once per name/color) ──
@@ -217,38 +217,37 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
 
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
-    const iconColor = '#ccc';
 
     if (node.type === 'entity') {
       const r = entityRadius(node.edge_count);
       const glowColor = ENTITY_COLOR[node.entity_type] || '#999';
-      group.add(makeFeatheredGlow(glowColor, r * GLOW.entity.baseRadius, GLOW.entity));
+      group.add(makeFeatheredGlow(glowColor, r * ENTITY_GLOW.baseRadius, ENTITY_GLOW));
 
       // Combined "Entity" + entity name label
       group.add(makeGroupLabel([
-        { text: ENTITY_LABEL.text, color: ENTITY_LABEL.color, fontSize: ENTITY_LABEL.fontSize },
-        { text: node.canonical_name || '', color: ENTITY_LABEL.color, fontSize: 28 },
-      ], { offY: 0, lineSpacing: LABEL_SPACING.entity.lineSpacing }));
+        { text: ENTITY_LABEL.top.text, color: ENTITY_LABEL.top.color, fontSize: ENTITY_LABEL.top.fontSize },
+        { text: node.canonical_name || '', color: ENTITY_LABEL.bottom.color, fontSize: ENTITY_LABEL.bottom.fontSize },
+      ], { offY: 0, lineSpacing: ENTITY_LABEL.lineSpacing }));
 
       // Icon at bottom
       const iconName = ENTITY_ICON[node.entity_type] || 'Lightbulb';
-      const iconSprite = makeIconSprite(iconName, ENTITY_ICON_STYLE.size, iconColor, ENTITY_ICON_STYLE.opacity, ENTITY_ICON_STYLE);
-      iconSprite.position.y = LABEL_SPACING.entity.icon;
+      const iconSprite = makeIconSprite(iconName, ENTITY_LABEL.icon.size, ENTITY_LABEL.icon.color, ENTITY_LABEL.icon.opacity, ENTITY_LABEL.icon);
+      iconSprite.position.y = ENTITY_LABEL.iconOffset;
       group.add(iconSprite);
 
     } else if (node.type === 'file') {
-      // File glow (black, fixed size)
-      group.add(makeFeatheredGlow(GLOW.file.color, GLOW.file.radius, GLOW.file));
+      // File glow
+      group.add(makeFeatheredGlow(FILE_GLOW.color, FILE_GLOW.radius, FILE_GLOW));
 
       // Combined file_type + file title label
       group.add(makeGroupLabel([
-        { text: node.file_type || '', color: FILE_LABEL.color, fontSize: FILE_LABEL.fontSize },
-        { text: node.title || '', color: FILE_LABEL.color, fontSize: FILE_LABEL.fontSize },
-      ], { offY: 0, lineSpacing: LABEL_SPACING.file.lineSpacing }));
+        { text: node.file_type || '', color: FILE_LABEL.top.color, fontSize: FILE_LABEL.top.fontSize },
+        { text: node.title || '', color: FILE_LABEL.bottom.color, fontSize: FILE_LABEL.bottom.fontSize },
+      ], { offY: 0, lineSpacing: FILE_LABEL.lineSpacing }));
 
       const iconName = getFileIcon(node);
-      const iconSprite = makeIconSprite(iconName, FILE_ICON_STYLE.size, '#dfd', FILE_ICON_STYLE.opacity, FILE_ICON_STYLE);
-      iconSprite.position.y = LABEL_SPACING.file.icon;
+      const iconSprite = makeIconSprite(iconName, FILE_LABEL.icon.size, FILE_LABEL.icon.color, FILE_LABEL.icon.opacity, FILE_LABEL.icon);
+      iconSprite.position.y = FILE_LABEL.iconOffset;
       group.add(iconSprite);
     }
 

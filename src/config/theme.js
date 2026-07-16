@@ -6,10 +6,11 @@
 // ============================================================
 //
 // Common colors used throughout (some overlap is intentional):
-//   #ccc = light gray      — entity labels, entity icons
+//   #fff = white           — entity labels
+//   #ccc = light gray      — entity labels (old)
 //   #dfd = light green     — file labels, file icons (near-white)
-//   #000 = black           — file glow sphere
-//    #fff = white
+//   #000 = black           — entity icons
+//   #999 = gray            — file glow
 //   #4f9 = mint green      — person glow
 //   #49f = sky blue        — org glow
 //   #f94 = orange          — place glow
@@ -23,8 +24,12 @@
 //   #555  = dark grey      — error/strip backgrounds
 //   #ffcc00 = gold         — selected node
 //
-// ── Entity icon names (lucide-react) ──────────────────────
-// Maps entity_type → lucide-react PascalCase component name
+// ══════════════════════════════════════════════════════════════
+// ICONS — Entity and File lucide-react component names
+// ══════════════════════════════════════════════════════════════
+
+// ── Entity icon names ──────────────────────────────────────
+// Keys: entity_type. Values: lucide-react PascalCase component.
 export const ENTITY_ICON = {
   person:   'User',
   org:      'Building2',
@@ -37,44 +42,8 @@ export const ENTITY_ICON = {
   concept:  'Brain',
 };
 
-// ── Entity glow colors (per type) ─────────────────────────
-export const ENTITY_COLOR = {
-  person:   '#4f9',  // mint green — person glow
-  org:      '#49f',  // sky blue — org glow
-  place:    '#f94',  // orange — place glow
-  project:  '#94f',  // purple — project glow
-  product:  '#f49',  // pink — product glow
-  document: '#9f4',  // lime — document glow
-  event:    '#ff4',  // yellow — event glow
-  thing:    '#999',  // grey — thing glow
-  concept:  '#aaa',  // light grey — concept glow
-};
-
-// ── Entity icon styling ───────────────────────────────────
-export const ENTITY_ICON_STYLE = {
-  size: 40,
-  opacity: 1.0,
-  strokeWidth: 1.5, // what the hell?
-  color: '#000',  // black. light gray — entity icons
-};
-
-// ── Entity label "Entity" word (smaller, above name) ─────
-export const ENTITY_LABEL = {
-  text: 'Entity',
-  color: '#fff',  // #ccc light gray — entity 'Entity' label
-  fontSize: 14,
-};
-
-// ── Entity size by edge_count tiers ───────────────────────
-export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 5  },
-  { max: 15, size: 6  },
-  { max: 30, size: 7  },
-  { max: Infinity, size: 9 },
-];
-
-// ── File type icons (lucide-react) ────────────────────────
-// Keys are file extensions (without dot). Dev can add or change.
+// ── File icon names ────────────────────────────────────────
+// Keys: file extension (no dot). Values: lucide-react PascalCase.
 export const FILE_ICON = {
   pdf:  'FileText',
   docx: 'FileText',
@@ -92,52 +61,73 @@ export const FILE_ICON = {
 };
 export const FILE_ICON_DEFAULT = 'Paperclip';
 
-// ── File icon styling ────────────────────────────────────
-export const FILE_ICON_STYLE = {
-  size: 30,
+// ══════════════════════════════════════════════════════════════
+// ENTITY — Per-type glow colors, size tiers, labels, glow
+// ══════════════════════════════════════════════════════════════
+
+// ── Entity glow colors (per entity_type) ───────────────────
+export const ENTITY_COLOR = {
+  person:   '#4f9',  // mint green — person glow
+  org:      '#49f',  // sky blue — org glow
+  place:    '#f94',  // orange — place glow
+  project:  '#94f',  // purple — project glow
+  product:  '#f49',  // pink — product glow
+  document: '#9f4',  // lime — document glow
+  event:    '#ff4',  // yellow — event glow
+  thing:    '#999',  // grey — thing glow
+  concept:  '#aaa',  // light grey — concept glow
+};
+
+// ── Entity size by edge_count tiers ───────────────────────
+export const ENTITY_SIZE_TIERS = [
+  { max: 5,  size: 5  },
+  { max: 15, size: 6  },
+  { max: 30, size: 7  },
+  { max: Infinity, size: 9 },
+];
+
+// ── Entity label + icon styling ───────────────────────────
+export const ENTITY_LABEL = {
+  top:    { text: 'Entity', color: '#fff', fontSize: 14 },   // "Entity" label (small, above name)
+  bottom: { color: '#fff', fontSize: 28 },                     // entity name (bigger)
+  icon:   { color: '#000', size: 40, opacity: 1.0, strokeWidth: 1.5 }, // entity icon  // what the hell?
+  lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
+  iconOffset: -3.5,   // how far below text the icon sits (negative = down)
+};
+
+// ── Entity glow (feathered radial gradient sprite) ────────
+export const ENTITY_GLOW = {
+  baseRadius: 0.8,    // multiplier × entity tier size
+  spriteScale: 3,     // world units per radius unit
+  featherStart: 0.4,  // where feathering begins (0=fully feathered, 1=solid circle)
   opacity: 1.0,
-  strokeWidth: 2, // ??
-  color: '#dfd',  // light green (near-white) — file icons
 };
 
-// ── File label styling ────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// FILE — Labels, icon, glow
+// ══════════════════════════════════════════════════════════════
+
+// ── File label + icon styling ─────────────────────────────
 export const FILE_LABEL = {
-  color: '#dfd',  // light green (near-white) — file labels
-  fontSize: 20,
+  top:    { color: '#dfd', fontSize: 20 },  // file_type line
+  bottom: { color: '#dfd', fontSize: 20 },  // file title line
+  icon:   { color: '#dfd', size: 30, opacity: 1.0, strokeWidth: 2 }, // file icon  // ??
+  lineSpacing: 1.6,   // gap between type and title lines
+  iconOffset: -3.0,   // how far below text the icon sits
 };
 
-// ── Label spacing (line height within combined label + icon position) ──
-// lineSpacing: multiplier of fontSize between stacked text lines
-// icon: how far below the combined label the icon sits (negative = down)
-export const LABEL_SPACING = {
-  entity: {
-    lineSpacing: 1.6,  // gap between "Entity" and entity name
-    icon: -3.5,         // icon below label group
-  },
-  file: {
-    lineSpacing: 1.6,  // gap between file_type and file title
-    icon: -3.0,         // icon below label group
-  },
+// ── File glow (feathered radial gradient sprite) ──────────
+export const FILE_GLOW = {
+  radius: 4,          // fixed radius for all file glows
+  spriteScale: 3,     // world units per radius unit
+  featherStart: 0.4,  // where feathering begins
+  color: '#999',      // gray — file glow
+  opacity: 1.0,
 };
 
-// ── Glow effects (feathered radial gradient sprites) ─────
-// featherStart: 0=fully feathered, 1=solid circle (controls inner solid vs haze)
-// spriteScale: world units per radius unit (total sprite size = radius × spriteScale)
-export const GLOW = {
-  entity: {
-    baseRadius: 0.8,        // default 1, 'glow radius', multiplier × entity tier size
-    spriteScale: 3,       // defualt 6 world units per radius unit
-    featherStart: 0.4,    // 0.3 default ,where feathering begins (0-1)
-    opacity: 1.0,
-  },
-  file: {
-    radius: 4,            // 'glow radius', fixed radius for all file glows
-    spriteScale: 3,       // 6, world units per radius unit
-    featherStart: 0.4,    // 0.3, where feathering begins
-    color: '#002366',     // #002366 drak blue, 999 gray. 000 black — file glow
-    opacity: 1.0,
-  },
-};
+// ══════════════════════════════════════════════════════════════
+// NODE / LINK / PHYSICS
+// ══════════════════════════════════════════════════════════════
 
 // ── Node display sizes ────────────────────────────────────
 export const NODE_SIZE = {
