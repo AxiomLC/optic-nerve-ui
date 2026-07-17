@@ -23,6 +23,7 @@
 //   #ff6ec7 = hot pink     — 'link' type edges
 //   #555  = dark grey      — error/strip backgrounds
 //   #ffcc00 = gold         — selected node
+//   #060 = dark green
 //
 // ══════════════════════════════════════════════════════════════
 // ICONS — Entity and File lucide-react component names
@@ -88,9 +89,9 @@ export const ENTITY_SIZE_TIERS = [
 
 // ── Entity label + icon styling ───────────────────────────
 export const ENTITY_LABEL = {
-  top:    { text: 'Entity', color: '#fff', fontSize: 14 },   // "Entity" label (small, above name)
-  bottom: { color: '#fff', fontSize: 28 },                     // entity name (bigger)
-  icon:   { color: '#000', size: 120, opacity: 1.0, strokeWidth: 2.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
+  top:    { text: 'Entity', color: '#fff', fontSize: 18, fontWeight: 600 },   // "Entity" label (small, above name); fontWeight 300=light, 400=normal, 700=bold, 900=black
+  bottom: { color: '#fff', fontSize: 28, fontWeight: 400 },  // entity name (bigger)
+  icon:   { color: '#000', size: 70, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
 };
 
@@ -108,9 +109,9 @@ export const ENTITY_GLOW = {
 
 // ── File label + icon styling ─────────────────────────────
 export const FILE_LABEL = {
-  top:    { color: '#9f4', fontSize: 18 },  // 9f4 lime, dfd light green, file_type line
-  bottom: { color: '#dfd', fontSize: 20 },  // dfd liht green, file title line
-  icon:   { color: '#9f4', size: 90, opacity: 1.0, strokeWidth: 2 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
+  top:    { color: '#060', fontSize: 16, fontWeight: 400 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
+  bottom: { color: '#fff', fontSize: 20, fontWeight: 400 },  // file title line
+  icon:   { color: '#060', size: 60, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
   lineSpacing: 1.6,   // gap between type and title lines
 };
 

@@ -121,7 +121,7 @@ function makeGroupLabel(lines, config = {}) {
   // Measure all (wrapped) lines to size canvas
   let totalH = 0, maxW = 0;
   lines.forEach(l => {
-    tctx.font = `bold ${l.fontSize}px sans-serif`;
+    tctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
     const m = tctx.measureText(l.text);
     const h = l.fontSize * lineSpacing;
     totalH += h;
@@ -147,7 +147,7 @@ function makeGroupLabel(lines, config = {}) {
 
   let y = pad + (lines[0].fontSize * lineSpacing) / 2;
   lines.forEach(l => {
-    ctx.font = `bold ${l.fontSize}px sans-serif`;
+    ctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
     ctx.fillStyle = l.color;
     ctx.fillText(l.text, cw / 2, y);
     y += l.fontSize * lineSpacing;
