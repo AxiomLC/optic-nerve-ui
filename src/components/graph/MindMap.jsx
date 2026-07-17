@@ -133,13 +133,15 @@ function makeGroupLabel(lines, config = {}) {
   const iconGap = icon ? 4 : 0;
 
   const pad = 6;
+  const dpr = window.devicePixelRatio || 1;
   const cw = Math.ceil(Math.max(maxW, iconSizePx) + pad * 2);
   const ch = Math.ceil(totalH + pad * 2 + iconSizePx + iconGap);
 
   const c = document.createElement('canvas');
-  c.width = cw;
-  c.height = ch;
+  c.width = cw * dpr;
+  c.height = ch * dpr;
   const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
