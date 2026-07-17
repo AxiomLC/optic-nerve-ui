@@ -163,6 +163,7 @@ function makeFeatheredGlow(color, radius, config) {
     transparent: true,
     depthWrite: true,
     depthTest: true,
+    alphaTest: 0.01,
     opacity,
   });
   const sprite = new THREE.Sprite(material);
