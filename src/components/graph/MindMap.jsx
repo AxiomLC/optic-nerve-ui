@@ -8,7 +8,7 @@ import { nodeColor, linkWidth } from './nodeStyles';
 import {
   ENTITY_ICON, ENTITY_COLOR, ENTITY_SIZE_TIERS, ENTITY_LABEL, ENTITY_GLOW,
   FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL, FILE_GLOW,
-  NODE_SIZE, PHYSICS, LINK,
+  PHYSICS, LINK,
 } from '../../config/theme';
 
 // ── Icon SVG cache (render lucide-react to SVG once per name/color) ──
@@ -120,17 +120,18 @@ function makeGroupLabel(lines, config = {}) {
 
   // Measure all (wrapped) lines to size canvas
   let totalH = 0, maxW = 0;
-  lines.forEach(l => {
+  lines.forEach((l, i) => {
     tctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
     const m = tctx.measureText(l.text);
-    const h = l.fontSize * lineSpacing;
+    // Last line uses just text height (no trailing lineSpacing gap)
+    const h = i < lines.length - 1 ? l.fontSize * lineSpacing : l.fontSize;
     totalH += h;
     maxW = Math.max(maxW, m.width);
   });
 
   // Reserve space for icon below text
   const iconSizePx = icon ? (icon.size || 30) : 0;
-  const iconGap = icon ? 4 : 0;
+  const iconGap = icon ? 2 : 0;
 
   const pad = 6;
   const dpr = window.devicePixelRatio || 1;
@@ -146,11 +147,17 @@ function makeGroupLabel(lines, config = {}) {
   ctx.textBaseline = 'middle';
 
   let y = pad + (lines[0].fontSize * lineSpacing) / 2;
-  lines.forEach(l => {
+  lines.forEach((l, i) => {
     ctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
     ctx.fillStyle = l.color;
     ctx.fillText(l.text, cw / 2, y);
-    y += l.fontSize * lineSpacing;
+    // On the last line, advance by just the text height (no trailing lineSpacing)
+    // so the icon sits directly below the text, not a full lineSpace below
+    if (i < lines.length - 1) {
+      y += l.fontSize * lineSpacing;
+    } else {
+      y += l.fontSize;
+    }
   });
 
   const t = new THREE.CanvasTexture(c);

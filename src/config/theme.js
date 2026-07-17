@@ -21,7 +21,7 @@
 //   #999 = grey            — thing glow
 //   #aaa = light grey      — concept glow
 //   #ff6ec7 = hot pink     — 'link' type edges
-//   #555  = dark grey      — error/strip backgrounds
+//   #555 #444 #333  = dark greys      — error/strip backgrounds
 //   #ffcc00 = gold         — selected node
 //   #060 = dark green
 //
@@ -120,19 +120,13 @@ export const FILE_GLOW = {
   radius: 5,          // fixed radius for all file glows
   spriteScale: 3,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
   featherStart: 0.4,  // where feathering begins
-  color: '#555',      // 555 drak gray, 999 gray — file glow
+  color: '#333',      // 555 drak gray, 999 gray — file glow
   opacity: 1.0,
 };
 
 // ══════════════════════════════════════════════════════════════
-// NODE / LINK / PHYSICS
+// LINK / PHYSICS
 // ══════════════════════════════════════════════════════════════
-
-// ── Node display sizes ────────────────────────────────────
-export const NODE_SIZE = {
-  fileIcon:   7,
-  entityIcon: 10,
-};
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
