@@ -1,9 +1,10 @@
 import ForceGraph3D from 'react-force-graph-3d';
-import { useState, useCallback, useRef, createElement } from 'react';
+import { useState, useCallback, useRef, useEffect, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import * as THREE from 'three';
 import * as LucideIcons from 'lucide-react';
+import { forceCenter } from 'd3-force-3d';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
   ENTITY_ICON, ENTITY_COLOR, ENTITY_SIZE_TIERS, ENTITY_LABEL, ENTITY_GLOW,
@@ -276,6 +277,16 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [onSelectEntity, onSelectFile]);
 
+  // Center force + camera on initial graph load
+  useEffect(() => {
+    if (fgRef.current && graphData?.nodes?.length) {
+      // Explicitly seat forceCenter at (0,0,0) so frozen orphans don't pull centroid
+      fgRef.current.d3Force('center', forceCenter(0, 0, 0));
+      // Set camera to look at origin
+      fgRef.current.cameraPosition({ x: 0, y: 0, z: 200 }, { x: 0, y: 0, z: 0 }, 0);
+    }
+  }, [graphData]);
+
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
 
@@ -328,15 +339,16 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__orphans = orphans;
     window.__graphData = graphData;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
-    // Center camera on cluster after simulation settles
+    // Re-center camera as fallback (forceCenter in useEffect handles the simulation)
     if (fgRef.current) {
+      console.log('[Camera] Centering on (0,0,0)');
       fgRef.current.cameraPosition(
-        { x: 0, y: 0, z: 200 },  // camera position
-        { x: 0, y: 0, z: 0 },     // look at cluster center
-        1200                        // transition duration (ms)
+        { x: 0, y: 0, z: 200 },
+        { x: 0, y: 0, z: 0 },
+        800
       );
     }
-  }, [graphData, graphData?.nodes]);
+  }, [graphData]);
 
   return (
     <div className="mindmap-container">

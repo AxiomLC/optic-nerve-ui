@@ -25,6 +25,7 @@
 //   #ffcc00 = gold         — selected node
 //   #060 = dark green   #004400 dark darker green
 //  #001133 = dark navy, #0a0a2e = dark midnight blue
+//  #440000 = drak red
 //
 // ══════════════════════════════════════════════════════════════
 // MAP FONT — applied to all label text on the graph
@@ -46,12 +47,12 @@ export const MAP_FONT = {
 export const ENTITY_ICON = {
   person:   'User',
   org:      'Building2',
-  place:    'MapPin',
+  place:    'Globe', //MapPin, Globe, Map
   project:  'Rocket',
   product:  'Package',
   document: 'FileText',
   event:    'Calendar',
-  thing:    'Lightbulb',
+  thing:    'Component', // Component, Lightbulb
   concept:  'Brain',
 };
 
@@ -87,7 +88,7 @@ export const ENTITY_COLOR = {
   product:  '#f49',  // pink — product glow
   document: '#9f4',  // lime — document glow
   event:    '#ff4',  // yellow — event glow
-  thing:    '#999',  // grey — thing glow
+  thing:    '#440000',  // #440000 dark red, — thing glow
   concept:  '#aaa',  // light grey — concept glow
 };
 
@@ -103,7 +104,7 @@ export const ENTITY_SIZE_TIERS = [
 export const ENTITY_LABEL = {
   top:    { text: 'Entity', color: '#fff', fontSize: 18, fontWeight: 400 },   // "Entity" label (small, above name); fontWeight 300=light, 400=normal, 700=bold, 900=black
   bottom: { color: '#fff', fontSize: 28, fontWeight: 200 },  // entity name (bigger)
-  icon:   { color: '#000', size: 75, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
+  icon:   { color: '#000', size: 75, opacity: 1.0, strokeWidth: 2.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
   iconGap: 1,          // pixels between text bottom and icon top (negative = closer/overlap)
 };
@@ -144,7 +145,7 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.2,
+  mentionWidth:  0.35,
   linkWidth:     2,
   mentionColor:  '#49f',       // 49f sky blue, fff white, #001133 dark blue, 999 dark grey — 'mention' edges
   linkColor:     '#ff6ec7',    // hot pink — 'link' edges
@@ -157,7 +158,7 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanRingRadius: 230,  // distance from center to place orphan nodes (on a sphere at this radius)
+  orphanRingRadius: 200,  // distance from center to place orphan nodes (on a sphere at this radius)
 };
 
 // ── Logo ──────────────────────────────────────────────────
