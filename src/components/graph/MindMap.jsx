@@ -328,6 +328,36 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__orphans = orphans;
     window.__graphData = graphData;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
+
+    if (orphans.length === 0) return;
+
+    // Measure cluster radius (max distance of non-orphan nodes from center)
+    const nonOrphans = graphData.nodes.filter(n => !n.isOrphan);
+    let clusterR = 0;
+    nonOrphans.forEach(n => {
+      const d = Math.sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+      if (d > clusterR) clusterR = d;
+    });
+    clusterR = Math.max(clusterR, 10);
+
+    // Place orphans in vertical column(s) to the right of the cluster
+    const colPadding = PHYSICS.orphanColumnPadding || 20;
+    const spacing = PHYSICS.orphanSpacing || 15;
+    const colX = clusterR + colPadding;
+    const colHeight = clusterR * 2;
+    const itemsPerCol = Math.max(1, Math.floor(colHeight / spacing));
+
+    orphans.forEach((n, i) => {
+      const col = Math.floor(i / itemsPerCol);
+      const row = i % itemsPerCol;
+      const y = -clusterR + row * spacing + spacing / 2;
+      n.x = colX + col * (colPadding + 10);
+      n.y = y;
+      n.z = 0;
+      n.fx = n.x;
+      n.fy = n.y;
+      n.fz = n.z;
+    });
   }, [graphData]);
 
   return (

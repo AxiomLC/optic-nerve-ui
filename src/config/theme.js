@@ -86,7 +86,7 @@ export const ENTITY_COLOR = {
   place:    '#f94',  // orange — place glow
   project:  '#94f',  // purple — project glow
   product:  '#f49',  // pink — product glow
-  document: '#9f4',  // lime — document glow
+  document: '#060',  // 060 dark green, 9f4lime — document glow
   event:    '#ff4',  // yellow — event glow
   thing:    '#330000',  // #330000 darker red#440000 dark red, — thing glow
   concept:  '#aaa',  // light grey — concept glow
@@ -145,7 +145,7 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.5,
+  mentionWidth:  0.7,
   linkWidth:     3,
   mentionColor:  '#49f',       // 49f sky blue, fff white, #001133 dark blue, 999 dark grey — 'mention' edges
   linkColor:     '#ff6ec7',    // hot pink — 'link' edges
@@ -158,7 +158,8 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanRingRadius: 200,  // distance from center to place orphan nodes (on a sphere at this radius)
+  orphanColumnPadding: 20,  // gap between cluster edge and first orphan column
+  orphanSpacing: 15,         // vertical spacing between orphans in the column
 };
 
 // ── Logo ──────────────────────────────────────────────────
