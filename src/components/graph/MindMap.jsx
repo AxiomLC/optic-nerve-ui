@@ -89,12 +89,36 @@ function makeIconSprite(iconName, size, color, opacity, style) {
 }
 
 function makeGroupLabel(lines, config = {}) {
-  const { offY = 0, lineSpacing = 1.4 } = config;
+  const { offY = 0, lineSpacing = 1.4, icon = null, maxWidth = 0 } = config;
   if (!lines || lines.length === 0) return new THREE.Group();
 
-  // Measure all lines to size canvas
+  // Measure + word-wrap: split long lines at maxWidth
   const temp = document.createElement('canvas');
   const tctx = temp.getContext('2d');
+  const wrappedLines = [];
+  lines.forEach(l => {
+    tctx.font = `bold ${l.fontSize}px sans-serif`;
+    const text = l.text || '';
+    if (maxWidth > 0 && tctx.measureText(text).width > maxWidth) {
+      const words = text.split(' ');
+      let line = '';
+      words.forEach(word => {
+        const testLine = line ? line + ' ' + word : word;
+        if (tctx.measureText(testLine).width > maxWidth && line) {
+          wrappedLines.push({ ...l, text: line });
+          line = word;
+        } else {
+          line = testLine;
+        }
+      });
+      if (line) wrappedLines.push({ ...l, text: line });
+    } else {
+      wrappedLines.push(l);
+    }
+  });
+  lines = wrappedLines;
+
+  // Measure all (wrapped) lines to size canvas
   let totalH = 0, maxW = 0;
   lines.forEach(l => {
     tctx.font = `bold ${l.fontSize}px sans-serif`;
@@ -104,9 +128,13 @@ function makeGroupLabel(lines, config = {}) {
     maxW = Math.max(maxW, m.width);
   });
 
+  // Reserve space for icon below text
+  const iconSizePx = icon ? (icon.size || 30) : 0;
+  const iconGap = icon ? 4 : 0;
+
   const pad = 6;
-  const cw = Math.ceil(maxW + pad * 2);
-  const ch = Math.ceil(totalH + pad * 2);
+  const cw = Math.ceil(Math.max(maxW, iconSizePx) + pad * 2);
+  const ch = Math.ceil(totalH + pad * 2 + iconSizePx + iconGap);
 
   const c = document.createElement('canvas');
   c.width = cw;
@@ -124,9 +152,28 @@ function makeGroupLabel(lines, config = {}) {
   });
 
   const t = new THREE.CanvasTexture(c);
+
+  // Draw icon SVG below text (async load, updates texture when ready)
+  if (icon && icon.svgHTML) {
+    const img = new Image();
+    const blob = new Blob([icon.svgHTML], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const iconY = y + iconGap;
+    img.onload = () => {
+      ctx.globalAlpha = icon.opacity != null ? icon.opacity : 1;
+      ctx.drawImage(img, (cw - iconSizePx) / 2, iconY, iconSizePx, iconSizePx);
+      ctx.globalAlpha = 1;
+      t.needsUpdate = true;
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => URL.revokeObjectURL(url);
+    img.src = url;
+  }
+
   const m = new THREE.SpriteMaterial({
     map: t, transparent: true, depthWrite: false, depthTest: true,
     alphaTest: 0.01, opacity: 1.0,
+    premultipliedAlpha: true,  // canvas data IS premultiplied — prevents dark fringes on anti-aliased text
   });
   const s = new THREE.Sprite(m);
   const aspect = cw / ch;
@@ -224,32 +271,35 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const glowColor = ENTITY_COLOR[node.entity_type] || '#999';
       group.add(makeFeatheredGlow(glowColor, r * ENTITY_GLOW.baseRadius, ENTITY_GLOW));
 
-      // Combined "Entity" + entity name label
+      // Composite label: "Entity" + entity name + icon (one sprite, no parallax drift)
+      const entIconName = ENTITY_ICON[node.entity_type] || 'Lightbulb';
+      const entIconSVG = getIconSVG(entIconName, ENTITY_LABEL.icon.color, ENTITY_LABEL.icon.strokeWidth);
       group.add(makeGroupLabel([
         { text: ENTITY_LABEL.top.text, color: ENTITY_LABEL.top.color, fontSize: ENTITY_LABEL.top.fontSize },
         { text: node.canonical_name || '', color: ENTITY_LABEL.bottom.color, fontSize: ENTITY_LABEL.bottom.fontSize },
-      ], { offY: 0, lineSpacing: ENTITY_LABEL.lineSpacing }));
-
-      // Icon at bottom
-      const iconName = ENTITY_ICON[node.entity_type] || 'Lightbulb';
-      const iconSprite = makeIconSprite(iconName, ENTITY_LABEL.icon.size, ENTITY_LABEL.icon.color, ENTITY_LABEL.icon.opacity, ENTITY_LABEL.icon);
-      iconSprite.position.y = ENTITY_LABEL.iconOffset;
-      group.add(iconSprite);
+      ], {
+        offY: 0,
+        lineSpacing: ENTITY_LABEL.lineSpacing,
+        maxWidth: 250,
+        icon: entIconSVG ? { svgHTML: entIconSVG, size: ENTITY_LABEL.icon.size, opacity: ENTITY_LABEL.icon.opacity } : null,
+      }));
 
     } else if (node.type === 'file') {
       // File glow
       group.add(makeFeatheredGlow(FILE_GLOW.color, FILE_GLOW.radius, FILE_GLOW));
 
-      // Combined file_type + file title label
+      // Composite label: file_type + title + icon (one sprite, no parallax drift)
+      const fileIconName = getFileIcon(node);
+      const fileIconSVG = getIconSVG(fileIconName, FILE_LABEL.icon.color, FILE_LABEL.icon.strokeWidth);
       group.add(makeGroupLabel([
         { text: node.file_type || '', color: FILE_LABEL.top.color, fontSize: FILE_LABEL.top.fontSize },
         { text: node.title || '', color: FILE_LABEL.bottom.color, fontSize: FILE_LABEL.bottom.fontSize },
-      ], { offY: 0, lineSpacing: FILE_LABEL.lineSpacing }));
-
-      const iconName = getFileIcon(node);
-      const iconSprite = makeIconSprite(iconName, FILE_LABEL.icon.size, FILE_LABEL.icon.color, FILE_LABEL.icon.opacity, FILE_LABEL.icon);
-      iconSprite.position.y = FILE_LABEL.iconOffset;
-      group.add(iconSprite);
+      ], {
+        offY: 0,
+        lineSpacing: FILE_LABEL.lineSpacing,
+        maxWidth: 250,
+        icon: fileIconSVG ? { svgHTML: fileIconSVG, size: FILE_LABEL.icon.size, opacity: FILE_LABEL.icon.opacity } : null,
+      }));
     }
 
     return group;
