@@ -350,8 +350,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     orphans.forEach((n, i) => {
       const col = Math.floor(i / itemsPerCol);
       const row = i % itemsPerCol;
-      const y = -clusterR + row * spacing + spacing / 2;
-      n.x = colX + col * (colPadding + 10);
+      const y = clusterR - row * spacing - spacing / 2;
+      n.x = -(colX + col * (colPadding + 10));
       n.y = y;
       n.z = 0;
       n.fx = n.x;
@@ -374,6 +374,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         linkDirectionalParticles={1}
         linkDirectionalParticleSpeed={LINK.particleSpeed}
         warmupTicks={PHYSICS.warmupTicks}
+        cooldownTime={5000}
         d3AlphaDecay={PHYSICS.alphaDecay}
         d3VelocityDecay={PHYSICS.velocityDecay}
         d3LinkDistance={PHYSICS.linkDistance}

@@ -158,7 +158,7 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanColumnPadding: 20,  // gap between cluster edge and first orphan column
+  orphanColumnPadding: 5,  // gap between cluster edge and first orphan column
   orphanSpacing: 15,         // vertical spacing between orphans in the column
 };
 
