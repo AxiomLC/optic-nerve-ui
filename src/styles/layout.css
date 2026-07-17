@@ -300,9 +300,10 @@ footer.app-footer {
 .viewer-footer-row {
   display: flex;
   gap: 8px;
+  justify-content: flex-end;
 }
 .viewer-footer-row .btn-get-file {
-  flex: 1;
+  min-width: 100px;
 }
 .btn-get-file {
   font-size: var(--font-size-sm);
