@@ -131,7 +131,7 @@ function makeGroupLabel(lines, config = {}) {
 
   // Reserve space for icon below text
   const iconSizePx = icon ? (icon.size || 30) : 0;
-  const iconGap = icon ? 2 : 0;
+  const iconGap = icon ? 1 : 0;
 
   const pad = 6;
   const dpr = window.devicePixelRatio || 1;

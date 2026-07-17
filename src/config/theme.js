@@ -23,7 +23,7 @@
 //   #ff6ec7 = hot pink     — 'link' type edges
 //   #555 #444 #333  = dark greys      — error/strip backgrounds
 //   #ffcc00 = gold         — selected node
-//   #060 = dark green
+//   #060 = dark green   #004400 dark darker green
 //
 // ══════════════════════════════════════════════════════════════
 // ICONS — Entity and File lucide-react component names
@@ -90,8 +90,8 @@ export const ENTITY_SIZE_TIERS = [
 // ── Entity label + icon styling ───────────────────────────
 export const ENTITY_LABEL = {
   top:    { text: 'Entity', color: '#fff', fontSize: 18, fontWeight: 600 },   // "Entity" label (small, above name); fontWeight 300=light, 400=normal, 700=bold, 900=black
-  bottom: { color: '#fff', fontSize: 28, fontWeight: 400 },  // entity name (bigger)
-  icon:   { color: '#000', size: 70, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
+  bottom: { color: '#fff', fontSize: 28, fontWeight: 300 },  // entity name (bigger)
+  icon:   { color: '#000', size: 75, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
 };
 
@@ -109,9 +109,9 @@ export const ENTITY_GLOW = {
 
 // ── File label + icon styling ─────────────────────────────
 export const FILE_LABEL = {
-  top:    { color: '#060', fontSize: 16, fontWeight: 400 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
-  bottom: { color: '#fff', fontSize: 20, fontWeight: 400 },  // file title line
-  icon:   { color: '#060', size: 60, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
+  top:    { color: '#004400', fontSize: 16, fontWeight: 200 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
+  bottom: { color: '#fff', fontSize: 20, fontWeight: 200 },  // file title line
+  icon:   { color: '#004400', size: 45, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
   lineSpacing: 1.6,   // gap between type and title lines
 };
 
@@ -120,7 +120,7 @@ export const FILE_GLOW = {
   radius: 5,          // fixed radius for all file glows
   spriteScale: 3,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
   featherStart: 0.4,  // where feathering begins
-  color: '#333',      // 555 drak gray, 999 gray — file glow
+  color: '#222',      // 555 drak gray, 999 gray — file glow
   opacity: 1.0,
 };
 
