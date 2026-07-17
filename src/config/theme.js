@@ -24,6 +24,7 @@
 //   #555 #444 #333  = dark greys      — error/strip backgrounds
 //   #ffcc00 = gold         — selected node
 //   #060 = dark green   #004400 dark darker green
+//  #001133 = dark navy, #0a0a2e = dark midnight blue
 //
 // ══════════════════════════════════════════════════════════════
 // ICONS — Entity and File lucide-react component names
@@ -89,8 +90,8 @@ export const ENTITY_SIZE_TIERS = [
 
 // ── Entity label + icon styling ───────────────────────────
 export const ENTITY_LABEL = {
-  top:    { text: 'Entity', color: '#fff', fontSize: 18, fontWeight: 600 },   // "Entity" label (small, above name); fontWeight 300=light, 400=normal, 700=bold, 900=black
-  bottom: { color: '#fff', fontSize: 28, fontWeight: 300 },  // entity name (bigger)
+  top:    { text: 'Entity', color: '#fff', fontSize: 18, fontWeight: 400 },   // "Entity" label (small, above name); fontWeight 300=light, 400=normal, 700=bold, 900=black
+  bottom: { color: '#fff', fontSize: 28, fontWeight: 200 },  // entity name (bigger)
   icon:   { color: '#000', size: 75, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
 };
@@ -109,8 +110,8 @@ export const ENTITY_GLOW = {
 
 // ── File label + icon styling ─────────────────────────────
 export const FILE_LABEL = {
-  top:    { color: '#004400', fontSize: 16, fontWeight: 200 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
-  bottom: { color: '#fff', fontSize: 20, fontWeight: 200 },  // file title line
+  top:    { color: '#004400', fontSize: 16, fontWeight: 100 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
+  bottom: { color: '#fff', fontSize: 20, fontWeight: 100 },  // file title line
   icon:   { color: '#004400', size: 45, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
   lineSpacing: 1.6,   // gap between type and title lines
 };
@@ -132,7 +133,7 @@ export const FILE_GLOW = {
 export const LINK = {
   mentionWidth:  0.5,
   linkWidth:     2,
-  mentionColor:  '#999',       // dark grey — 'mention' edges
+  mentionColor:  '#001133',       // #001133 dark blue, 999 dark grey — 'mention' edges
   linkColor:     '#ff6ec7',    // hot pink — 'link' edges
   particleSpeed: 0.005,
 };
@@ -143,7 +144,7 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanRadius:  0.3,
+  orphanRingRadius: 150,  // distance from center to place orphan nodes (on a sphere at this radius)
 };
 
 // ── Logo ──────────────────────────────────────────────────

@@ -286,8 +286,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const entIconName = ENTITY_ICON[node.entity_type] || 'Lightbulb';
       const entIconSVG = getIconSVG(entIconName, ENTITY_LABEL.icon.color, ENTITY_LABEL.icon.strokeWidth);
       group.add(makeGroupLabel([
-        { text: ENTITY_LABEL.top.text, color: ENTITY_LABEL.top.color, fontSize: ENTITY_LABEL.top.fontSize },
-        { text: node.canonical_name || '', color: ENTITY_LABEL.bottom.color, fontSize: ENTITY_LABEL.bottom.fontSize },
+        { ...ENTITY_LABEL.top },
+        { text: node.canonical_name || '', color: ENTITY_LABEL.bottom.color, fontSize: ENTITY_LABEL.bottom.fontSize, fontWeight: ENTITY_LABEL.bottom.fontWeight },
       ], {
         offY: 0,
         lineSpacing: ENTITY_LABEL.lineSpacing,
@@ -303,8 +303,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       const fileIconName = getFileIcon(node);
       const fileIconSVG = getIconSVG(fileIconName, FILE_LABEL.icon.color, FILE_LABEL.icon.strokeWidth);
       group.add(makeGroupLabel([
-        { text: node.file_type || '', color: FILE_LABEL.top.color, fontSize: FILE_LABEL.top.fontSize },
-        { text: node.title || '', color: FILE_LABEL.bottom.color, fontSize: FILE_LABEL.bottom.fontSize },
+        { text: node.file_type || '', color: FILE_LABEL.top.color, fontSize: FILE_LABEL.top.fontSize, fontWeight: FILE_LABEL.top.fontWeight },
+        { text: node.title || '', color: FILE_LABEL.bottom.color, fontSize: FILE_LABEL.bottom.fontSize, fontWeight: FILE_LABEL.bottom.fontWeight },
       ], {
         offY: 0,
         lineSpacing: FILE_LABEL.lineSpacing,
