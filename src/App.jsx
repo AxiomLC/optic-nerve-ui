@@ -102,7 +102,7 @@ export default function App() {
   const handleSelectFile = useCallback((file) => {
     // Search results lack md/thumb_url — cross-reference with canvas cache
     if (file.score != null && canvas?.files) {
-      const match = canvas.files.find(f => f.id === file.id);
+      const match = canvas.files.find(f => f.source_id === file.source_id);
       if (match) {
         setSelectedFile(match);
       } else {
