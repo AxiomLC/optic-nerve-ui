@@ -90,14 +90,14 @@ export const ENTITY_SIZE_TIERS = [
 export const ENTITY_LABEL = {
   top:    { text: 'Entity', color: '#fff', fontSize: 14 },   // "Entity" label (small, above name)
   bottom: { color: '#fff', fontSize: 28 },                     // entity name (bigger)
-  icon:   { color: '#000', size: 120, opacity: 1.0, strokeWidth: 2.0 }, // icon drawn on same canvas as text; opacity controls alpha
+  icon:   { color: '#000', size: 120, opacity: 1.0, strokeWidth: 2.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
 };
 
 // ── Entity glow (feathered radial gradient sprite) ────────
 export const ENTITY_GLOW = {
   baseRadius: 0.8,    // multiplier × entity tier size
-  spriteScale: 3,     // world units per radius unit
+  spriteScale: 3,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
   featherStart: 0.4,  // where feathering begins (0=fully feathered, 1=solid circle)
   opacity: 1.0,
 };
@@ -110,14 +110,14 @@ export const ENTITY_GLOW = {
 export const FILE_LABEL = {
   top:    { color: '#9f4', fontSize: 18 },  // 9f4 lime, dfd light green, file_type line
   bottom: { color: '#dfd', fontSize: 20 },  // dfd liht green, file title line
-  icon:   { color: '#9f4', size: 90, opacity: 1.0, strokeWidth: 2 }, // icon drawn on same canvas as text; opacity controls alpha
+  icon:   { color: '#9f4', size: 90, opacity: 1.0, strokeWidth: 2 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
   lineSpacing: 1.6,   // gap between type and title lines
 };
 
 // ── File glow (feathered radial gradient sprite) ──────────
 export const FILE_GLOW = {
   radius: 5,          // fixed radius for all file glows
-  spriteScale: 3,     // world units per radius unit
+  spriteScale: 3,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
   featherStart: 0.4,  // where feathering begins
   color: '#555',      // 555 drak gray, 999 gray — file glow
   opacity: 1.0,

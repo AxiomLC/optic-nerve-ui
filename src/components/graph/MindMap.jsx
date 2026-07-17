@@ -178,8 +178,10 @@ function makeGroupLabel(lines, config = {}) {
     premultipliedAlpha: true,  // canvas data IS premultiplied — prevents dark fringes on anti-aliased text
   });
   const s = new THREE.Sprite(m);
-  const aspect = cw / ch;
-  s.scale.set(6 * aspect, 6, 1);
+  // Scale so the TEXT portion always occupies 6 world units in height;
+  // if icon is present, the sprite grows taller to fit it, but text stays same readable size.
+  const textPxH = totalH + pad * 2;
+  s.scale.set(6 * cw / textPxH, 6 * ch / textPxH, 1);
   s.position.y = offY;
   s.renderOrder = 20;
   return s;
