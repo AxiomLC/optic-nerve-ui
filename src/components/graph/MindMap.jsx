@@ -351,7 +351,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     orphans.forEach((n, i) => {
       const col = Math.floor(i / itemsPerCol);
       const row = i % itemsPerCol;
-      const y = (itemsPerCol - 1) * spacing / 2 - row * spacing;
+      const countInCol = Math.min(orphans.length - col * itemsPerCol, itemsPerCol);
+      const y = (countInCol - 1) * spacing / 2 - row * spacing;
       n.x = -(colX + col * (colPadding + 10));
       n.y = y;
       n.z = 0;
