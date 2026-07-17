@@ -27,6 +27,17 @@
 //  #001133 = dark navy, #0a0a2e = dark midnight blue
 //
 // ══════════════════════════════════════════════════════════════
+// MAP FONT — applied to all label text on the graph
+// ══════════════════════════════════════════════════════════════
+// Change fontFamily to any system or webfont. The `sans-serif`
+// fallback catches cases where the named font isn't installed.
+
+// ── Map font family ─────────────────────────────────────────
+export const MAP_FONT = {
+  fontFamily: 'system-ui, sans-serif',  // tried first, falls back to sans-serif if missing
+};
+
+// ══════════════════════════════════════════════════════════════
 // ICONS — Entity and File lucide-react component names
 // ══════════════════════════════════════════════════════════════
 
@@ -82,9 +93,9 @@ export const ENTITY_COLOR = {
 
 // ── Entity size by edge_count tiers ───────────────────────
 export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 6  },
-  { max: 15, size: 7  },
-  { max: 30, size: 8  },
+  { max: 5,  size: 7  },
+  { max: 15, size: 8  },
+  { max: 30, size: 9  },
   { max: Infinity, size: 10 },
 ];
 
@@ -94,6 +105,7 @@ export const ENTITY_LABEL = {
   bottom: { color: '#fff', fontSize: 28, fontWeight: 200 },  // entity name (bigger)
   icon:   { color: '#000', size: 75, opacity: 1.0, strokeWidth: 1.0 }, // icon drawn on same canvas as text; opacity controls alpha; strokeWidth = line thickness (1=thin, 3=bold)
   lineSpacing: 1.6,   // gap between top and bottom lines (multiplier of fontSize)
+  iconGap: 1,          // pixels between text bottom and icon top (negative = closer/overlap)
 };
 
 // ── Entity glow (feathered radial gradient sprite) ────────
@@ -111,9 +123,10 @@ export const ENTITY_GLOW = {
 // ── File label + icon styling ─────────────────────────────
 export const FILE_LABEL = {
   top:    { color: '#004400', fontSize: 16, fontWeight: 100 },  // #060 dark green; fontWeight 300=light, 400=normal, 700=bold, 900=black
-  bottom: { color: '#fff', fontSize: 20, fontWeight: 100 },  // file title line
-  icon:   { color: '#004400', size: 45, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
+  bottom: { color: '#fff', fontSize: 20, fontWeight: 50 },  // file title line
+  icon:   { color: '#004400', size: 40, opacity: 1.0, strokeWidth: 1.0 },   // line thickness (1=thin, 3=bold); opacity controls icon alpha
   lineSpacing: 1.6,   // gap between type and title lines
+  iconGap: -2,         // pixels between text bottom and icon top (negative = closer/overlap) — tighter for files
 };
 
 // ── File glow (feathered radial gradient sprite) ──────────
@@ -131,9 +144,9 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.5,
+  mentionWidth:  0.2,
   linkWidth:     2,
-  mentionColor:  '#001133',       // #001133 dark blue, 999 dark grey — 'mention' edges
+  mentionColor:  '#49f',       // 49f sky blue, fff white, #001133 dark blue, 999 dark grey — 'mention' edges
   linkColor:     '#ff6ec7',    // hot pink — 'link' edges
   particleSpeed: 0.005,
 };
@@ -144,7 +157,7 @@ export const PHYSICS = {
   velocityDecay: 0.3,
   linkDistance:  80,
   warmupTicks:   100,
-  orphanRingRadius: 150,  // distance from center to place orphan nodes (on a sphere at this radius)
+  orphanRingRadius: 230,  // distance from center to place orphan nodes (on a sphere at this radius)
 };
 
 // ── Logo ──────────────────────────────────────────────────

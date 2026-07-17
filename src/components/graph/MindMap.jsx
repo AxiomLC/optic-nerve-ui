@@ -8,7 +8,7 @@ import { nodeColor, linkWidth } from './nodeStyles';
 import {
   ENTITY_ICON, ENTITY_COLOR, ENTITY_SIZE_TIERS, ENTITY_LABEL, ENTITY_GLOW,
   FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL, FILE_GLOW,
-  PHYSICS, LINK,
+  MAP_FONT, PHYSICS, LINK,
 } from '../../config/theme';
 
 // ── Icon SVG cache (render lucide-react to SVG once per name/color) ──
@@ -89,7 +89,7 @@ function makeIconSprite(iconName, size, color, opacity, style) {
 }
 
 function makeGroupLabel(lines, config = {}) {
-  const { offY = 0, lineSpacing = 1.4, icon = null, maxWidth = 0 } = config;
+  const { offY = 0, lineSpacing = 1.4, icon = null, maxWidth = 0, fontFamily = 'system-ui, sans-serif', iconGap: cfgIconGap } = config;
   if (!lines || lines.length === 0) return new THREE.Group();
 
   // Measure + word-wrap: split long lines at maxWidth
@@ -97,7 +97,8 @@ function makeGroupLabel(lines, config = {}) {
   const tctx = temp.getContext('2d');
   const wrappedLines = [];
   lines.forEach(l => {
-    tctx.font = `bold ${l.fontSize}px sans-serif`;
+    const w = l.fontWeight || 700;
+    tctx.font = `${w} ${l.fontSize}px ${fontFamily}`;
     const text = l.text || '';
     if (maxWidth > 0 && tctx.measureText(text).width > maxWidth) {
       const words = text.split(' ');
@@ -121,7 +122,8 @@ function makeGroupLabel(lines, config = {}) {
   // Measure all (wrapped) lines to size canvas
   let totalH = 0, maxW = 0;
   lines.forEach((l, i) => {
-    tctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
+    const w = l.fontWeight || 700;
+    tctx.font = `${w} ${l.fontSize}px ${fontFamily}`;
     const m = tctx.measureText(l.text);
     // Last line uses just text height (no trailing lineSpacing gap)
     const h = i < lines.length - 1 ? l.fontSize * lineSpacing : l.fontSize;
@@ -131,7 +133,7 @@ function makeGroupLabel(lines, config = {}) {
 
   // Reserve space for icon below text
   const iconSizePx = icon ? (icon.size || 30) : 0;
-  const iconGap = icon ? 1 : 0;
+  const iconGap = icon ? (cfgIconGap != null ? cfgIconGap : 1) : 0;
 
   const pad = 6;
   const dpr = window.devicePixelRatio || 1;
@@ -148,7 +150,7 @@ function makeGroupLabel(lines, config = {}) {
 
   let y = pad + (lines[0].fontSize * lineSpacing) / 2;
   lines.forEach((l, i) => {
-    ctx.font = `${l.fontWeight || 700} ${l.fontSize}px sans-serif`;
+    ctx.font = `${l.fontWeight || 700} ${l.fontSize}px ${fontFamily}`;
     ctx.fillStyle = l.color;
     ctx.fillText(l.text, cw / 2, y);
     // On the last line, advance by just the text height (no trailing lineSpacing)
@@ -292,6 +294,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         offY: 0,
         lineSpacing: ENTITY_LABEL.lineSpacing,
         maxWidth: 250,
+        fontFamily: MAP_FONT.fontFamily,
+        iconGap: ENTITY_LABEL.iconGap,
         icon: entIconSVG ? { svgHTML: entIconSVG, size: ENTITY_LABEL.icon.size, opacity: ENTITY_LABEL.icon.opacity } : null,
       }));
 
@@ -309,6 +313,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         offY: 0,
         lineSpacing: FILE_LABEL.lineSpacing,
         maxWidth: 250,
+        fontFamily: MAP_FONT.fontFamily,
+        iconGap: FILE_LABEL.iconGap,
         icon: fileIconSVG ? { svgHTML: fileIconSVG, size: FILE_LABEL.icon.size, opacity: FILE_LABEL.icon.opacity } : null,
       }));
     }
@@ -322,6 +328,14 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__orphans = orphans;
     window.__graphData = graphData;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
+    // Center camera on cluster after simulation settles
+    if (fgRef.current) {
+      fgRef.current.cameraPosition(
+        { x: 0, y: 0, z: 200 },  // camera position
+        { x: 0, y: 0, z: 0 },     // look at cluster center
+        1200                        // transition duration (ms)
+      );
+    }
   }, [graphData, graphData?.nodes]);
 
   return (
