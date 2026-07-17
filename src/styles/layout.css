@@ -291,11 +291,18 @@ footer.app-footer {
   border: none;
 }
 
-/* ── Viewer footer (Get File button) ── */
+/* ── Viewer footer (Get File / Back buttons) ── */
 .viewer-footer {
   padding-top: 8px;
   border-top: 1px solid #222;
   margin-top: 8px;
+}
+.viewer-footer-row {
+  display: flex;
+  gap: 8px;
+}
+.viewer-footer-row .btn-get-file {
+  flex: 1;
 }
 .btn-get-file {
   font-size: var(--font-size-sm);

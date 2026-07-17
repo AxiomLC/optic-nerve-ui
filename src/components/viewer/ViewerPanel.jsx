@@ -1,6 +1,6 @@
 import MarkdownView from './MarkdownView';
 
-export default function ViewerPanel({ file, entity, previewUrl, previewMode, onGetFile, getFileAvailable }) {
+export default function ViewerPanel({ file, entity, previewUrl, previewMode, onGetFile, getFileAvailable, onBack }) {
   // ── Entity snippet ──────────────────────────────────────
   if (entity) {
     return (
@@ -59,7 +59,10 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
 
       {getFileAvailable && (
         <div className="viewer-footer">
-          <button className="btn-get-file" onClick={onGetFile}>Get File</button>
+          <div className="viewer-footer-row">
+            {onBack && <button className="btn-get-file" onClick={onBack}>← Back</button>}
+            <button className="btn-get-file" onClick={onGetFile}>Get File</button>
+          </div>
         </div>
       )}
     </div>

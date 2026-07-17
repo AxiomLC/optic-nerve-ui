@@ -217,6 +217,7 @@ export default function App() {
                 previewMode={previewMode}
                 onGetFile={handleGetFile}
                 getFileAvailable={getFileAvailable}
+                onBack={searchResults ? () => setActiveLayer('search') : undefined}
               />
             )}
 
