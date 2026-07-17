@@ -25,7 +25,7 @@
 //   #ffcc00 = gold         — selected node
 //   #060 = dark green   #004400 dark darker green
 //  #001133 = dark navy, #0a0a2e = dark midnight blue
-//  #440000 = drak red
+//  #440000 = dark red, #330000 darker red
 //
 // ══════════════════════════════════════════════════════════════
 // MAP FONT — applied to all label text on the graph
@@ -47,12 +47,12 @@ export const MAP_FONT = {
 export const ENTITY_ICON = {
   person:   'User',
   org:      'Building2',
-  place:    'Globe', //MapPin, Globe, Map
+  place:    'Map', //MapPin, Globe, Map
   project:  'Rocket',
   product:  'Package',
   document: 'FileText',
   event:    'Calendar',
-  thing:    'Component', // Cog, Component, Lightbulb
+  thing:    'Cog', // Cog, Component, Lightbulb
   concept:  'Brain',
 };
 
@@ -88,13 +88,13 @@ export const ENTITY_COLOR = {
   product:  '#f49',  // pink — product glow
   document: '#9f4',  // lime — document glow
   event:    '#ff4',  // yellow — event glow
-  thing:    '#440000',  // #440000 dark red, — thing glow
+  thing:    '#330000',  // #330000 darker red#440000 dark red, — thing glow
   concept:  '#aaa',  // light grey — concept glow
 };
 
 // ── Entity size by edge_count tiers ───────────────────────
 export const ENTITY_SIZE_TIERS = [
-  { max: 5,  size: 7  },
+  { max: 7,  size: 7  },
   { max: 15, size: 8  },
   { max: 30, size: 9  },
   { max: Infinity, size: 10 },
@@ -111,8 +111,8 @@ export const ENTITY_LABEL = {
 
 // ── Entity glow (feathered radial gradient sprite) ────────
 export const ENTITY_GLOW = {
-  baseRadius: 0.8,    // multiplier × entity tier size
-  spriteScale: 3,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
+  baseRadius: 1.0,    // multiplier × entity tier size
+  spriteScale: 4,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
   featherStart: 0.4,  // where feathering begins (0=fully feathered, 1=solid circle)
   opacity: 1.0,
 };

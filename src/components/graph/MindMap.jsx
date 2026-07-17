@@ -1,10 +1,9 @@
 import ForceGraph3D from 'react-force-graph-3d';
-import { useState, useCallback, useRef, useEffect, createElement } from 'react';
+import { useState, useCallback, useRef, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import * as THREE from 'three';
 import * as LucideIcons from 'lucide-react';
-import { forceCenter } from 'd3-force-3d';
 import { nodeColor, linkWidth } from './nodeStyles';
 import {
   ENTITY_ICON, ENTITY_COLOR, ENTITY_SIZE_TIERS, ENTITY_LABEL, ENTITY_GLOW,
@@ -277,16 +276,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [onSelectEntity, onSelectFile]);
 
-  // Center force + camera on initial graph load
-  useEffect(() => {
-    if (fgRef.current && graphData?.nodes?.length) {
-      // Explicitly seat forceCenter at (0,0,0) so frozen orphans don't pull centroid
-      fgRef.current.d3Force('center', forceCenter(0, 0, 0));
-      // Set camera to look at origin
-      fgRef.current.cameraPosition({ x: 0, y: 0, z: 200 }, { x: 0, y: 0, z: 0 }, 0);
-    }
-  }, [graphData]);
-
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
 
@@ -339,29 +328,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__orphans = orphans;
     window.__graphData = graphData;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
-
-    // Teleport orphans to outer rim now that simulation has settled
-    const ringR = PHYSICS.orphanRingRadius || 150;
-    orphans.forEach(n => {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      n.x = ringR * Math.sin(phi) * Math.cos(theta);
-      n.y = ringR * Math.sin(phi) * Math.sin(theta);
-      n.z = ringR * Math.cos(phi);
-      n.fx = n.x;
-      n.fy = n.y;
-      n.fz = n.z;
-    });
-
-    // Center camera on cluster
-    if (fgRef.current) {
-      console.log('[Camera] Centering on (0,0,0)');
-      fgRef.current.cameraPosition(
-        { x: 0, y: 0, z: 200 },
-        { x: 0, y: 0, z: 0 },
-        800
-      );
-    }
   }, [graphData]);
 
   return (
