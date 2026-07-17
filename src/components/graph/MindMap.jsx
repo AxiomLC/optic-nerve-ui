@@ -125,7 +125,7 @@ function makeGroupLabel(lines, config = {}) {
 
   const t = new THREE.CanvasTexture(c);
   const m = new THREE.SpriteMaterial({
-    map: t, transparent: true, depthWrite: false, depthTest: false,
+    map: t, transparent: true, depthWrite: false, depthTest: true,
     alphaTest: 0.01, opacity: 1.0,
   });
   const s = new THREE.Sprite(m);
