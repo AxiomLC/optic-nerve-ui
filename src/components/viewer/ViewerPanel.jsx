@@ -18,7 +18,7 @@ export default function ViewerPanel({ file, entity, previewUrl, previewMode, onG
     return <div className="viewer empty-state">Select a file to view</div>;
   }
 
-  const isMedia = file.file_type?.startsWith('image/') || file.file_type?.startsWith('video/');
+  const isMedia = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|mp4|mov|avi|mkv|webm|wmv)$/i.test(file.file_type);
 
   // ── Preview mode ────────────────────────────────────────
   if (previewMode) {

@@ -100,11 +100,21 @@ export default function App() {
   }
 
   const handleSelectFile = useCallback((file) => {
-    setSelectedFile(file);
+    // Search results lack md/thumb_url — cross-reference with canvas cache
+    if (file.score != null && canvas?.files) {
+      const match = canvas.files.find(f => f.id === file.id);
+      if (match) {
+        setSelectedFile(match);
+      } else {
+        setSelectedFile({ ...file, unauthorized: true });
+      }
+    } else {
+      setSelectedFile(file);
+    }
     setSelectedEntity(null);
     setPreviewMode(false);
     setActiveLayer('viewer');
-  }, []);
+  }, [canvas]);
 
   const handleSelectEntity = useCallback((entity) => {
     setSelectedEntity(entity);
