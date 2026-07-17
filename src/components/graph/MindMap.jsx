@@ -327,6 +327,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     const orphans = graphData.nodes.filter(n => n.isOrphan);
     window.__orphans = orphans;
     window.__graphData = graphData;
+    window.__fgRef = fgRef.current;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
 
     if (orphans.length === 0) return;
