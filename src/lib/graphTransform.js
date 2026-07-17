@@ -1,5 +1,3 @@
-import { PHYSICS } from '../config/theme'
-
 /**
  * Convert Supabase canvas payload into react-force-graph-3d graph data.
  *
@@ -45,12 +43,11 @@ export function toGraphData({ files, entities, edges }) {
     n.isOrphan = !linkedIds.has(n.graphId);
     
     if (n.isOrphan) {
-      const ringR = PHYSICS.orphanRingRadius || 150;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      n.x = ringR * Math.sin(phi) * Math.cos(theta);
-      n.y = ringR * Math.sin(phi) * Math.sin(theta);
-      n.z = ringR * Math.cos(phi);
+      // Stay near center during simulation so frozen orphans don't pull the centroid.
+      // Teleported to outer rim in handleEngineStop after sim settles.
+      n.x = (Math.random() - 0.5) * 5;
+      n.y = (Math.random() - 0.5) * 5;
+      n.z = (Math.random() - 0.5) * 5;
       n.fx = n.x;
       n.fy = n.y;
       n.fz = n.z;

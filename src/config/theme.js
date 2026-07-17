@@ -52,7 +52,7 @@ export const ENTITY_ICON = {
   product:  'Package',
   document: 'FileText',
   event:    'Calendar',
-  thing:    'Component', // Component, Lightbulb
+  thing:    'Component', // Cog, Component, Lightbulb
   concept:  'Brain',
 };
 
@@ -145,8 +145,8 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.35,
-  linkWidth:     2,
+  mentionWidth:  0.5,
+  linkWidth:     3,
   mentionColor:  '#49f',       // 49f sky blue, fff white, #001133 dark blue, 999 dark grey — 'mention' edges
   linkColor:     '#ff6ec7',    // hot pink — 'link' edges
   particleSpeed: 0.005,

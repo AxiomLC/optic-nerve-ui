@@ -339,7 +339,21 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__orphans = orphans;
     window.__graphData = graphData;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
-    // Re-center camera as fallback (forceCenter in useEffect handles the simulation)
+
+    // Teleport orphans to outer rim now that simulation has settled
+    const ringR = PHYSICS.orphanRingRadius || 150;
+    orphans.forEach(n => {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      n.x = ringR * Math.sin(phi) * Math.cos(theta);
+      n.y = ringR * Math.sin(phi) * Math.sin(theta);
+      n.z = ringR * Math.cos(phi);
+      n.fx = n.x;
+      n.fy = n.y;
+      n.fz = n.z;
+    });
+
+    // Center camera on cluster
     if (fgRef.current) {
       console.log('[Camera] Centering on (0,0,0)');
       fgRef.current.cameraPosition(
