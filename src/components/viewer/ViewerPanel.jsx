@@ -17,8 +17,8 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
           <div style={{marginTop:12}}>
             <div className="snippet-type" style={{marginBottom:4}}>Connected Files</div>
             {connectedFiles.map(f => (
-              <div key={f.id} className="search-result-item" onClick={() => onSelectFile?.(f)}>
-                <div className="search-result-title">{f.title}{f.file_type === '.ntn' ? ' (.ntn)' : ''}</div>
+              <div key={f.id} className="search-result-item" onClick={() => onSelectFile?.(f, { from: 'entity' })}>
+                <div className="search-result-title">{f.title}{!/\.\w{2,4}$/.test(f.title) ? ' (.ntn)' : ''}</div>
                 <div className="search-result-summary">{f.summary}</div>
               </div>
             ))}

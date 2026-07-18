@@ -37,6 +37,7 @@ export default function App() {
   const [errorLog, setErrorLog] = useState([]);
   const [leftPanelWidth, setLeftPanelWidth] = useState(380);
   const [connectedFiles, setConnectedFiles] = useState([]);
+  const [backTo, setBackTo] = useState(null);
 
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
@@ -100,15 +101,14 @@ export default function App() {
     setErrorLog([]);
   }
 
-  const handleSelectFile = useCallback((file) => {
-    // Search results lack md/thumb_url — cross-reference with canvas cache
+  const handleSelectFile = useCallback((file, { from } = {}) => {
+    if (from === 'entity') setBackTo('entity');
+    else if (from === 'search' || file.score != null) setBackTo('search');
+    else setBackTo(null);
     if (file.score != null && canvas?.files) {
       const match = canvas.files.find(f => f.source_id === file.source_id);
-      if (match) {
-        setSelectedFile(match);
-      } else {
-        setSelectedFile({ ...file, unauthorized: true });
-      }
+      if (match) setSelectedFile(match);
+      else setSelectedFile({ ...file, unauthorized: true });
     } else {
       setSelectedFile(file);
     }
@@ -121,6 +121,7 @@ export default function App() {
   const handleSelectEntity = useCallback((entity) => {
     setSelectedEntity(entity);
     setSelectedFile(null);
+    setBackTo(null);
     setPreviewMode(false);
     setActiveLayer('viewer');
     // Compute connected files from canvas edges
@@ -230,15 +231,15 @@ export default function App() {
                 previewMode={previewMode}
                 onGetFile={handleGetFile}
                 getFileAvailable={getFileAvailable}
-                onBack={searchResults ? () => setActiveLayer('search') : undefined}
+                onBack={backTo === 'entity' ? () => { setSelectedFile(null); setActiveLayer('viewer'); } : backTo === 'search' ? () => setActiveLayer('search') : undefined}
               />
             )}
 
             {activeLayer === 'search' && searchResults && searchResults.length > 0 && (
               <div className="layer-search scrollable">
                 {searchResults.map(r => (
-                  <div key={r.source_id} className="search-result-item" onClick={() => handleSelectFile(r)}>
-                    <div className="search-result-title">{r.title}{r.file_type === '.ntn' ? ' (.ntn)' : ''}</div>
+                  <div key={r.source_id} className="search-result-item" onClick={() => handleSelectFile(r, { from: 'search' })}>
+                    <div className="search-result-title">{r.title}{!/\.\w{2,4}$/.test(r.title) ? ' (.ntn)' : ''}</div>
                     <div className="search-result-score">{(r.score * 100).toFixed(0)}%</div>
                     <div className="search-result-summary">{r.summary}</div>
                   </div>

@@ -305,6 +305,7 @@ footer.app-footer {
 .viewer-footer-row .btn-get-file {
   min-width: 70px;
   padding: 6px 10px;
+  width: auto;
 }
 .btn-get-file {
   font-size: var(--font-size-sm);
