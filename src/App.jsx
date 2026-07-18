@@ -65,10 +65,7 @@ export default function App() {
           .filter(f => f.drive_id && f.drive_id !== 'null' && f.source_id)
           .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
         if (items.length > 0) {
-          getPreviewUrls(items).then(urls => {
-            console.log('[App] Background refresh got', Object.keys(urls || {}).length, 'keys');
-            setPreviewUrls(urls || {});
-          }).catch(err => console.log('[App] Background refresh error:', err.message));
+          getPreviewUrls(items).then(urls => setPreviewUrls(urls || {})).catch(() => {});
         }
         saveSession({ username: saved.username, password: saved.password, canvas: canvasData, previewUrls });
       }).catch(err => addLog(`Background refresh failed: ${err.message}`));
@@ -90,12 +87,9 @@ export default function App() {
     if (items.length > 0) {
       try {
         urls = await getPreviewUrls(items);
-        console.log('[App] getPreviewUrls returned', Object.keys(urls || {}).length, 'keys');
         setPreviewUrls(urls || {});
-        console.log('[App] setPreviewUrls called');
       } catch (err) {
         addLog(`Preview batch failed: ${err.message}`);
-        console.log('[App] Preview batch error:', err.message);
       }
     }
     const password = document?.forms?.[0]?.password?.value || '';
@@ -236,10 +230,17 @@ export default function App() {
 
   const previewUrl = selectedFile?.source_id ? previewUrls[selectedFile.source_id] : null;
 
-  // ── Debug diagnostics (accessible in console) ──
+  // ── Dev diagnostics (console) ──
   window.__previewUrls = previewUrls;
   window.__selectedFile = selectedFile;
   window.__previewUrl = previewUrl;
+  window.__diag = function() {
+    var c = canvas;
+    var f = selectedFile;
+    console.log('Canvas: ' + (c ? c.files.length + 'f ' + c.entities.length + 'e ' + c.edges.length + 'edg' : 'null'));
+    console.log('Preview: ' + Object.keys(previewUrls).length + ' URLs cached');
+    console.log('Selected: ' + (f ? f.title + ' (' + f.source_id.slice(0,20) + '...)' : 'none') + ' | Preview match: ' + (previewUrl ? (previewUrl.getUrl ? 'getUrl' : 'has keys [' + Object.keys(previewUrl).join(',') + ']') : 'none'));
+  };
 
   // =============== 15. Render: App Shell with MindMap ===============
   return (
