@@ -265,7 +265,7 @@ footer.app-footer {
 }
 
 .media-preview { max-width: 100%; display: block; margin: 8px 0; }
-.media-thumb { max-width: 100%; max-height: 200px; display: block; margin: 8px 0; border-radius: 4px; }
+.media-thumb { max-width: 100%; width: 100%; height: auto; display: block; margin: 8px 0; border-radius: 4px; }
 .media-error { color: #f55; font-size: 0.85rem; }
 
 .preview-unavail {
@@ -303,7 +303,8 @@ footer.app-footer {
   justify-content: flex-end;
 }
 .viewer-footer-row .btn-get-file {
-  min-width: 100px;
+  min-width: 70px;
+  padding: 6px 10px;
 }
 .btn-get-file {
   font-size: var(--font-size-sm);

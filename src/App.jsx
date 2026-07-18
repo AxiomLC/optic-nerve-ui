@@ -36,6 +36,7 @@ export default function App() {
   const [searchResults, setSearchResults] = useState(null);
   const [errorLog, setErrorLog] = useState([]);
   const [leftPanelWidth, setLeftPanelWidth] = useState(380);
+  const [connectedFiles, setConnectedFiles] = useState([]);
 
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
@@ -112,6 +113,7 @@ export default function App() {
       setSelectedFile(file);
     }
     setSelectedEntity(null);
+    setConnectedFiles([]);
     setPreviewMode(false);
     setActiveLayer('viewer');
   }, [canvas]);
@@ -121,7 +123,16 @@ export default function App() {
     setSelectedFile(null);
     setPreviewMode(false);
     setActiveLayer('viewer');
-  }, []);
+    // Compute connected files from canvas edges
+    if (canvas?.edges && canvas?.files) {
+      const fileIds = canvas.edges
+        .filter(e => e.target_entity_id === entity.id)
+        .map(e => e.file_id);
+      setConnectedFiles(canvas.files.filter(f => fileIds.includes(f.id)));
+    } else {
+      setConnectedFiles([]);
+    }
+  }, [canvas]);
 
   const handleSearchSubmit = useCallback(() => {
     setActiveLayer('search');
@@ -213,6 +224,8 @@ export default function App() {
               <ViewerPanel
                 file={selectedFile}
                 entity={selectedEntity}
+                connectedFiles={connectedFiles}
+                onSelectFile={handleSelectFile}
                 previewUrl={previewUrl}
                 previewMode={previewMode}
                 onGetFile={handleGetFile}
@@ -225,7 +238,7 @@ export default function App() {
               <div className="layer-search scrollable">
                 {searchResults.map(r => (
                   <div key={r.source_id} className="search-result-item" onClick={() => handleSelectFile(r)}>
-                    <div className="search-result-title">{r.title}</div>
+                    <div className="search-result-title">{r.title}{r.file_type === '.ntn' ? ' (.ntn)' : ''}</div>
                     <div className="search-result-score">{(r.score * 100).toFixed(0)}%</div>
                     <div className="search-result-summary">{r.summary}</div>
                   </div>
