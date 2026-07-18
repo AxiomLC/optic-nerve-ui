@@ -55,7 +55,7 @@ export default function App() {
         setCanvas(canvasData);
         setGraphData(toGraphData(canvasData));
         const items = (canvasData.files || [])
-          .filter(f => f.drive_id && f.source_id)
+          .filter(f => f.drive_id && f.drive_id !== 'null' && f.source_id)
           .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
         if (items.length > 0) {
           getPreviewUrls(items).then(urls => setPreviewUrls(urls || {})).catch(() => {});
@@ -73,7 +73,7 @@ export default function App() {
     setSelectedFile(null);
     setSelectedEntity(null);
     const items = (canvasData.files || [])
-      .filter(f => f.drive_id && f.source_id)
+      .filter(f => f.drive_id && f.drive_id !== 'null' && f.source_id)
       .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
     let urls = {};
     if (items.length > 0) {
@@ -149,8 +149,12 @@ export default function App() {
   }, []);
 
   const handleGetFile = useCallback(() => {
-    setPreviewMode(true);
-  }, []);
+    if (selectedFile?.file_type === '.ntn' && selectedFile?.source_id) {
+      window.open(`https://www.notion.so/${selectedFile.source_id.replace(/-/g, '')}`, '_blank');
+    } else {
+      setPreviewMode(true);
+    }
+  }, [selectedFile]);
 
   const handleBackFromPreview = useCallback(() => {
     setPreviewMode(false);
@@ -159,7 +163,7 @@ export default function App() {
   const handleRefreshPreview = useCallback(async () => {
     if (!canvas?.files) return;
     const items = canvas.files
-      .filter(f => f.drive_id && f.source_id)
+      .filter(f => f.drive_id && f.drive_id !== 'null' && f.source_id)
       .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
     if (items.length === 0) return;
     try {
