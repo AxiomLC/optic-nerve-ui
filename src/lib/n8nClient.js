@@ -20,7 +20,9 @@ export async function getPreviewUrls(items) {
   });
   if (!res.ok) throw new Error(`preview-batch failed: ${res.status}`);
   const data = await res.json();
-  return data.previews || {};
+  // n8n Respond to Webhook wraps in array: [{ previews: {...} }]
+  const map = Array.isArray(data) ? data[0] : data;
+  return map?.previews || {};
 }
 
 // =============== 2. Single-Item Preview Retry (not built yet) ===============
