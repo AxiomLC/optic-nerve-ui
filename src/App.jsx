@@ -112,8 +112,10 @@ export default function App() {
     } else {
       setSelectedFile(file);
     }
-    setSelectedEntity(null);
-    setConnectedFiles([]);
+    if (from !== 'entity') {
+      setSelectedEntity(null);
+      setConnectedFiles([]);
+    }
     setPreviewMode(false);
     setActiveLayer('viewer');
   }, [canvas]);
