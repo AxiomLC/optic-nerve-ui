@@ -19,10 +19,16 @@ export async function getPreviewUrls(items) {
     body: JSON.stringify({ items }),
   });
   if (!res.ok) throw new Error(`preview-batch failed: ${res.status}`);
-  const data = await res.json();
+  const text = await res.text();
+  console.log('[n8nClient] RAW response:', text.slice(0, 300));
+  const data = JSON.parse(text);
+  console.log('[n8nClient] Parsed type:', Array.isArray(data) ? 'array[' + data.length + ']' : typeof data);
   // n8n Respond to Webhook wraps in array: [{ previews: {...} }]
   const map = Array.isArray(data) ? data[0] : data;
-  return map?.previews || {};
+  console.log('[n8nClient] map keys:', map ? Object.keys(map) : 'null');
+  const result = map?.previews || {};
+  console.log('[n8nClient] result keys:', Object.keys(result).length);
+  return result;
 }
 
 // =============== 2. Single-Item Preview Retry (not built yet) ===============
