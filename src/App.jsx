@@ -241,7 +241,7 @@ export default function App() {
               <div className="layer-search scrollable">
                 {searchResults.map(r => (
                   <div key={r.source_id} className="search-result-item" onClick={() => handleSelectFile(r, { from: 'search' })}>
-                    <div className="search-result-title">{r.title}{r.file_type === '.ntn' ? ' (.ntn)' : ''}</div>
+                    <div className="search-result-title">{r.title}{r.file_type === '.ntn' ? '.ntn' : ''}</div>
                     <div className="search-result-score">{(r.score * 100).toFixed(0)}%</div>
                     <div className="search-result-summary">{r.summary}</div>
                   </div>

@@ -1,8 +1,11 @@
 import MarkdownView from './MarkdownView';
 
 export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile, previewUrl, previewMode, onGetFile, getFileAvailable, onBack }) {
-  // ── Entity snippet with connected files ──────────────
-  if (entity) {
+  // File takes priority over entity (for Back from entity-connected files)
+  if (file) {
+    // falls through to file viewer below
+  } else if (entity) {
+    // ── Entity snippet with connected files ──────────────
     return (
       <div className="viewer scrollable">
         <div className="snippet-header">
@@ -18,7 +21,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
             <div className="snippet-type" style={{marginBottom:4}}>Connected Files</div>
             {connectedFiles.map(f => (
               <div key={f.id} className="search-result-item" onClick={() => onSelectFile?.(f, { from: 'entity' })}>
-                <div className="search-result-title">{f.title}{f.file_type === '.ntn' ? ' (.ntn)' : ''}</div>
+                <div className="search-result-title">{f.title}{f.file_type === '.ntn' ? '.ntn' : ''}</div>
                 <div className="search-result-summary">{f.summary}</div>
               </div>
             ))}
