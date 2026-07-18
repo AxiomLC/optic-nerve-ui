@@ -56,7 +56,7 @@ export default function App() {
         setGraphData(toGraphData(canvasData));
         const items = (canvasData.files || [])
           .filter(f => f.drive_id && f.source_id)
-          .map(f => ({ driveId: f.drive_id, source_id: f.source_id }));
+          .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
         if (items.length > 0) {
           getPreviewUrls(items).then(urls => setPreviewUrls(urls || {})).catch(() => {});
         }
@@ -74,7 +74,7 @@ export default function App() {
     setSelectedEntity(null);
     const items = (canvasData.files || [])
       .filter(f => f.drive_id && f.source_id)
-      .map(f => ({ driveId: f.drive_id, source_id: f.source_id }));
+      .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
     let urls = {};
     if (items.length > 0) {
       try {
@@ -151,6 +151,24 @@ export default function App() {
   const handleGetFile = useCallback(() => {
     setPreviewMode(true);
   }, []);
+
+  const handleBackFromPreview = useCallback(() => {
+    setPreviewMode(false);
+  }, []);
+
+  const handleRefreshPreview = useCallback(async () => {
+    if (!canvas?.files) return;
+    const items = canvas.files
+      .filter(f => f.drive_id && f.source_id)
+      .map(f => ({ drive_id: f.drive_id, source_id: f.source_id }));
+    if (items.length === 0) return;
+    try {
+      const urls = await getPreviewUrls(items);
+      setPreviewUrls(urls || {});
+    } catch (err) {
+      addLog(`Preview refresh failed: ${err.message}`);
+    }
+  }, [canvas, addLog]);
 
   const getFileAvailable = selectedFile?.drive_id && selectedFile?.source_id;
 
@@ -232,8 +250,10 @@ export default function App() {
                 previewUrl={previewUrl}
                 previewMode={previewMode}
                 onGetFile={handleGetFile}
+                onBackFromPreview={handleBackFromPreview}
+                onRefreshPreview={handleRefreshPreview}
                 getFileAvailable={getFileAvailable}
-                onBack={backTo === 'entity' ? () => { setSelectedFile(null); setActiveLayer('viewer'); } : backTo === 'search' ? () => setActiveLayer('search') : undefined}
+                onBack={backTo === 'entity' ? () => { setSelectedFile(null); setActiveLayer('viewer'); setPreviewMode(false); } : backTo === 'search' ? () => { setActiveLayer('search'); setPreviewMode(false); } : undefined}
               />
             )}
 

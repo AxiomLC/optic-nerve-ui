@@ -15,7 +15,8 @@ export async function getPreviewUrls(items) {
     body: JSON.stringify({ items }),
   });
   if (!res.ok) throw new Error(`preview-batch failed: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return data.previews || {};
 }
 
 export async function getPreviewUrlSingle(driveId, source_id) {

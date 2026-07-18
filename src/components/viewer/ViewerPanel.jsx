@@ -1,6 +1,6 @@
 import MarkdownView from './MarkdownView';
 
-export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile, previewUrl, previewMode, onGetFile, getFileAvailable, onBack }) {
+export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile, previewUrl, previewMode, onGetFile, onBackFromPreview, onRefreshPreview, getFileAvailable, onBack }) {
   // File takes priority over entity (for Back from entity-connected files)
   if (file) {
     // falls through to file viewer below
@@ -40,23 +40,34 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
 
   // ── Preview mode ────────────────────────────────────────
   if (previewMode) {
-    if (previewUrl) {
+    const embedUrl = previewUrl?.getUrl;
+    const openUrl  = previewUrl?.webUrl || previewUrl?.getUrl;
+
+    if (embedUrl) {
       return (
         <div className="viewer scrollable">
           {isMedia ? (
-            <img src={previewUrl} alt={file.title || ''} className="media-preview" />
+            <img
+              src={embedUrl}
+              alt={file.title || ''}
+              className="media-preview"
+              onError={(e) => { e.target.alt = 'Preview unavailable'; e.target.style.opacity = '0.3'; }}
+            />
           ) : (
-            <iframe src={previewUrl} className="preview-iframe" title="file preview" />
+            <iframe src={embedUrl} className="preview-iframe" title="file preview" />
           )}
           <div className="viewer-footer">
-            <button onClick={() => window.open(previewUrl, '_blank')} className="btn-get-file">Open File</button>
+            <div className="viewer-footer-row">
+              <button className="btn-get-file" onClick={onBackFromPreview}>← Back</button>
+              <button className="btn-get-file" onClick={() => window.open(openUrl, '_blank')}>Open File</button>
+            </div>
           </div>
         </div>
       );
     }
     return (
       <div className="viewer">
-        <p className="preview-unavail">Preview unavailable. <button onClick={onGetFile} className="link-btn">Refresh now</button></p>
+        <p className="preview-unavail">Preview unavailable. <button onClick={onRefreshPreview} className="link-btn">Refresh now</button></p>
       </div>
     );
   }
