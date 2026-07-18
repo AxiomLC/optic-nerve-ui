@@ -1,3 +1,5 @@
+// Optic Nerve — ver 1.0 beta July 2026
+
 import { useState, useRef, useEffect } from 'react';
 
 /**
@@ -13,12 +15,14 @@ import { useState, useRef, useEffect } from 'react';
  */
 const STATE = { IDLE: 'idle', LISTENING: 'listening', SPEAKING: 'speaking' };
 
+// =============== 1. Voice Chat Component ===============
 export default function VoiceChat({ onExpandChange, voiceExpanded, onSearchPayload }) {
   const [micState, setMicState] = useState(STATE.IDLE);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const timerRef = useRef(null);
 
+  // -------------- 2. Auto-Timeout Listening State --------------
   // Auto-timeout listening after 2s
   useEffect(() => {
     if (micState === STATE.LISTENING) {
@@ -29,6 +33,7 @@ export default function VoiceChat({ onExpandChange, voiceExpanded, onSearchPaylo
     return () => clearTimeout(timerRef.current);
   }, [micState]);
 
+  // -------------- 3. Toggle Mic --------------
   function toggleMic() {
     if (micState === STATE.IDLE) {
       setMicState(STATE.LISTENING);
@@ -37,6 +42,7 @@ export default function VoiceChat({ onExpandChange, voiceExpanded, onSearchPaylo
     }
   }
 
+  // -------------- 4. Handle Send (placeholder) --------------
   async function handleSend(e) {
     e.preventDefault();
     if (!input.trim()) return;
@@ -50,6 +56,7 @@ export default function VoiceChat({ onExpandChange, voiceExpanded, onSearchPaylo
     }, 500);
   }
 
+  // -------------- 5. Render Voice UI --------------
   return (
     <div className="voice-layer">
       <div className="voice-messages">

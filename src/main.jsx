@@ -1,3 +1,6 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// App entry point. Wraps App in ErrorBoundary + StrictMode.
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -22,6 +25,7 @@ function ErrorFallback({ error }) {
   );
 }
 
+// =============== 1. Error Boundary ===============
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -38,6 +42,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// =============== 2. Mount ===============
 const root = document.getElementById('root');
 if (root) {
   ReactDOM.createRoot(root).render(

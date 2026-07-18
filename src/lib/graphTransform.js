@@ -1,14 +1,14 @@
-/**
- * Convert Supabase canvas payload into react-force-graph-3d graph data.
- *
- * Nodes use internal DB primary keys (id) since that's what edge
- * foreign keys (file_id, target_entity_id) reference.
- * Full row data (source_id, canonical_name, etc.) is preserved on
- * each node for the viewer panel.
- *
- * Orphaned files (no edges) get frozen positions near center
- * using fx/fy/fz so the simulation cannot push them outward.
- */
+// Optic Nerve — ver 1.0 beta July 2026
+// Converts Supabase canvas payload (files, entities, edges) into
+// { nodes, links } for react-force-graph-3d.
+//
+// Nodes use internal DB primary keys (id) since that's what edge
+// foreign keys (file_id, target_entity_id) reference.
+// Full row data (source_id, canonical_name, etc.) is preserved on
+// each node for the viewer panel.
+//
+// Orphaned files (no edges) get frozen positions near center
+// using fx/fy/fz so the simulation cannot push them outward.
 export function toGraphData({ files, entities, edges }) {
   // Use separate graphId (prefixed by type) to prevent d3-force ID collision
   // while preserving numeric id for downstream code (ViewerPanel, selection, etc.)

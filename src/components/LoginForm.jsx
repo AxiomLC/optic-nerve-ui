@@ -1,3 +1,6 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// Login form — calls getCanvas RPC and passes result to parent.
+
 import { useState } from 'react';
 import { getCanvas } from '../lib/supabaseClient';
 
@@ -7,6 +10,7 @@ export default function LoginForm({ onLogin }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // =============== 1. Handle Login Submit ===============
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);

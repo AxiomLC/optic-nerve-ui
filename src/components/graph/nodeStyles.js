@@ -1,3 +1,4 @@
+// Optic Nerve — ver 1.0 beta July 2026
 // ============================================================
 // Node styling helpers — delegates to theme.js for values.
 // ============================================================

@@ -1,3 +1,8 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// Application shell. Handles auth, canvas fetch, layer system
+// (viewer / search / voice), file/entity selection, preview mode,
+// and the draggable left-column divider.
+
 import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import LoginForm from './components/LoginForm';
 import SearchPanel from './components/SearchPanel';
@@ -9,6 +14,7 @@ import { getCanvas } from './lib/supabaseClient';
 
 const MindMap = lazy(() => import('./components/graph/MindMap'));
 
+// =============== 1. Session Persistence (localStorage) ===============
 const SESSION_KEY = 'optic-nerve-session';
 
 function loadSession() {
@@ -24,6 +30,7 @@ function clearSession() {
   try { localStorage.removeItem(SESSION_KEY); } catch {}
 }
 
+// =============== 2. State Declarations ===============
 export default function App() {
   const [authUser, setAuthUser] = useState(null);
   const [canvas, setCanvas] = useState(null);
@@ -43,7 +50,7 @@ export default function App() {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
   }, []);
 
-  // ── Restore session on mount ──
+  // =============== 3. Restore Session on Mount ===============
   useEffect(() => {
     const saved = loadSession();
     if (saved && saved.canvas && saved.username) {
@@ -65,6 +72,7 @@ export default function App() {
     }
   }, []);
 
+  // =============== 4. Login Handler ===============
   async function handleLogin({ username, canvas: canvasData }) {
     setAuthUser({ username });
     setCanvas(canvasData);
@@ -88,6 +96,7 @@ export default function App() {
     saveSession({ username, password, canvas: canvasData, previewUrls: urls });
   }
 
+  // =============== 5. Logout Handler ===============
   function handleLogout() {
     clearSession();
     setAuthUser(null);
@@ -101,6 +110,7 @@ export default function App() {
     setErrorLog([]);
   }
 
+  // =============== 6. File Selection Handler ===============
   const handleSelectFile = useCallback((file, { from } = {}) => {
     if (from === 'entity') setBackTo('entity');
     else if (from === 'search' || file.score != null) setBackTo('search');
@@ -120,13 +130,14 @@ export default function App() {
     setActiveLayer('viewer');
   }, [canvas]);
 
+  // =============== 7. Entity Selection Handler ===============
   const handleSelectEntity = useCallback((entity) => {
     setSelectedEntity(entity);
     setSelectedFile(null);
     setBackTo(null);
     setPreviewMode(false);
     setActiveLayer('viewer');
-    // Compute connected files from canvas edges
+    // -------------- 8. Compute Connected Files from Canvas Edges --------------
     if (canvas?.edges && canvas?.files) {
       const fileIds = canvas.edges
         .filter(e => e.target_entity_id === entity.id)
@@ -137,10 +148,12 @@ export default function App() {
     }
   }, [canvas]);
 
+  // =============== 9. Search Submit Handler ===============
   const handleSearchSubmit = useCallback(() => {
     setActiveLayer('search');
   }, []);
 
+  // =============== 10. Voice Payload Handler ===============
   const handleVoicePayload = useCallback((payload) => {
     if (payload && Array.isArray(payload) && payload.length > 0 && payload[0].source_id) {
       setSearchResults(payload);
@@ -148,6 +161,7 @@ export default function App() {
     }
   }, []);
 
+  // =============== 11. Get File / Preview Handlers ===============
   const handleGetFile = useCallback(() => {
     if (selectedFile?.file_type === '.ntn' && selectedFile?.source_id) {
       window.open(`https://www.notion.so/${selectedFile.source_id.replace(/-/g, '')}`, '_blank');
@@ -176,11 +190,12 @@ export default function App() {
 
   const getFileAvailable = selectedFile?.drive_id && selectedFile?.source_id;
 
+  // =============== 12. Voice Toggle ===============
   const handleVoiceToggle = useCallback(() => {
     setActiveLayer(prev => prev === 'voice' ? 'viewer' : 'voice');
   }, []);
 
-  // ── Draggable divider ──
+  // =============== 13. Draggable Divider ===============
   const isDragging = useRef(false);
   const handleDividerDown = useCallback((e) => {
     e.preventDefault();
@@ -208,12 +223,19 @@ export default function App() {
     };
   }, []);
 
+  // =============== 14. Render: Login Redirect ===============
   if (!authUser) {
     return <LoginForm onLogin={handleLogin} />;
   }
 
   const previewUrl = selectedFile?.source_id ? previewUrls[selectedFile.source_id] : null;
 
+  // ── Debug diagnostics (accessible in console) ──
+  window.__previewUrls = previewUrls;
+  window.__selectedFile = selectedFile;
+  window.__previewUrl = previewUrl;
+
+  // =============== 15. Render: App Shell with MindMap ===============
   return (
     <div className="app-shell">
       <header className="app-header">

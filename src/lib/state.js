@@ -1,3 +1,6 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// AppContext definition and shape documentation.
+
 import { createContext, useContext } from 'react';
 
 export const AppContext = createContext(null);

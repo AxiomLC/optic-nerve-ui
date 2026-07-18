@@ -1,3 +1,7 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// File/entity viewer panel. Dual mode: snippet (md/thumb) and
+// preview (iframe/img). Entity display shows connected files.
+
 import MarkdownView from './MarkdownView';
 
 export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile, previewUrl, previewMode, onGetFile, onBackFromPreview, onRefreshPreview, getFileAvailable, onBack }) {
@@ -5,7 +9,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
   if (file) {
     // falls through to file viewer below
   } else if (entity) {
-    // ── Entity snippet with connected files ──────────────
+    // =============== 1. Entity Snippet with Connected Files ===============
     return (
       <div className="viewer scrollable">
         <div className="snippet-header">
@@ -31,14 +35,14 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
     );
   }
 
-  // ── No selection ────────────────────────────────────────
+  // =============== 2. No Selection ===============
   if (!file) {
     return <div className="viewer empty-state">Select a file to view</div>;
   }
 
   const isMedia = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|mp4|mov|avi|mkv|webm|wmv)$/i.test(file.file_type);
 
-  // ── Preview mode ────────────────────────────────────────
+  // =============== 3. Preview Mode (iframe / img) ===============
   if (previewMode) {
     const embedUrl = previewUrl?.getUrl;
     const openUrl  = previewUrl?.webUrl || previewUrl?.getUrl;
@@ -72,7 +76,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
     );
   }
 
-  // ── Snippet mode ────────────────────────────────────────
+  // =============== 4. Snippet Mode (md / thumb) ===============
   return (
     <div className="viewer scrollable">
       <div className="snippet-header">

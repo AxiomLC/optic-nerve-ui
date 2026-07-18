@@ -1,3 +1,6 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// n8n webhook fetch wrappers for preview URLs and vector search.
+
 const N8N_BASE = import.meta.env.VITE_N8N_BASE_URL;
 
 function requireBase() {
@@ -7,6 +10,7 @@ function requireBase() {
   );
 }
 
+// =============== 1. Batch Preview URL Fetch ===============
 export async function getPreviewUrls(items) {
   requireBase();
   const res = await fetch(`${N8N_BASE}/webhook/preview-batch`, {
@@ -19,6 +23,7 @@ export async function getPreviewUrls(items) {
   return data.previews || {};
 }
 
+// =============== 2. Single-Item Preview Retry (not built yet) ===============
 export async function getPreviewUrlSingle(driveId, source_id) {
   requireBase();
   const res = await fetch(`${N8N_BASE}/webhook/preview-single`, {
@@ -30,6 +35,7 @@ export async function getPreviewUrlSingle(driveId, source_id) {
   return res.json();
 }
 
+// =============== 3. Semantic Vector Search ===============
 export async function vectorSearch(query) {
   requireBase();
   const res = await fetch(`${N8N_BASE}/webhook/optic-query`, {

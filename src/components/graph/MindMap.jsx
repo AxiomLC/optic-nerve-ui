@@ -1,3 +1,9 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// 3D force-directed graph using react-force-graph-3d / Three.js.
+// Builds custom sprites for entity and file nodes: feathered glow,
+// composite label text, and lucide icons. Handles orphan column
+// placement on engine stop.
+
 import ForceGraph3D from 'react-force-graph-3d';
 import { useState, useCallback, useRef, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -11,7 +17,8 @@ import {
   MAP_FONT, PHYSICS, LINK,
 } from '../../config/theme';
 
-// ── Icon SVG cache (render lucide-react to SVG once per name/color) ──
+// =============== 1. Icon SVG Cache ===============
+// Renders a lucide-react component to inline SVG once per (name, color, strokeWidth).
 const iconSvgCache = {};
 
 function getIconSVG(iconName, color, strokeWidth) {
@@ -42,6 +49,9 @@ function getIconSVG(iconName, color, strokeWidth) {
   }
 }
 
+// =============== 2. makeIconSprite ===============
+// Renders a lucide icon as a standalone THREE.Sprite (used rarely;
+// most icons are embedded into the composite label via makeGroupLabel).
 function makeIconSprite(iconName, size, color, opacity, style) {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
@@ -88,6 +98,10 @@ function makeIconSprite(iconName, size, color, opacity, style) {
   return sprite;
 }
 
+// =============== 3. makeGroupLabel ===============
+// Draws text lines + optional icon onto one canvas, returns a single
+// THREE.Sprite. All content on one canvas = zero parallax drift.
+// Handles word-wrap at configurable maxWidth.
 function makeGroupLabel(lines, config = {}) {
   const { offY = 0, lineSpacing = 1.4, icon = null, maxWidth = 0, fontFamily = 'system-ui, sans-serif', iconGap: cfgIconGap } = config;
   if (!lines || lines.length === 0) return new THREE.Group();
@@ -196,11 +210,14 @@ function makeGroupLabel(lines, config = {}) {
   return s;
 }
 
+// =============== 4. makeLabel ===============
+// Simple single-line label (convenience wrapper around makeGroupLabel).
 function makeLabel(text, color, fontSize, offY) {
   return makeGroupLabel([{ text, color, fontSize }], { offY, lineSpacing: 1.4 });
 }
 
-// ── Feathered glow (radial gradient sprite) ──
+// =============== 5. makeFeatheredGlow ===============
+// Feathered radial gradient sprite for entity/file glow behind labels.
 function makeFeatheredGlow(color, radius, config) {
   const { spriteScale = 6, featherStart = 0.3, opacity = 1.0 } = config || {};
   const canvas = document.createElement('canvas');
@@ -231,6 +248,8 @@ function makeFeatheredGlow(color, radius, config) {
   return sprite;
 }
 
+// =============== 6. getFileIcon ===============
+// Looks up a lucide icon name by file extension or MIME subtype.
 function getFileIcon(node) {
   const ft = (node.file_type || '').toLowerCase();
   if (!ft) return FILE_ICON_DEFAULT;
@@ -254,6 +273,8 @@ function getFileIcon(node) {
   return FILE_ICON_DEFAULT;
 }
 
+// =============== 7. entityRadius ===============
+// Maps edge_count to a size tier for entity glow sprites.
 function entityRadius(edgeCount) {
   const c = edgeCount || 0;
   for (const t of ENTITY_SIZE_TIERS) {
@@ -262,10 +283,12 @@ function entityRadius(edgeCount) {
   return 17;
 }
 
+// =============== 8. MindMap Component ===============
 export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   const [selected, setSelected] = useState(new Set());
   const fgRef = useRef(null);
 
+  // -------------- 9. Handle Node Click --------------
   const handleClick = useCallback((node) => {
     if (node.type === 'file') {
       setSelected(new Set([node.id]));
@@ -276,6 +299,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [onSelectEntity, onSelectFile]);
 
+  // -------------- 10. Build Three.js Node Objects --------------
   const handleNodeThreeObject = useCallback((node) => {
     const group = new THREE.Group();
 
@@ -322,6 +346,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     return group;
   }, []);
 
+  // -------------- 11. Engine Stop / Orphan Column --------------
   const handleEngineStop = useCallback(() => {
     if (!graphData?.nodes) return;
     const orphans = graphData.nodes.filter(n => n.isOrphan);
@@ -361,6 +386,8 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
       n.fz = n.z;
     });
   }, [graphData]);
+
+  // -------------- 12. Render ForceGraph3D --------------
 
   return (
     <div className="mindmap-container">

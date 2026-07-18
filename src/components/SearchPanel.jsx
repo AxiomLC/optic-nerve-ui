@@ -1,3 +1,6 @@
+// Optic Nerve — ver 1.0 beta July 2026
+// Vector search bar — submits query to n8n, results handled by parent.
+
 import { useState } from 'react';
 import { vectorSearch } from '../lib/n8nClient';
 
@@ -5,6 +8,7 @@ export default function SearchPanel({ onSelectFile, setSearchResults, searchResu
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // =============== 1. Handle Search Submit ===============
   async function handleSearch(e) {
     e.preventDefault();
     if (!query.trim()) return;
