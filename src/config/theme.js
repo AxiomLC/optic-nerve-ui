@@ -113,7 +113,7 @@ export const ENTITY_LABEL = {
 export const ENTITY_GLOW = {
   baseRadius: 1.0,    // multiplier × entity tier size
   spriteScale: 4,     // glow size = radius × spriteScale. Higher = bigger glow ball in 3D space.
-  featherStart: 0.4,  // where feathering begins (0=fully feathered, 1=solid circle)
+  featherStart: 0.6,  // where feathering begins (0=fully feathered, 1=solid circle)
   opacity: 1.0,
 };
 
@@ -145,10 +145,12 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  mentionWidth:  0.7,
-  linkWidth:     3,
-  mentionColor:  '#49f',       // 49f sky blue, fff white, #001133 dark blue, 999 dark grey — 'mention' edges
-  linkColor:     '#ff6ec7',    // hot pink — 'link' edges
+  coreWidth:     4,
+  linkWidth:     2.5,
+  mentionWidth:  0.5,
+  coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
+  linkColor:     '#49f',       // sky blue — link edges
+  mentionColor:  '#555',       // dark grey — mention edges (weakest)
   particleSpeed: 0.005,
 };
 

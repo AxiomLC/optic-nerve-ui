@@ -397,7 +397,11 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         nodeId="graphId"
         nodeColor={n => nodeColor(n, selected.has(n.id))}
         linkWidth={linkWidth}
-        linkColor={e => e.edge_type === 'link' ? LINK.linkColor : LINK.mentionColor}
+        linkColor={e => {
+          if (e.edge_type === 'core') return LINK.coreColor;
+          if (e.edge_type === 'link') return LINK.linkColor;
+          return LINK.mentionColor;
+        }}
         onNodeClick={handleClick}
         nodeThreeObject={handleNodeThreeObject}
         linkDirectionalParticles={1}

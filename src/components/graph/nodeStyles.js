@@ -12,5 +12,7 @@ export function nodeColor(node, selected) {
 }
 
 export function linkWidth(edge) {
-  return edge.edge_type === 'link' ? LINK.linkWidth : LINK.mentionWidth;
+  if (edge.edge_type === 'core') return LINK.coreWidth;
+  if (edge.edge_type === 'link') return LINK.linkWidth;
+  return LINK.mentionWidth;  // mention or fallback
 }

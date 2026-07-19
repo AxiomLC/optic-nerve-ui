@@ -55,7 +55,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
               src={embedUrl}
               alt={file.title || ''}
               className="media-preview"
-              onError={(e) => { e.target.alt = 'Preview unavailable'; e.target.style.opacity = '0.3'; }}
+              onError={(e) => { e.target.alt = 'Preview failed. Use Open File for videos'; e.target.style.opacity = '0.3'; }}
             />
           ) : (
             <iframe src={embedUrl} className="preview-iframe" title="file preview" />
@@ -71,7 +71,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
     }
     return (
       <div className="viewer">
-        <p className="preview-unavail">Preview unavailable. <button onClick={onRefreshPreview} className="link-btn">Refresh now</button></p>
+        <p className="preview-unavail">Preview unavailable. For videos use Open File. <button onClick={onRefreshPreview} className="link-btn">Refresh now</button></p>
       </div>
     );
   }
