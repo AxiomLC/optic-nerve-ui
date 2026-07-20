@@ -161,11 +161,11 @@ export const PHYSICS = {
   alphaDecay:    0.02,    // How fast sim settles. 0.01=slow/wide, 0.05=fast/tight.
   velocityDecay: 0.3,     // Friction. 0.1=glides far, 0.5=stops quick.
   warmupTicks:   100,     // Pre-render ticks for initial positioning.
-  linkDistance:  80,      // Target edge length. 30=tight, 80=default, 120=loose.
+  linkDistance:  90,      // Target edge length. 30=tight, 80=default, 120=loose.
   // ── Repulsion ──
-  chargeStrength: -30,    // How strongly nodes repel. -10=tight, -30=default, -60=spread.
+  chargeStrength: -40,    // How strongly nodes repel. -10=tight, -30=default, -60=spread.
   // ── Centroid lock ──
-  centerStrength: 1.0,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
+  centerStrength: 0.8,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
   // ── Per-node origin gravity (fix for small components drifting far) ──
   axisStrength: 0.01,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
   // ── Orphan column ──
