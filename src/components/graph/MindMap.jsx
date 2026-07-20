@@ -377,19 +377,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__fgRef = fgRef.current;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
 
-    // ── Reset camera rotation/controls target to origin ──
-    // Fixes viewport offset where graph appears ~30% right and 10% down
-    try {
-      fgRef.current.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 0);
-      const ctrl = fgRef.current.controls();
-      if (ctrl && ctrl.target) {
-        ctrl.target.set(0, 0, 0);
-        ctrl.update();
-      }
-    } catch (e) {
-      // controls not available, skip reset
-    }
-
     if (orphans.length === 0) return;
 
     // Measure cluster radius (max distance of non-orphan nodes from center)
