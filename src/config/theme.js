@@ -167,7 +167,7 @@ export const PHYSICS = {
   // ── Centroid lock ──
   centerStrength: 1.0,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
   // ── Per-node origin gravity (fix for small components drifting far) ──
-  axisStrength: 0.01,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
+  axisStrength: 0.03,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
   // ── Orphan column ──
   orphanColumnPadding: 5,  // Gap between cluster edge and first orphan column
   orphanSpacing: 15,        // Vertical gap between each orphan in the column
