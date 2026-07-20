@@ -145,12 +145,12 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  coreWidth:     3,
+  coreWidth:     3.5,
   linkWidth:     1.8,
-  mentionWidth:  1.8,
+  mentionWidth:  1.4,
   coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
   linkColor:     '#49f',       // sky blue — link edges
-  mentionColor:  '#555',       // dark grey — mention edges (weakest)
+  mentionColor:  '#fff',       // fff white,  555 dark grey — mention edges (weakest)
   // Global edge opacity. 0=invisible, 0.2=library default, 1=solid. Same for all edge types.
   linkOpacity: 0.35,
   particleSpeed: 0.005,
