@@ -151,10 +151,8 @@ export const LINK = {
   coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
   linkColor:     '#49f',       // sky blue — link edges
   mentionColor:  '#555',       // dark grey — mention edges (weakest)
-  // Opacity per edge type. 0=invisible, 0.5=half, 1.0=solid.
-  coreOpacity:    0.5,         // core edges fully opaque
-  linkOpacity:    0.35,         // slightly faded, visible but secondary
-  mentionOpacity: 0.35,        // faint, sits in background
+  // Global edge opacity. 0=invisible, 0.2=library default, 1=solid. Same for all edge types.
+  linkOpacity: 0.3,
   particleSpeed: 0.005,
 };
 

@@ -419,14 +419,12 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         nodeId="graphId"
         nodeColor={n => nodeColor(n, selected.has(n.id))}
         linkWidth={linkWidth}
-        linkMaterial={e => {
-          const t = e.edge_type;
-          return new THREE.MeshLambertMaterial({
-            color: t === 'core' ? LINK.coreColor : t === 'link' ? LINK.linkColor : LINK.mentionColor,
-            transparent: true,
-            opacity: t === 'core' ? LINK.coreOpacity : t === 'link' ? LINK.linkOpacity : LINK.mentionOpacity
-          });
+        linkColor={e => {
+          if (e.edge_type === 'core') return LINK.coreColor;
+          if (e.edge_type === 'link') return LINK.linkColor;
+          return LINK.mentionColor;
         }}
+        linkOpacity={LINK.linkOpacity}  // single global opacity, same for all edge types
         onNodeClick={handleClick}
         nodeThreeObject={handleNodeThreeObject}
         linkDirectionalParticles={1}
