@@ -20,10 +20,10 @@ export function toGraphData({ files, entities, edges }) {
   const links = (edges || []).flatMap(e => {
     const result = [];
     if (e.target_entity_id != null) {
-      result.push({ source: `f_${e.file_id}`, target: `e_${e.target_entity_id}`, edge_type: e.edge_type, action: e.action, weight: e.weight });
+      result.push({ source: `f_${e.file_id}`, target: `e_${e.target_entity_id}`, edge_type: e.edge_type, action: e.action });
     }
     if (e.target_file_id != null) {
-      result.push({ source: `f_${e.file_id}`, target: `f_${e.target_file_id}`, edge_type: e.edge_type, action: e.action, weight: e.weight });
+      result.push({ source: `f_${e.file_id}`, target: `f_${e.target_file_id}`, edge_type: e.edge_type, action: e.action });
     }
     return result;
   });

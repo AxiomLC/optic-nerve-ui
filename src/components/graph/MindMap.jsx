@@ -5,7 +5,7 @@
 // placement on engine stop.
 
 import ForceGraph3D from 'react-force-graph-3d';
-import { useState, useCallback, useRef, createElement } from 'react';
+import { useState, useCallback, useRef, useEffect, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import * as THREE from 'three';
@@ -16,6 +16,7 @@ import {
   FILE_ICON, FILE_ICON_DEFAULT, FILE_LABEL, FILE_GLOW,
   MAP_FONT, PHYSICS, LINK,
 } from '../../config/theme';
+import { forceX, forceY, forceZ } from 'd3-force-3d';
 
 // =============== 1. Icon SVG Cache ===============
 // Renders a lucide-react component to inline SVG once per (name, color, strokeWidth).
@@ -288,6 +289,27 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   const [selected, setSelected] = useState(new Set());
   const fgRef = useRef(null);
 
+  // -------------- Custom d3 forces (mount + data change) --------------
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (!fg || !graphData?.nodes?.length) return;
+    // Repulsion: how strongly nodes push apart. -10=tight, -30=default, -60=spread
+    fg.d3Force('charge').strength(PHYSICS.chargeStrength ?? -30);
+    // Centroid lock: keeps graph center at origin. 0=drifts, 0.5=soft, 1.0=fixed
+    fg.d3Force('center').strength(PHYSICS.centerStrength ?? 1.0);
+    // Axis gravity: per-node pull toward 0,0,0. Fixes small components drifting far.
+    const axStr = PHYSICS.axisStrength ?? 0;
+    if (axStr > 0) {
+      fg.d3Force('x', forceX().strength(axStr));
+      fg.d3Force('y', forceY().strength(axStr));
+      fg.d3Force('z', forceZ().strength(axStr));
+    } else {
+      if (fg.d3Force('x')) fg.d3Force('x', null);
+      if (fg.d3Force('y')) fg.d3Force('y', null);
+      if (fg.d3Force('z')) fg.d3Force('z', null);
+    }
+  }, [graphData]);
+
   // -------------- 9. Handle Node Click --------------
   const handleClick = useCallback((node) => {
     if (node.type === 'file') {
@@ -397,10 +419,13 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
         nodeId="graphId"
         nodeColor={n => nodeColor(n, selected.has(n.id))}
         linkWidth={linkWidth}
-        linkColor={e => {
-          if (e.edge_type === 'core') return LINK.coreColor;
-          if (e.edge_type === 'link') return LINK.linkColor;
-          return LINK.mentionColor;
+        linkMaterial={e => {
+          const t = e.edge_type;
+          return new THREE.MeshLambertMaterial({
+            color: t === 'core' ? LINK.coreColor : t === 'link' ? LINK.linkColor : LINK.mentionColor,
+            transparent: true,
+            opacity: t === 'core' ? LINK.coreOpacity : t === 'link' ? LINK.linkOpacity : LINK.mentionOpacity
+          });
         }}
         onNodeClick={handleClick}
         nodeThreeObject={handleNodeThreeObject}

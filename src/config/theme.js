@@ -151,17 +151,28 @@ export const LINK = {
   coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
   linkColor:     '#49f',       // sky blue — link edges
   mentionColor:  '#555',       // dark grey — mention edges (weakest)
+  // Opacity per edge type. 0=invisible, 0.5=half, 1.0=solid.
+  coreOpacity:    1.0,         // core edges fully opaque
+  linkOpacity:    0.7,         // slightly faded, visible but secondary
+  mentionOpacity: 0.35,        // faint, sits in background
   particleSpeed: 0.005,
 };
 
 // ── Graph physics ─────────────────────────────────────────
 export const PHYSICS = {
-  alphaDecay:    0.02,
-  velocityDecay: 0.3,
-  linkDistance:  80,
-  warmupTicks:   100,
-  orphanColumnPadding: 5,  // gap between cluster edge and first orphan column
-  orphanSpacing: 15,         // vertical spacing between orphans in the column
+  alphaDecay:    0.02,    // How fast sim settles. 0.01=slow/wide, 0.05=fast/tight.
+  velocityDecay: 0.3,     // Friction. 0.1=glides far, 0.5=stops quick.
+  warmupTicks:   100,     // Pre-render ticks for initial positioning.
+  linkDistance:  80,      // Target edge length. 30=tight, 80=default, 120=loose.
+  // ── Repulsion ──
+  chargeStrength: -30,    // How strongly nodes repel. -10=tight, -30=default, -60=spread.
+  // ── Centroid lock ──
+  centerStrength: 1.0,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
+  // ── Per-node origin gravity (fix for small components drifting far) ──
+  axisStrength: 0.005,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
+  // ── Orphan column ──
+  orphanColumnPadding: 5,  // Gap between cluster edge and first orphan column
+  orphanSpacing: 15,        // Vertical gap between each orphan in the column
 };
 
 // ── Logo ──────────────────────────────────────────────────
