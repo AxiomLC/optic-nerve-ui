@@ -145,7 +145,7 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  coreWidth:     4,
+  coreWidth:     3,
   linkWidth:     1.8,
   mentionWidth:  1.8,
   coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
@@ -167,7 +167,7 @@ export const PHYSICS = {
   // ── Centroid lock ──
   centerStrength: 0.8,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
   // ── Per-node origin gravity (fix for small components drifting far) ──
-  axisStrength: 0.01,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
+  axisStrength: 0.04,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
   // ── Orphan column ──
   orphanColumnPadding: 5,  // Gap between cluster edge and first orphan column
   orphanSpacing: 15,        // Vertical gap between each orphan in the column
