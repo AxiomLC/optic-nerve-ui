@@ -145,14 +145,14 @@ export const FILE_GLOW = {
 
 // ── Link styling ──────────────────────────────────────────
 export const LINK = {
-  coreWidth:     3.0,
+  coreWidth:     3.0, // 5.0 max, 3.0 good.
   linkWidth:     1.1,
   mentionWidth:  0.8,
   coreColor:     '#ff6ec7',    // hot pink — core edges (strongest)
   linkColor:     '#49f',       // sky blue — link edges
   mentionColor:  '#fff',       // fff white,  555 dark grey — mention edges (weakest)
   // Global edge opacity. 0=invisible, 0.2=library default, 1=solid. Same for all edge types.
-  linkOpacity: 0.5,
+  linkOpacity: 0.30,
   particleSpeed: 0.005,
 };
 
@@ -161,13 +161,13 @@ export const PHYSICS = {
   alphaDecay:    0.02,    // How fast sim settles. 0.01=slow/wide, 0.05=fast/tight.
   velocityDecay: 0.3,     // Friction. 0.1=glides far, 0.5=stops quick.
   warmupTicks:   100,     // Pre-render ticks for initial positioning.
-  linkDistance:  90,      // Target edge length. 30=tight, 80=default, 120=loose.
+  linkDistance:  90,      // 90 good. Target edge length. 30=tight, 80=default, 120=loose.
   // ── Repulsion ──
-  chargeStrength: -50,    // How strongly nodes repel. -10=tight, -30=default, -60=spread.
+  chargeStrength: -60,    // -60 currently good. How strongly nodes repel. -10=tight, -30=default, -60=spread.
   // ── Centroid lock ──
   centerStrength: 1.0,    // Pulls graph center-of-mass to origin. 0=drifts, 0.5=soft, 1.0=fixed.
   // ── Per-node origin gravity (fix for small components drifting far) ──
-  axisStrength: 0.04,    // Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
+  axisStrength: 0.04,    // .04 workin perfectly for component distance. Pulls each node toward 0,0,0. 0=off, 0.005=gentle, 0.01=moderate.
   // ── Orphan column ──
   orphanColumnPadding: 5,  // Gap between cluster edge and first orphan column
   orphanSpacing: 15,        // Vertical gap between each orphan in the column
