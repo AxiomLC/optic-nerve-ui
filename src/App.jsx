@@ -147,18 +147,30 @@ export default function App() {
     }
   }, [canvas]);
 
-  // =============== 9. Search Submit Handler ===============
+  // =============== 9. Search Results Filter (scope guard) ===============
+  // Filters search results against the user's canvas to prevent out-of-scope
+  // file titles/summaries from leaking to users who shouldn't see them.
+  const setFilteredSearchResults = useCallback((results) => {
+    if (!canvas?.files) {
+      setSearchResults([]);
+      return;
+    }
+    const valid = new Set(canvas.files.map(f => f.source_id));
+    setSearchResults(results.filter(r => valid.has(r.source_id)));
+  }, [canvas]);
+
+  // =============== 10. Search Submit Handler ===============
   const handleSearchSubmit = useCallback(() => {
     setActiveLayer('search');
   }, []);
 
-  // =============== 10. Voice Payload Handler ===============
+  // =============== 11. Voice Payload Handler ===============
   const handleVoicePayload = useCallback((payload) => {
     if (payload && Array.isArray(payload) && payload.length > 0 && payload[0].source_id) {
-      setSearchResults(payload);
+      setFilteredSearchResults(payload);
       setActiveLayer('search');
     }
-  }, []);
+  }, [setFilteredSearchResults]);
 
   // =============== 11. Get File / Preview Handlers ===============
   const handleGetFile = useCallback(() => {
@@ -189,9 +201,19 @@ export default function App() {
 
   const getFileAvailable = selectedFile?.drive_id && selectedFile?.source_id;
 
-  // =============== 12. Voice Toggle ===============
+  // =============== 12. Voice Toggle & Close ===============
+  const prevLayerRef = useRef('viewer');
   const handleVoiceToggle = useCallback(() => {
-    setActiveLayer(prev => prev === 'voice' ? 'viewer' : 'voice');
+    setActiveLayer(prev => {
+      if (prev !== 'voice') {
+        prevLayerRef.current = prev;
+        return 'voice';
+      }
+      return prevLayerRef.current;
+    });
+  }, []);
+  const handleVoiceClose = useCallback(() => {
+    setActiveLayer(prevLayerRef.current);
   }, []);
 
   // =============== 13. Draggable Divider ===============
@@ -268,7 +290,7 @@ export default function App() {
           <SearchPanel
             onSelectFile={handleSelectFile}
             searchResults={searchResults}
-            setSearchResults={setSearchResults}
+            setSearchResults={setFilteredSearchResults}
             onSearchSubmit={handleSearchSubmit}
           />
 
@@ -306,6 +328,7 @@ export default function App() {
                 voiceExpanded={true}
                 onExpandChange={() => {}}
                 onSearchPayload={handleVoicePayload}
+                onClose={handleVoiceClose}
               />
             )}
           </div>

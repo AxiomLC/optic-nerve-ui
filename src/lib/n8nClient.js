@@ -48,3 +48,15 @@ export async function vectorSearch(query) {
   if (!res.ok) throw new Error(`vector-search failed: ${res.status}`);
   return res.json();
 }
+
+// =============== 4. Voice Chat (Charles AI agent) ===============
+export async function voiceChat(text, sessionId) {
+  requireBase();
+  const res = await fetch(`${N8N_BASE}/webhook/charles`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, sessionId }),
+  });
+  if (!res.ok) throw new Error(`voice-chat failed: ${res.status}`);
+  return res.json();
+}

@@ -7,7 +7,18 @@
 :root {
   --bg-black: #0a0a0a;
   --bg-green: #0d1f14;
-  --border-pink: #ff6ec7;
+  /* ═══════════════════════════════════════════════════════════
+     ██  ACCENT COLOR  ██  (change here for entire app theme)
+     Deep purple — edit this single variable to rebrand
+     Example options:
+       #ff6ec7  (original hot pink)
+       #8b5cf6  (violet)
+       #7c3aed  (deep violet)
+       #6366f1  (indigo)
+       #06b6d4  (cyan)
+       #f59e0b  (amber)
+     ═══════════════════════════════════════════════════════ */
+  --border-pink: #8b5cf6;
   --border-thickness: 1px;
   --text-white: #f2f2f2;
   --text-muted: #888;
@@ -398,3 +409,115 @@ footer.app-footer {
   0%   { transform: scale(1); opacity: 0.6; }
   100% { transform: scale(2.5); opacity: 0; }
 }
+
+/* ── Voice header (title + close) ── */
+.voice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px var(--pad) 4px;
+  flex-shrink: 0;
+}
+.voice-header-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.voice-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+}
+.voice-close-btn:hover { color: var(--text-white); }
+
+/* ── Chat transcript bubbles ── */
+.voice-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 40px;
+}
+.voice-bubble {
+  margin-bottom: 8px;
+  display: flex;
+}
+.voice-bubble.user { justify-content: flex-end; }
+.voice-bubble.assistant { justify-content: flex-start; }
+.bubble-text {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.voice-bubble.user .bubble-text {
+  background: #1a1a2e;
+  color: var(--border-pink);
+  border-bottom-right-radius: 4px;
+}
+.voice-bubble.assistant .bubble-text {
+  background: #0d1f14;
+  color: var(--text-white);
+  border-bottom-left-radius: 4px;
+}
+
+/* ── Typing indicator ── */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #0d1f14;
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+}
+.typing-indicator span {
+  animation: typing-bounce 1.4s ease-in-out infinite;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── Mic + keyboard controls row ── */
+.voice-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px var(--pad) 8px;
+  flex-shrink: 0;
+}
+.voice-controls-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.voice-controls-spacer { width: 32px; }
+.voice-kb-toggle {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  width: 32px;
+  text-align: center;
+}
+.voice-kb-toggle:hover { color: var(--text-white); }
+.voice-kb-toggle.active {
+  border-color: var(--border-pink);
+  color: var(--border-pink);
+}
+.voice-mic-container.processing { cursor: default; }
+.voice-mic-container.processing .mic-ring { border-color: var(--text-muted); opacity: 0.2; }
