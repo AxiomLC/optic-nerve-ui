@@ -47,19 +47,41 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
     const embedUrl = previewUrl?.getUrl;
     const openUrl  = previewUrl?.webUrl || previewUrl?.getUrl;
 
+    // ── For images/videos: show thumb with overlay instead of unreliable iframe ──
+    if (isMedia) {
+      return (
+        <div className="viewer scrollable">
+          {file.thumb_url ? (
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src={file.thumb_url} alt={file.title || ''} className="media-preview" style={{ opacity: 0.35 }} />
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                pointerEvents: 'none'
+              }}>
+                <p style={{ color: '#fff', fontSize: '1.1rem', textAlign: 'center', padding: '12px 20px', background: 'rgba(0,0,0,0.65)', borderRadius: 8, margin: 0 }}>
+                  Cannot play inline. Use <strong>Open File</strong> below.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="preview-unavail">Cannot play inline. Use Open File below.</p>
+          )}
+          <div className="viewer-footer">
+            <div className="viewer-footer-row">
+              <button className="btn-get-file" onClick={onBackFromPreview}>← Back</button>
+              <button className="btn-get-file" onClick={() => window.open(openUrl, '_blank')}>Open File</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Non-media files: try iframe preview ──
     if (embedUrl) {
       return (
         <div className="viewer scrollable">
-          {isMedia ? (
-            <img
-              src={embedUrl}
-              alt={file.title || ''}
-              className="media-preview"
-              onError={(e) => { e.target.alt = 'Preview failed. Use Open File for videos'; e.target.style.opacity = '0.3'; }}
-            />
-          ) : (
-            <iframe src={embedUrl} className="preview-iframe" title="file preview" />
-          )}
+          <iframe src={embedUrl} className="preview-iframe" title="file preview" />
           <div className="viewer-footer">
             <div className="viewer-footer-row">
               <button className="btn-get-file" onClick={onBackFromPreview}>← Back</button>
@@ -71,7 +93,7 @@ export default function ViewerPanel({ file, entity, connectedFiles, onSelectFile
     }
     return (
       <div className="viewer">
-        <p className="preview-unavail">Preview unavailable. For videos use Open File. <button onClick={onRefreshPreview} className="link-btn">Refresh now</button></p>
+        <p className="preview-unavail">Preview unavailable. <button onClick={onRefreshPreview} className="link-btn">Refresh now</button></p>
       </div>
     );
   }

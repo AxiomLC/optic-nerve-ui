@@ -73,7 +73,7 @@ export default function App() {
   }, []);
 
   // =============== 4. Login Handler ===============
-  async function handleLogin({ username, canvas: canvasData }) {
+  async function handleLogin({ username, password, canvas: canvasData }) {
     setAuthUser({ username });
     setCanvas(canvasData);
     setGraphData(toGraphData(canvasData));
@@ -92,7 +92,6 @@ export default function App() {
         addLog(`Preview batch failed: ${err.message}`);
       }
     }
-    const password = document?.forms?.[0]?.password?.value || '';
     saveSession({ username, password, canvas: canvasData, previewUrls: urls });
   }
 

@@ -17,7 +17,7 @@ export default function LoginForm({ onLogin }) {
     setLoading(true);
     try {
       const canvas = await getCanvas(username, password);
-      onLogin({ username, canvas });
+      onLogin({ username, password, canvas });
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
