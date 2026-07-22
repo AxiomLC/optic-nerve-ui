@@ -213,7 +213,7 @@ footer.app-footer {
 }
 .search-header {
   font-size: var(--font-size-xs);
-  color: #a78bfa;         /* lighter purple than border */
+  color: #c4b5fd;         /* lighter purple than border */
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
