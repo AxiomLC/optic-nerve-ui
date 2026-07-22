@@ -166,7 +166,7 @@ export default function VoiceChat({ onSearchPayload, onClose }) {
     <div className="voice-layer">
       {/* Header */}
       <div className="voice-header">
-        <span className="voice-header-title">Voice AI</span>
+        <span className="voice-header-title">AI Voice</span>
         <button className="voice-close-btn" onClick={onClose} title="Close voice">&times;</button>
       </div>
 

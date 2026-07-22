@@ -7,7 +7,7 @@
 :root {
   --bg-black: #0a0a0a;
   --bg-green: #0d1f14;
-  --bg-dark: #505050;   /* grey for voice/panels — tweak here */
+  --bg-dark: #333333;   /* grey for voice/panels — tweak here */
   /* ═══════════════════════════════════════════════════════════
      ██  ACCENT COLOR  ██  (change here for entire app theme)
      Deep purple — edit this single variable to rebrand
@@ -49,7 +49,7 @@ body {
 }
 
 .panel {
-  background: #505050;   /* grey — viewer with content */
+  background: #333333;   /* grey — viewer with content */
   border: 1px solid var(--border-pink);
   padding: var(--pad);
 }
