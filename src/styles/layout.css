@@ -89,11 +89,13 @@ header.app-header {
 }
 header.app-header h1 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 2.5em;
+  font-weight: 300;       /* light weight */
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 6px;
+  text-shadow: 0 0 12px rgba(200, 50, 150, 0.4);   /* subtle magenta glow */
 }
 header.app-header .sub {
   margin: 0;
