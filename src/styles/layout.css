@@ -96,7 +96,7 @@ header.app-header h1 {
   display: flex;
   align-items: center;
   gap: 6px;
-  text-shadow: 0 0 24px rgba(200, 50, 150, 0.8);   /* subtle magenta glow */
+  text-shadow: 0 0 8px rgba(200, 50, 150, 0.95), 0 0 20px rgba(200, 50, 150, 0.3);   /* tight bright magenta glow */
 }
 header.app-header .sub {
   margin: 0;
