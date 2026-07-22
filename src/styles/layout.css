@@ -7,7 +7,7 @@
 :root {
   --bg-black: #0a0a0a;
   --bg-green: #0d1f14;
-  --bg-dark: #141a14;   /* dark grey-green for voice/panels — tweak here */
+  --bg-dark: #333333;   /* grey for voice/panels — tweak here */
   /* ═══════════════════════════════════════════════════════════
      ██  ACCENT COLOR  ██  (change here for entire app theme)
      Deep purple — edit this single variable to rebrand
@@ -49,7 +49,7 @@ body {
 }
 
 .panel {
-  background: var(--bg-green);
+  background: #333333;   /* grey — viewer with content */
   border: 1px solid var(--border-pink);
   padding: var(--pad);
 }
@@ -213,7 +213,7 @@ footer.app-footer {
 }
 .search-header {
   font-size: var(--font-size-xs);
-  color: var(--border-pink);
+  color: #a78bfa;         /* lighter purple than border */
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
@@ -400,7 +400,7 @@ footer.app-footer {
   border: 2px solid transparent;
   pointer-events: none;
 }
-.voice-mic-container.idle .mic-ring { border-color: #9b59b6; opacity: 0.3; }
+.voice-mic-container.idle .mic-ring { border-color: #3d85c6; opacity: 0.3; }
 .voice-mic-container.listening .mic-ring { border-color: #2ecc71; animation: emanate 1.5s ease-out infinite; }
 .voice-mic-container.listening .ring-2 { animation-delay: 0.3s; }
 .voice-mic-container.listening .ring-3 { animation-delay: 0.6s; }
@@ -502,14 +502,16 @@ footer.app-footer {
 .voice-kb-toggle {
   background: none;
   border: 1px solid transparent;
-  color: #9b59b6;          /* match idle mic ring color */
-  font-size: 2.2rem;        /* roughly 2x the previous 1.1rem */
+  color: #3d85c6;          /* match idle mic ring */
+  font-size: 1.65rem;       /* 25% smaller, then stretched */
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 4px;
   line-height: 1;
   width: auto;
   text-align: center;
+  display: inline-block;
+  transform: scaleX(1.5);   /* stretched 1.5x wide, same height */
 }
 .voice-kb-toggle:hover { color: var(--text-white); }
 .voice-kb-toggle.active {
