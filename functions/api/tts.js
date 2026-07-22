@@ -7,8 +7,8 @@
 
 // ── DEV CONTROLS ──────────────────────────────────────────────────
 const TTS_ENDPOINT = 'https://api.x.ai/v1/tts';
-const TTS_MODEL    = 'tts-1';
 const TTS_VOICE    = 'Rex';
+const TTS_LANGUAGE = 'en';
 // ──────────────────────────────────────────────────────────────────
 
 export async function onRequest(context) {
@@ -41,9 +41,9 @@ export async function onRequest(context) {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			model: TTS_MODEL,
-			voice: TTS_VOICE,
-			input: text,
+			text,
+			voice_id: TTS_VOICE,
+			language: TTS_LANGUAGE,
 		}),
 	});
 
