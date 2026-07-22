@@ -90,7 +90,8 @@ header.app-header {
 header.app-header h1 {
   margin: 0;
   font-size: 1.2em;
-  font-weight: 300;       /* light weight */
+  font-weight: 300;
+  line-height: 1;       /* light weight */
   white-space: nowrap;
   display: flex;
   align-items: center;
@@ -99,6 +100,7 @@ header.app-header h1 {
 }
 header.app-header .sub {
   margin: 0;
+  line-height: 1;
   font-size: var(--font-size-sm);
   color: #aaa;
   white-space: nowrap;
@@ -118,7 +120,7 @@ header.app-header .sub {
 }
 
 .header-logo-img {
-  height: 36px;
+  height: 32px;
   width: auto;
 }
 
