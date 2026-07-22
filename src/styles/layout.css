@@ -89,7 +89,7 @@ header.app-header {
 }
 header.app-header h1 {
   margin: 0;
-  font-size: 2.5em;
+  font-size: 1.5em;
   font-weight: 300;       /* light weight */
   white-space: nowrap;
   display: flex;
