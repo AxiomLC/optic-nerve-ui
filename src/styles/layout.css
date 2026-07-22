@@ -7,6 +7,7 @@
 :root {
   --bg-black: #0a0a0a;
   --bg-green: #0d1f14;
+  --bg-dark: #141a14;   /* dark grey-green for voice/panels — tweak here */
   /* ═══════════════════════════════════════════════════════════
      ██  ACCENT COLOR  ██  (change here for entire app theme)
      Deep purple — edit this single variable to rebrand
@@ -207,7 +208,7 @@ footer.app-footer {
 .search-panel {
   border-bottom: 1px solid var(--border-pink);
   padding: var(--pad) var(--pad) 6px;
-  background: var(--bg-green);
+  background: var(--bg-dark);   /* dark grey-green */
   flex-shrink: 0;
 }
 .search-header {
@@ -232,7 +233,7 @@ footer.app-footer {
 .layer-search {
   flex: 1;
   overflow-y: auto;
-  background: var(--bg-green);
+  background: var(--bg-black);   /* pure black — matches viewer */
   padding: var(--pad);
 }
 .search-result-item {
@@ -351,6 +352,7 @@ footer.app-footer {
   border-radius: 0 4px 4px 0;
   border-left: none;
 }
+.voice-toggle-btn:hover { background: var(--bg-dark); }   /* dark grey-green */
 
 /* ── Voice layer (in-column) ── */
 .voice-layer {
@@ -358,7 +360,7 @@ footer.app-footer {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg-green);
+  background: var(--bg-dark);   /* dark grey-green */
 }
 .voice-messages {
   flex: 1;
@@ -389,6 +391,7 @@ footer.app-footer {
   flex-shrink: 0;
 }
 .mic-icon { font-size: 1.4rem; z-index: 2; }
+.mic-icon-svg { z-index: 2; position: absolute; }   /* SVG mic/speaker icons */
 .mic-ring {
   position: absolute;
   border-radius: 50%;
@@ -435,12 +438,6 @@ footer.app-footer {
 .voice-close-btn:hover { color: var(--text-white); }
 
 /* ── Chat transcript bubbles ── */
-.voice-hint {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  text-align: center;
-  margin-top: 40px;
-}
 .voice-bubble {
   margin-bottom: 8px;
   display: flex;
@@ -505,13 +502,13 @@ footer.app-footer {
 .voice-kb-toggle {
   background: none;
   border: 1px solid transparent;
-  color: var(--text-muted);
-  font-size: 1.1rem;
+  color: #9b59b6;          /* match idle mic ring color */
+  font-size: 2.2rem;        /* roughly 2x the previous 1.1rem */
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 4px;
   line-height: 1;
-  width: 32px;
+  width: auto;
   text-align: center;
 }
 .voice-kb-toggle:hover { color: var(--text-white); }

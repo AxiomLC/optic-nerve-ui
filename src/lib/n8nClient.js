@@ -50,6 +50,8 @@ export async function vectorSearch(query) {
 }
 
 // =============== 4. Voice Chat (Charles AI agent) ===============
+// n8n may respond with JSON or plain text. Read as text, try JSON parse,
+// extract .output if wrapped, otherwise return raw. Handles both shapes.
 export async function voiceChat(text, sessionId) {
   requireBase();
   const res = await fetch(`${N8N_BASE}/webhook/charles`, {
@@ -58,5 +60,13 @@ export async function voiceChat(text, sessionId) {
     body: JSON.stringify({ text, sessionId }),
   });
   if (!res.ok) throw new Error(`voice-chat failed: ${res.status}`);
-  return res.json();
+  const raw = await res.text();
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed[0]?.output) return parsed[0].output;
+    if (parsed?.output) return parsed.output;
+    return parsed;
+  } catch {
+    return raw;
+  }
 }
