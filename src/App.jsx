@@ -45,6 +45,7 @@ export default function App() {
   const [leftPanelWidth, setLeftPanelWidth] = useState(380);
   const [connectedFiles, setConnectedFiles] = useState([]);
   const [backTo, setBackTo] = useState(null);
+  const [voiceMessages, setVoiceMessages] = useState([]);
 
   const addLog = useCallback((msg) => {
     setErrorLog(prev => [...prev.slice(-50), { msg, time: new Date().toLocaleTimeString() }]);
@@ -329,6 +330,8 @@ export default function App() {
                 onExpandChange={() => {}}
                 onSearchPayload={handleVoicePayload}
                 onClose={handleVoiceClose}
+                messages={voiceMessages}
+                setMessages={setVoiceMessages}
               />
             )}
           </div>

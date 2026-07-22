@@ -458,7 +458,7 @@ footer.app-footer {
 }
 .voice-bubble.user .bubble-text {
   background: #1a1a2e;
-  color: var(--border-pink);
+  color: var(--text-white);
   border-bottom-right-radius: 4px;
 }
 .voice-bubble.assistant .bubble-text {

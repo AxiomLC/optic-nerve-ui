@@ -25,10 +25,14 @@ function isSearchPayload(data) {
   return Array.isArray(data) && data.length > 0 && data[0].source_id;
 }
 
+// Strip URLs from text before sending to TTS — never read URLs aloud
+function stripUrls(text) {
+  return text.replace(/https?:\/\/[^\s,)]+/g, '').replace(/\s{2,}/g, ' ').trim();
+}
+
 // =============== 1. Voice Chat Component ===============
-export default function VoiceChat({ onSearchPayload, onClose }) {
+export default function VoiceChat({ onSearchPayload, onClose, messages, setMessages }) {
   const [micState, setMicState] = useState(STATE.IDLE);
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
@@ -56,12 +60,13 @@ export default function VoiceChat({ onSearchPayload, onClose }) {
 
   // -------------- 2. Speak (TTS via proxy, fallback to SpeechSynthesis) --------------
   const speakText = useCallback(async (text, gen) => {
+    const cleanText = stripUrls(text);   // strip URLs before TTS
     setMicState(STATE.SPEAKING);
     try {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text: cleanText }),
       });
       if (!res.ok) throw new Error(`TTS proxy: ${res.status}`);
       if (gen !== ttsGenRef.current) { setMicState(STATE.IDLE); return; }
@@ -74,7 +79,7 @@ export default function VoiceChat({ onSearchPayload, onClose }) {
     } catch {
       if (gen !== ttsGenRef.current) { setMicState(STATE.IDLE); return; }
       try {
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.onend = () => setMicState(STATE.IDLE);
         utterance.onerror = () => setMicState(STATE.IDLE);
         speechSynthesis.speak(utterance);
@@ -103,7 +108,7 @@ export default function VoiceChat({ onSearchPayload, onClose }) {
     } finally {
       setIsProcessing(false);
     }
-  }, [onSearchPayload, speakText]);
+  }, [onSearchPayload, speakText, setMessages]);
 
   // -------------- 4. STT (SpeechRecognition) --------------
   function startListening() {
