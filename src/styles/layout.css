@@ -459,6 +459,13 @@ footer.app-footer {
   word-break: break-word;
   white-space: pre-wrap;
 }
+.bubble-text a {
+  color: #99ccff;          /* light blue for md links in chat */
+  text-decoration: underline;
+}
+.bubble-text a:hover {
+  color: #cce5ff;
+}
 .voice-bubble.user .bubble-text {
   background: #555;          /* gray for user */
   color: var(--text-white);
