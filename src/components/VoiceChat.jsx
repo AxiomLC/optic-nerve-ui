@@ -60,7 +60,16 @@ export default function VoiceChat({ onSearchPayload, onClose, messages, setMessa
 
   // -------------- 2. Speak (TTS via proxy, fallback to SpeechSynthesis) --------------
   const speakText = useCallback(async (text, gen) => {
-    const cleanText = stripUrls(text);   // strip URLs before TTS
+    // Strip URLs + intro phrases before TTS (keep full text in chat bubble)
+    let cleanText = stripUrls(text);
+    // Strip everything after colon for web search and KB intro lines
+    const introLines = ['Here\'s what I found on the web:', 'Here\'s what the Knowledge Base has on that:'];
+    for (const line of introLines) {
+      if (cleanText.startsWith(line)) {
+        cleanText = line;
+        break;
+      }
+    }
     setMicState(STATE.SPEAKING);
     try {
       const res = await fetch('/api/tts', {
@@ -222,7 +231,7 @@ export default function VoiceChat({ onSearchPayload, onClose, messages, setMessa
             <div className="mic-ring ring-3" />
             <svg
               className="mic-icon-svg"
-              width="30" height="30" viewBox="0 0 24 24"
+              width="22" height="22" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" strokeWidth="2"
               style={{ display: micState === STATE.SPEAKING ? 'none' : 'block' }}
             >
