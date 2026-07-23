@@ -377,9 +377,6 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     window.__fgRef = fgRef.current;
     console.log(`[Orphan] Engine stopped, ${orphans.length} orphans`);
 
-    // Frame camera to fit all nodes after settle
-    fgRef.current?.zoomToFit?.(400);
-
     if (orphans.length === 0) return;
 
     // Measure cluster radius (max distance of non-orphan nodes from center)
