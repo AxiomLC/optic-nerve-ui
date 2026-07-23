@@ -288,6 +288,20 @@ function entityRadius(edgeCount) {
 export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   const [selected, setSelected] = useState(new Set());
   const fgRef = useRef(null);
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+  // Measure container so ForceGraph3D renders at correct display size
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      setDimensions({ width: Math.floor(width), height: Math.floor(height) });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // -------------- Custom d3 forces (mount + data change) --------------
   useEffect(() => {
@@ -310,15 +324,7 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [graphData]);
 
-  // -------------- 9. Force canvas to container size on mount --------------
-  useEffect(() => {
-    const c = document.querySelector('.mindmap-container');
-    const canvas = c?.querySelector('canvas');
-    if (canvas && c) {
-      canvas.style.width = c.clientWidth + 'px';
-      canvas.style.height = c.clientHeight + 'px';
-    }
-  }, []);
+
 
   // -------------- 10. Handle Node Click --------------
   const handleClick = useCallback((node) => {
@@ -422,9 +428,11 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
   // -------------- 12. Render ForceGraph3D --------------
 
   return (
-    <div className="mindmap-container">
+    <div className="mindmap-container" ref={containerRef}>
       <ForceGraph3D
         ref={fgRef}
+        width={dimensions.width}
+        height={dimensions.height}
         graphData={graphData}
         nodeId="graphId"
         nodeColor={n => nodeColor(n, selected.has(n.id))}
