@@ -310,7 +310,17 @@ export default function MindMap({ graphData, onSelectEntity, onSelectFile }) {
     }
   }, [graphData]);
 
-  // -------------- 9. Handle Node Click --------------
+  // -------------- 9. Force canvas to container size on mount --------------
+  useEffect(() => {
+    const c = document.querySelector('.mindmap-container');
+    const canvas = c?.querySelector('canvas');
+    if (canvas && c) {
+      canvas.style.width = c.clientWidth + 'px';
+      canvas.style.height = c.clientHeight + 'px';
+    }
+  }, []);
+
+  // -------------- 10. Handle Node Click --------------
   const handleClick = useCallback((node) => {
     if (node.type === 'file') {
       setSelected(new Set([node.id]));
