@@ -63,7 +63,7 @@ export default function VoiceChat({ onSearchPayload, onClose, messages, setMessa
     // Strip URLs + intro phrases before TTS (keep full text in chat bubble)
     let cleanText = stripUrls(text);
     // Strip everything after colon for web search and KB intro lines
-    const introLines = ['Here\'s what I found on the web:', 'Here\'s what the Knowledge Base has on that:'];
+    const introLines = ['Here\'s what I found on the web:', 'Here\'s the current Knowledge Base:'];
     for (const line of introLines) {
       if (cleanText.startsWith(line)) {
         cleanText = line;

@@ -268,11 +268,12 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div />
+        <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',padding:'0 12px'}}>
+          <img src="/logo.png" alt="" className="header-logo-img" />
+        </div>
         <div className="header-center">
           <h1>
-            <img src="/logo.png" alt="" className="header-logo-img" />
-            {' '}Optic Nerve VK<sup>™</sup>
+            Optic Nerve VK<sup>™</sup>
           </h1>
           <p className="sub">visual kernel</p>
         </div>

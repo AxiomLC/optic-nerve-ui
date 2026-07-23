@@ -106,6 +106,7 @@ header.app-header .sub {
   color: #aaa;
   white-space: nowrap;
   text-align: center;
+  margin-top: -3px;            /* pull up off header bottom */
 }
 
 .header-center {
@@ -163,7 +164,7 @@ footer.app-footer {
 .layout-4tier {
   flex: 1;
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden removed — right-col handles its own clip */
 }
 
 .left-col {
@@ -409,7 +410,7 @@ footer.app-footer {
   border: 2px solid transparent;
   pointer-events: none;
 }
-.voice-mic-container.idle .mic-ring { border-color: var(--mic-blue); opacity: 0.3; }
+.voice-mic-container.idle .mic-ring { border-color: #99ccff; opacity: 0.3; }
 .voice-mic-container.listening .mic-ring { border-color: #2ecc71; animation: emanate 1.5s ease-out infinite; }
 .voice-mic-container.listening .ring-2 { animation-delay: 0.3s; }
 .voice-mic-container.listening .ring-3 { animation-delay: 0.6s; }
@@ -463,7 +464,7 @@ footer.app-footer {
   white-space: pre-wrap;     /* preserve line breaks for KB markdown */
 }
 .voice-bubble.user .bubble-text {
-  background: #0d1f14;          /* dark green for user */
+  background: #99ccff;          /* light blue for user */
   color: var(--text-white);
   border-bottom-right-radius: 4px;
 }
@@ -512,7 +513,7 @@ footer.app-footer {
 .voice-kb-toggle {
   background: none;
   border: 1px solid transparent;
-  color: var(--mic-blue);
+  color: #99ccff;
   font-size: 1.65rem;
   cursor: pointer;
   padding: 4px 6px;
@@ -526,7 +527,7 @@ footer.app-footer {
 .voice-kb-toggle:hover { color: var(--text-white); }
 .voice-kb-toggle.active {
   border-color: var(--border-pink);
-  color: var(--border-pink);
+  color: #99ccff;
 }
 .voice-mic-container.processing { cursor: default; }
 .voice-mic-container.processing .mic-ring { border-color: var(--text-muted); opacity: 0.2; }
