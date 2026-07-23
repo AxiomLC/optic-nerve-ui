@@ -1,30 +1,16 @@
 # Optic Nerve VK™
+**visual kernel** — beta 1.3 · by w57th.agency
 
-**visual kernel** — a knowledge graph UI that maps files, entities, and relationships from OneDrive and Notion into an interactive 3D mind map.
+A GraphRAG platform that maps corporate files, entities, and relationships into an interactive 3D mind map with pgvector semantic search, hybrid retrieval, and AI voice chat.
 
-Built with React + Vite, deployed on Cloudflare Pages via GitHub Actions.
+---
 
 ## Stack
 
-- **Frontend:** React, react-force-graph-3d, react-markdown
-- **Backend:** n8n (OneDrive/Notion ingestion, LLM analysis, vector embeddings)
-- **Database:** Postgres (pgvector) via Supabase
-- **Hosting:** Cloudflare Pages
-
-## App Flow
-
-- **Initial run** — no OneDrive delta link, no Notion poll timestamp. n8n fetches all files from root, populates `optic_delta_link` table with delta tokens and `notion_last_poll` timestamp for subsequent incremental pulls.
-- **OneDrive delta fetch** — weekly cron hits Graph API delta endpoint. New/changed files pass through hash dedup (`optic_hash`), then downloaded in parallel (6 concurrent, 30s timeout) and converted to Markdown via Python MarkItDown (single batch for all docs, O(1) Python startup). Dept/tier extracted from OneDrive folder naming convention (`Dept_Tier_X`).
-- **Route split** — files route into three parallel ingest legs by type: **Docs** (Office docs + Notion `.ntn`), **Images** (JPG, PNG, etc.), **Videos** (MP4, MOV, etc.). Docs and Images use direct Gemini analysis; Videos run two parallel sub-legs (frames via ffmpeg scene detection + audio via Whisper STT) then merge for unified GPT-4o-mini review.
-- **LLM analysis** — Gemini 2.5 Flash Lite (fallback to 3.1 Flash Lite on 503) extracts structured JSON: `{ summary, entities[{canonical_name, entity_type}], edges[{entity_canonical_name, edge_type, action, event_date}] }`. Entity types: person, org, place, project, product, document, event, thing. Edge types: core (central subject), link (specific action), mention (incidental). With `is_named_entity` boolean for filtering generic vs. named entities.
-- **Video processing** — ffmpeg cuts video into frames (interval mode for <3min, scene-detect for ≥3min). Frames analyzed by Gemini; audio extracted per-frame, sent to Groq Whisper-large-v3-turbo for STT. Results merged and reconciled by GPT-4o-mini into one unified summary/entities/edges set, capped at 7 entities / 10 edges.
-- **Vector DB ingest** — embeddings generated via OpenAI text-embedding-3-small (batched 15). Upsert into `optic_file` (ON CONFLICT source_id), then entities into `optic_entity` (dedup by canonical_name + entity_type), then edges into `optic_edge` (ON CONFLICT DO NOTHING). Orphan entities deleted via edge_count recomputation.
-- **Thumbnail creation** — for images and videos, ffmpeg resizes to 500×500, uploaded to Supabase Storage bucket `optic_thumb/`, and `thumb_url` written back to `optic_file`.
-- **UI login** — user enters username/password → Supabase RPC `get_canvas` returns scoped graph data filtered by user's `optic_user_scope` (dept/tier matrix). Session cached in `localStorage` for instant restore on browser refresh, with background re-fetch for fresh data.
-- **UI — 3D mind map** — react-force-graph-3d renders files and entities as Three.js custom sprites (feathered glow + composite label with lucide icons). Color-coded by entity type, sized by connection count, with per-type edge styling (core=pink, link=blue, mention=grey). Orphan files placed in a column. Physics configurable via `theme.js` DEV CONTROLS.
-- **UI — vector search** — semantic search via n8n `/webhook/optic-query`: embeds query text, calls Supabase `match_documents` RPC for pgvector similarity, returns ranked results to the search panel.
-- **UI — voice search agent** — mic button opens voice chat layer. When a search-shaped payload is returned, switches to search results layer. (Mic UI functional, n8n webhook not yet wired.)
-- **UI — entity & file viewer** — left panel shows: for entities — type, name, connection count, and clickable list of connected files; for files — summary + Markdown content + thumbnail (for media) or iframe preview (for docs), with Back/Get File/Open File buttons. OneDrive preview URLs fetched batch from n8n, stored ephemerally. Images/videos show thumbnail with overlay instead of broken iframe.
+- **Frontend:** React, react-force-graph-3d, react-markdown, Cloudflare Pages (edge-deployed, no server)
+- **Backend:** n8n (self-hosted) orchestrates OneDrive/Notion ingestion, LLM analysis, vector embeddings, and AI Voice Chat
+- **Database:** Supabase (Postgres + pgvector) — all file data, entity graph, and vector embeddings in one managed service
+- **Auth:** Database-backed login with dept/tier scope enforcement — no auth provider needed
 
 ---
 
@@ -37,9 +23,9 @@ npm run dev
 
 For local dev, create a `.env` file with the same vars as `.env.production`.
 
-## Env vars
+### Env vars
 
-All three are public-safe values, committed in `.env.production` — Vite bakes them into the JS at build time:
+All three are public-safe values, committed in `.env.production`:
 
 | Var | Purpose |
 |---|---|
@@ -47,13 +33,62 @@ All three are public-safe values, committed in `.env.production` — Vite bakes 
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon public key (safe to expose, RLS enforces access) |
 | `VITE_N8N_BASE_URL` | n8n instance URL |
 
-## Deploy
+### Deploy
 
 Push to `main` — Cloudflare Pages auto-deploys.
 
-## Security
+### Security
 
 Supabase anon key is designed to be public. Data access is enforced server-side by the `get_canvas` RPC function which validates username/password. No sensitive credentials ever reach the browser.
+
+---
+## SUMMARY
+## What It Does
+
+Optic Nerve combines a **knowledge graph** with **semantic vector search** in one interface. Every file in your OneDrive and Notion is analyzed, embedded, and connected into a searchable 3D mind map.
+
+An IT manager or department sub-manager can see at a glance which files exist, where they live, who they relate to — all scoped by their login permissions. No more hunting through OneDrive folders or guessing which doc is relevant.
+
+### The MindMap
+
+- **Entity nodes** glow by type (person, org, project, product) with labels and lucide icons — sized by connection count
+- **File nodes** show file type, title, and icon — color-coded and glow-styled
+- **Edges** show relationships: core (central subject), link (specific action), mention (incidental)
+- **Orphaned files** sit in a tidy column so they don't scatter the simulation
+- **Physics** — drag, zoom, rotate. Configurable via `theme.js`
+
+### Left Panel
+
+Three layers, one at a time: **Viewer** (entity details + file content with Markdown preview), **Search** (vector search results ranked by similarity), **Voice** (AI Voice Chat — speak or type to Charles).
+
+### Auth & Security
+
+Login via Supabase RPC — results scoped by dept/tier. `all_access` flag for admins. Session cached for instant restore on refresh.
+
+## n8n
+### File Ingestion
+
+| Channel | Status |
+|---|---|
+| **OneDrive** — Delta API + hash dedup (`optic_hash`). Only new/changed files processed. Parallel download + batch MarkItDown. | SOLVED ✅ |
+| **Notion** — Biweekly poll via Notion API. Markdown content per page. Same analysis pipeline as OneDrive. | SOLVED ✅ |
+| **Google Drive** | Future add-on |
+
+### LLM Analysis
+
+Files route by type into three parallel legs: **Docs** (Gemini → structured JSON), **Images** (Gemini via file URI), **Video** (FFmpeg frames + Whisper STT → GPT-4o-mini reconciliation). All produce `{ summary, entities[], edges[] }`.
+
+### GraphRAG — Knowledge Graph + Vector DB Combined
+
+Each file gets an OpenAI embedding stored in the same row as its metadata. Entities deduplicated. Edges carry dept/tier scoping from the source file. Semantic search (vector) and graph exploration (entities + edges) work from the same data — a hybrid approach with no separate systems to sync.
+
+### AI Voice Chat
+
+Charles (Mistral Small + 20-turn memory) supports vector search ("find the batch records"), web search (Serper with clickable source links), and knowledge base stats ("how many files do we have?"). TTS via Grok API with SpeechSynthesis fallback.
+
+### Utilities Dropdown (future)
+
+An ⚙️ controls panel in the UI will toggle dept/tier filters, file type visibility, and map styling options.
 
 ## Contact
 
