@@ -8,6 +8,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { voiceChat } from '../lib/n8nClient';
+import Markdown from 'react-markdown';
 
 const STATE = { IDLE: 'idle', LISTENING: 'listening', SPEAKING: 'speaking' };
 const SESSION_KEY = 'optic-nerve-voice-session';
@@ -188,7 +189,7 @@ export default function VoiceChat({ onSearchPayload, onClose, messages, setMessa
       <div className="voice-messages" ref={messagesRef}>
         {messages.map((m, i) => (
           <div key={i} className={`voice-bubble ${m.role}`}>
-            <div className="bubble-text">{m.text}</div>
+            <div className="bubble-text"><Markdown>{m.text}</Markdown></div>
           </div>
         ))}
         {isProcessing && (
