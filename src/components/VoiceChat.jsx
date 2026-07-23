@@ -189,7 +189,7 @@ export default function VoiceChat({ onSearchPayload, onClose, messages, setMessa
       <div className="voice-messages" ref={messagesRef}>
         {messages.map((m, i) => (
           <div key={i} className={`voice-bubble ${m.role}`}>
-            <div className="bubble-text"><Markdown>{m.text}</Markdown></div>
+            <div className="bubble-text"><Markdown components={{a: ({href, children}) => <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>}}>{m.text}</Markdown></div>
           </div>
         ))}
         {isProcessing && (
