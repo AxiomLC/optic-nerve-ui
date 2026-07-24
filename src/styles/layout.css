@@ -473,7 +473,7 @@ footer.app-footer {
   border-bottom-right-radius: 4px;
 }
 .voice-bubble.assistant .bubble-text {
-  background: #49295E;          /* dark gray-purple for AI */
+  background: #321C40;          /* dark gray-purple for AI */
   color: var(--text-white);
   border-bottom-left-radius: 4px;
 }
