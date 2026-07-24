@@ -106,6 +106,7 @@ header.app-header .sub {
   color: #aaa;
   white-space: nowrap;
   text-align: center;
+  padding-bottom: 4px;
 }
 
 .header-center {
@@ -121,7 +122,7 @@ header.app-header .sub {
 }
 
 .header-logo-img {
-  height: 32px;
+  height: 42px;            /* 30% larger */
   width: auto;
 }
 
@@ -472,7 +473,7 @@ footer.app-footer {
   border-bottom-right-radius: 4px;
 }
 .voice-bubble.assistant .bubble-text {
-  background: #2a1040;          /* dark purple for AI */
+  background: #49295E;          /* dark gray-purple for AI */
   color: var(--text-white);
   border-bottom-left-radius: 4px;
 }
